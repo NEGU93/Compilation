@@ -1,100 +1,73 @@
-#################################################################
-# Problem extracted from https://projecteuler.net/problem=345   #
-#################################################################
+        .text
+	    .globl	main
 
-	.text
-	.globl	main
-	
-	.set	N,	15
-	.set	L,	4
+        .set    N, 15
+
+f:
+        xorq    %rax, %rax      # s = 0
+        cmpq    $N, %rdi       # i == N ?
+        je      exit
+        movq    %rsi, %rdx      # key = c << L | i
+        salq    $4, %rdx
+        orq     %rdi, %rdx
+        movl    memo(,%rdx,4), %eax
+        testq   %rax, %rax
+        jnz     exit            # r != 0 ?
+        xorq    %rcx, %rcx      # j = 0
+        jmp     test
+loop:   movq    $1, %r8
+        salq    %cl, %r8        # col = 1 << j
+        testq   %rsi, %r8       # c & col == 0 ?
+        jz      continue
+        pushq   %rax            # sauvegarde s, i, c, key, j
+        pushq   %rdi
+        pushq   %rsi
+        pushq   %rdx
+        pushq   %rcx
+        incq    %rdi            # i + 1
+        subq    %r8, %rsi       # c - col
+        call    f
+        movq    %rax, %r8
+        popq    %rcx            # restauration j, key, c, i, s
+        popq    %rdx
+        popq    %rsi
+        popq    %rdi
+        popq    %rax
+        movq    %rdi, %r9       # m[i][j]
+        imulq   $N, %r9
+        addq    %rcx, %r9
+        movl    m(,%r9,4), %r9d
+        addq    %r9, %r8        # x = m[i][j] + f(...)
+        cmpq    %rax, %r8       # x > s ?
+        cmovg   %r8, %rax
+continue:
+        incq    %rcx            # j++
+test:   cmpq    $N, %rcx       # j < N ?
+        jl      loop
+        movl    %eax, memo(,%rdx,4)
+exit:   ret
+
+## int main() {
+##   printf("solution = %d\n", f(0, (1 << N) - 1));
+##   return 0;
+## }
 
 main:
-	movq	$0,	%rdi	# i = 0
-	movq	$1,	%rsi	
-	salq	$N,	%rsi	# (1 << N)	
-	decq	%rsi
-	call	f
+        movq    $0, %rdi
+        movq    $1, %rsi
+        salq    $N, %rsi
+        decq    %rsi
+        call    f
+        movq	$format, %rdi   # premier argument (format)
+        movq    %rax, %rsi      # deuxième argument (f(...))
+        xorq    %rax, %rax      # %rax = 0 = pas de registres vecteurs
+	call	printf
+        xorq    %rax, %rax
+        ret
 
-	movq	%rax,	%rsi	# variable f(0, (1 << N) - 1)
-	movq	$msg,	%rdi	# variable "solution = %d\n"
-	xorq	%rax,	%rax	# no register "vectours"
-	call	printf		# make the print
-
-	xorq	%rax,	%rax	#return 0;
-	ret
-
-f:	
-	pushq	%rbx		# this will be x
-	pushq	%r12		# key
-	pushq	%r13		# r
-	pushq	%rcx		# j
-	pushq	%r15		# col
-	
-	testq	$N,	%rdi	# if (i == N)
-	je	RET0		# return 0;
-
-	movq	%rsi,	%r12	# key = c
-	salq	$L,	%r12	# key = c << L
-	orq	%rdi,	%r12	# key = c << L | i
-
-	movq	memo(, %r12),	%r13	# r = memo[key] ???
-	jnz	RETR	 	# if (r != 0)
-
-	xorq	%rax,	%rax	# s = 0
-	xorq	$-1,	%rcx	# j = -1
-	jmp	L2
-L1:
-	movq	$1,	%r15	# col = 1
-	salq	%cl,	%r15	# col = 1 << j
-	
-	movq	%r15,	%r10	# have to use a new register :(
-	addq	%rsi,	%r10	# c & col
-	jz	L2		# if ((c & col) == 0) continue;
-
-	movq	%rdi, 	%r10 	
-	salq	$4, 	%r10	# i * 16 = i << 4
-	subq	%rdi,	%r10	# i * 16 - i = 15 * i
-	movq	m(%rcx, %r10, 4), 	  %rbx	# x = m[i][j] = m + 4 * (15*i + j)
-	
-	pushq	%rax
-	pushq	%rdi		# Instead of push and pop I can add and substract
-	pushq	%rsi		# This way is slower but fancier (2 more inst, plus I think push and pop are slower)
-	incq	%rdi		# i += 1
-	subq	%r15,	%rsi	# c - col
-	call	f
-	popq	%rsi
-	popq	%rdi
-	addq	%rax,	%rbx	# x = m[i][j] + f(i + 1, c - col)
-	popq	%rax
-
-	cmpq	%rbx,	%rax	# s - n
-	jge	L2		# if (x > s)
-	movq	%rbx,	%rax	# s = x
-	jmp	L2	
-		
-L2:	
-	incq	%rcx		# this will make j = 0 in the first loop
-	testq	$N,	%rcx
-	jge	L1
-
-	movq	%rax,	memo(, %r12) # memo[key] = s
-
-RET:	
-	popq	%r15
-	popq	%rcx
-	popq	%r13
-	popq	%r12
-	popq	%rbx
-	ret
-RET0:	
-	xorq	%rax,	%rax	#return 0
-	jmp	RET		#would it be to ugly to put RET code here? (memory vs speed)
-RETR:	
-	movq	%r13,	%rax
-	jmp	RET
-
-	.data
-msg:	.string	"solution = %d\n"
+        .data
+format:
+        .string "solution = %d\n"
 m:
 	.long	7
 	.long	53
@@ -326,5 +299,5 @@ memo:
         .space	2097152
 
 ## Local Variables:
-## compile-command: "gcc matrix.s && ./a.out"
+## compile-command: "gcc matrix_sum.s && ./a.out"
 ## End:
