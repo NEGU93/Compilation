@@ -25,32 +25,34 @@ f:
 	pushq	%rbx		# this will be x
 	pushq	%r12		# key
 	pushq	%r13		# r
-	pushq	%r14		# j
+	pushq	%rcx		# j
 	pushq	%r15		# col
 	
 	testq	$N,	%rdi	# if (i == N)
-	je	RET0:		# return 0;
+	je	RET0		# return 0;
 
 	movq	%rsi,	%r12	# key = c
 	salq	$L,	%r12	# key = c << L
 	orq	%rdi,	%r12	# key = c << L | i
 
-	movq	(memo, %r12),	%r13	# r = memo[key] ???
+	movq	memo(, %r12),	%r13	# r = memo[key] ???
 	jnz	RETR	 	# if (r != 0)
 
 	xorq	%rax,	%rax	# s = 0
-	xorq	$-1,	%r14	# j = -1
+	xorq	$-1,	%rcx	# j = -1
 	jmp	L2
 L1:
 	movq	$1,	%r15	# col = 1
-	salq	%r14,	%r15	# col = 1 << j
+	salq	%cl,	%r15	# col = 1 << j
 	
-	movq	%r15,	%rcx	# have to use a new register :(
-	addq	%rsi,	%rcx	# c & col
+	movq	%r15,	%r10	# have to use a new register :(
+	addq	%rsi,	%r10	# c & col
 	jz	L2		# if ((c & col) == 0) continue;
 
-	leaq	(%r14, %rdi, 15), %rcx 	# 15*i + j
-	movq	(m, %rcx, 4), 	  %rbx	# x = m[i][j] = m + 4 * (15*i + j)
+	movq	%rdi, 	%r10 	
+	salq	$4, 	%r10	# i * 16 = i << 4
+	subq	%rdi,	%r10	# i * 16 - i = 15 * i
+	movq	m(%rcx, %r10, 4), 	  %rbx	# x = m[i][j] = m + 4 * (15*i + j)
 	
 	pushq	%rax
 	pushq	%rdi		# Instead of push and pop I can add and substract
@@ -63,21 +65,21 @@ L1:
 	addq	%rax,	%rbx	# x = m[i][j] + f(i + 1, c - col)
 	popq	%rax
 
-	compq	%rbx,	%rax	# s - n
+	cmpq	%rbx,	%rax	# s - n
 	jge	L2		# if (x > s)
 	movq	%rbx,	%rax	# s = x
 	jmp	L2	
 		
 L2:	
-	incq	%r14		# this will make j = 0 in the first loop
-	testq	$r14,	%N
-	jl	L1
+	incq	%rcx		# this will make j = 0 in the first loop
+	testq	$N,	%rcx
+	jge	L1
 
-	movq	%rax,	(memo, %r12) # memo[key] = s
+	movq	%rax,	memo(, %r12) # memo[key] = s
 
 RET:	
 	popq	%r15
-	popq	%r14
+	popq	%rcx
 	popq	%r13
 	popq	%r12
 	popq	%rbx
