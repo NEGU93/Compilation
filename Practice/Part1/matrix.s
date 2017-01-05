@@ -30,31 +30,26 @@ f:
 	pushq	%rcx		# j
 	pushq	%r15		# col
 	
-	testq	$N,	%rdi	# if (i == N)
+	cmpq	$N,	%rdi	# if (i == N)
 	je	RET0		# return 0;
 
 	movq	%rsi,	%r12	# key = c
 	salq	$L,	%r12	# key = c << L
 	orq	%rdi,	%r12	# key = c << L | i
 
-	movq	memo(, %r12),	%r13	# r = memo[key] ???
+	movq	memo(, %r12, 4),	%r13	# r = memo[key] ???
+	testq	%r13,	%r13
 	jnz	RETR	 	# if (r != 0)
 
 	xorq	%rax,	%rax	# s = 0
-	xorq	$-1,	%rcx	# j = -1
+	xorq	%rcx,	%rcx	# j = 0
 	jmp	L2
 L1:
 	movq	$1,	%r15	# col = 1
 	salq	%cl,	%r15	# col = 1 << j
 	
-	movq	%r15,	%r10	# have to use a new register :(
-	addq	%rsi,	%r10	# c & col
-	jz	L2		# if ((c & col) == 0) continue;
-
-	movq	%rdi, 	%r10 	
-	salq	$4, 	%r10	# i * 16 = i << 4
-	subq	%rdi,	%r10	# i * 16 - i = 15 * i
-	movq	m(%rcx, %r10, 4), 	  %rbx	# x = m[i][j] = m + 4 * (15*i + j)
+	testq	%rsi,	%r15	# c & col
+	jz	continue		# if ((c & col) == 0) continue;
 	
 	pushq	%rax
 	pushq	%rdi		# Instead of push and pop I can add and substract
@@ -62,22 +57,27 @@ L1:
 	incq	%rdi		# i += 1
 	subq	%r15,	%rsi	# c - col
 	call	f
+	movq	%rax,	%rbx	# x = f(i + 1, c - col)
 	popq	%rsi
 	popq	%rdi
-	addq	%rax,	%rbx	# x = m[i][j] + f(i + 1, c - col)
 	popq	%rax
 
-	cmpq	%rbx,	%rax	# s - n
-	jge	L2		# if (x > s)
-	movq	%rbx,	%rax	# s = x
-	jmp	L2	
-		
-L2:	
-	incq	%rcx		# this will make j = 0 in the first loop
-	testq	$N,	%rcx
-	jge	L1
+	movq	%rdi, 	%r10 	
+	imulq	$N, 	%r10	# 15 * i
+	addq	%rcx,	%r10	# 15*i + j
+	movl	m(, %r10, 4), %r10d
+	addq	%r10, 	  %rbx	# x += m[i][j] = m + 4 * (15*i + j)
 
-	movq	%rax,	memo(, %r12) # memo[key] = s
+	cmpq	%rax,	%rbx	# s - n
+	cmovg	%rbx,	%rax
+		
+continue:	
+	incq	%rcx		# j++
+L2:
+	cmpq	$N,	%rcx
+	jl	L1
+
+	movq	%rax,	memo(, %r12, 4) # memo[key] = s
 
 RET:	
 	popq	%r15
