@@ -1,0 +1,17 @@
+INDEX VERSION 1.127+/home/jose-agustin.barrachina/Compilation/Practice/mini-python-java/workspace/.metadata/.plugins/org.eclipse.jdt.core
+2820215315.index
+346860699.index
+3761096043.index
+1582553210.index
+2530192399.index
+476941819.index
+1566176712.index
+1379344257.index
+1849650901.index
+2726518502.index
+799512722.index
+816719260.index
+2631635096.index
+3829055936.index
+3405316120.index
+2159530823.index
