@@ -195,9 +195,7 @@ class Return extends Exception {
 	
 	final Value v;
 
-	Return(Value v) {
-		this.v = v;
-	}
+	Return(Value v) { this.v = v; }
 }
 
 class Todo extends Error {
@@ -221,7 +219,7 @@ class Interp implements Interpreter {
 	// interprétation d'une opération binaire sur deux valeurs
 	static Value binop(Binop op, Value v1, Value v2) {
 		switch (op) {
-		case Bsub:
+		case Bsub: // Do operations. For the first ones, only the int is considered.
 			if (v1 instanceof Vint && v2 instanceof Vint) {
 				return new Vint(v1.asInt() - v2.asInt());
 			}
@@ -247,8 +245,9 @@ class Interp implements Interpreter {
 			if (v1 instanceof Vint && v2 instanceof Vint) {
 				return new Vint(v1.asInt() + v2.asInt());
 			}
-			if (v1 instanceof Vstring && v2 instanceof Vstring)
-				throw new Todo(); // à compléter (question 3)
+			if (v1 instanceof Vstring && v2 instanceof Vstring) {
+				return new Vstring(v1.toString() + v2.toString());
+			}
 			if (v1 instanceof Vlist && v2 instanceof Vlist)
 				throw new Todo(); // à compléter (question 5)
 			break;
@@ -293,9 +292,9 @@ class Interp implements Interpreter {
 	@Override
 	public Value interp(Eunop e) {
 		switch (e.op) {
-		case Unot:
+		case Unot: // ~b
 			return new Vbool(e.e.accept(this).isFalse());
-		case Uneg:
+		case Uneg: // if 4 -> -4
 			return new Vint(-e.e.accept(this).asInt());
 		}
 		throw new Error("unreachable");
@@ -309,7 +308,19 @@ class Interp implements Interpreter {
 		case "range":
 			throw new Todo(); // à compléter (question 5)
 		default:
-			throw new Todo(); // à compléter (question 4)
+			Def def = functions.get(e.f);
+			if (def == null) { throw new Error("unbound function " + e.f); }
+			if (e.l.size() != def.l.size()) { throw new Error("bad arity"); } // ASK: isn't this always true?
+			Interp variables = new Interp();
+			Iterator<String> it = def.l.iterator();
+			for (Expr e1 : e.l)
+				variables.vars.put(it.next(), e1.accept(this));
+			try {
+				def.s.accept(variables);
+				return new Vnone();
+			} catch (Return r) {
+				return r.v;
+			}
 		}
 	}
 
@@ -320,12 +331,14 @@ class Interp implements Interpreter {
 
 	@Override
 	public Value interp(Eleft e) {
-		throw new Todo(); // à compléter (question 3)
+		return e.lv.accept(this);
 	}
 
 	@Override
 	public Value interp(Lident lv) {
-		throw new Todo(); // à compléter (question 3)
+		Value v = vars.get(lv.s);
+		if (v == null) { throw new Error("unbound variable" + lv.s); }
+		return v;
 	}
 
 	@Override
@@ -335,7 +348,7 @@ class Interp implements Interpreter {
 
 	@Override
 	public void assign(Lident lv, Expr e) {
-		throw new Todo(); // à compléter (question 3)
+		vars.put(lv.s, e.accept(this));
 	}
 
 	@Override
@@ -369,12 +382,12 @@ class Interp implements Interpreter {
 
 	@Override
 	public void interp(Sassign s) throws Return {
-		throw new Todo(); // à compléter (question 3)
+		s.lv.assign(this, s.e);
 	}
 
 	@Override
 	public void interp(Sreturn s) throws Return {
-		throw new Todo(); // à compléter (question 4)
+		throw new Return(s.e.accept(this)); // ASK: why not something like function.put(...) and... where do I do function.put????
 	}
 
 	@Override

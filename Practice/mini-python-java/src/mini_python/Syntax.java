@@ -242,9 +242,9 @@ class Def {
 	final Stmt s;
 	Def(String f, LinkedList<String> l, Stmt s) {
 		super();
-		this.f = f;
-		this.l = l;
-		this.s = s;
+		this.f = f; // the functions name
+		this.l = l; // arguments it has
+		this.s = s; // what the function do
 	}
 }
 
