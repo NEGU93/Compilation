@@ -253,7 +253,7 @@ class Interp implements Interpreter {
 		case Beq:
 			return new Vbool(v1.compareTo(v2) == 0);
 		case Bneq:
-			return new Vbool(v1.compareTo(v2) != 0);
+			throw new Todo(); // à compléter (question 2)
 		case Blt:
 			throw new Todo(); // à compléter (question 2)
 		case Ble:

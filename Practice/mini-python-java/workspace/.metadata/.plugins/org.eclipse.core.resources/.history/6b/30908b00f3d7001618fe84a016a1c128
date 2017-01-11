@@ -60,7 +60,7 @@ class Vbool extends Value {
 
 	@Override
 	boolean isFalse() {
-		return !this.b;
+		
 	}
 
 	@Override
@@ -89,7 +89,7 @@ class Vint extends Value {
 
 	@Override
 	boolean isFalse() {
-		return this.i == 0 ? true : false;
+		throw new Todo(); // à compléter (question 2)
 	}
 
 	@Override
@@ -116,7 +116,7 @@ class Vstring extends Value {
 
 	@Override
 	boolean isFalse() {
-		return this.s == "" ? true : false;
+		throw new Todo(); // à compléter (question 2)
 	}
 
 	@Override
@@ -149,7 +149,7 @@ class Vlist extends Value {
 
 	@Override
 	boolean isFalse() {
-		return l.length == 0 ? true : false;
+		throw new Todo(); // à compléter (question 2)
 	}
 
 	@Override
@@ -251,9 +251,9 @@ class Interp implements Interpreter {
 				throw new Todo(); // à compléter (question 5)
 			break;
 		case Beq:
-			return new Vbool(v1.compareTo(v2) == 0);
+			throw new Todo(); // à compléter (question 2)
 		case Bneq:
-			return new Vbool(v1.compareTo(v2) != 0);
+			throw new Todo(); // à compléter (question 2)
 		case Blt:
 			throw new Todo(); // à compléter (question 2)
 		case Ble:
