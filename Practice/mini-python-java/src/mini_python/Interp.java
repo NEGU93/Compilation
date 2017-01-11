@@ -233,12 +233,14 @@ class Interp implements Interpreter {
 			break;
 		case Bdiv:
 			if (v1 instanceof Vint && v2 instanceof Vint) {
-				return new Vint(v1.asInt() / v2.asInt());
+				if ( v2.asInt() != 0) { return new Vint(v1.asInt() / v2.asInt()); } // Here I call 2 times asInt. Perhaps is no efficient
+				else { return new Vnone(); } //Don't really sure what I have to do in a divide by zero case
 			}
 			break;
 		case Bmod:
 			if (v1 instanceof Vint && v2 instanceof Vint) {
-				return new Vint(v1.asInt() % v2.asInt());
+				if ( v2.asInt() != 0) { return new Vint(v1.asInt() % v2.asInt()); } // Here I call 2 times asInt. Perhaps is no efficient
+				else { return new Vnone(); } //Don't really sure what I have to do in a divide by zero case
 			}
 			break;
 		case Badd:
@@ -255,13 +257,13 @@ class Interp implements Interpreter {
 		case Bneq:
 			return new Vbool(v1.compareTo(v2) != 0);
 		case Blt:
-			throw new Todo(); // à compléter (question 2)
+			return new Vbool(v1.compareTo(v2) < 0);
 		case Ble:
-			throw new Todo(); // à compléter (question 2)
+			return new Vbool(v1.compareTo(v2) <= 0);
 		case Bgt:
-			throw new Todo(); // à compléter (question 2)
+			return new Vbool(v1.compareTo(v2) > 0);
 		case Bge:
-			throw new Todo(); // à compléter (question 2)
+			return new Vbool(v1.compareTo(v2) >= 0);
 		default:
 		}
 		throw new Error("unsupported operand types");
@@ -277,11 +279,12 @@ class Interp implements Interpreter {
 	@Override
 	public Value interp(Ebinop e) {
 		Value v1 = e.e1.accept(this);
+		Value v2 = e.e2.accept(this);
 		switch (e.op) {
 		case Band:
-			throw new Todo(); // à compléter (question 2)
+			return new Vbool(v1.isTrue() && v2.isTrue()); //Other way: Vbool(v1.compareTo(v2) == 0);
 		case Bor:
-			throw new Todo(); // à compléter (question 2)
+			return new Vbool(v1.isTrue() || v2.isTrue());
 		default:
 			return binop(e.op, v1, e.e2.accept(this));
 		}
@@ -291,7 +294,7 @@ class Interp implements Interpreter {
 	public Value interp(Eunop e) {
 		switch (e.op) {
 		case Unot:
-			throw new Todo(); // à compléter (question 2)
+			return new Vbool(e.e.accept(this).isFalse());
 		case Uneg:
 			return new Vint(-e.e.accept(this).asInt());
 		}
@@ -360,7 +363,8 @@ class Interp implements Interpreter {
 
 	@Override
 	public void interp(Sif s) throws Return {
-		throw new Todo(); // à compléter (question 2)
+		if ( s.e.accept(this).isTrue() ) { s.s1.accept(this); }
+		else { s.s2.accept(this); }
 	}
 
 	@Override
