@@ -248,8 +248,9 @@ class Interp implements Interpreter {
 			if (v1 instanceof Vstring && v2 instanceof Vstring) {
 				return new Vstring(v1.toString() + v2.toString());
 			}
-			if (v1 instanceof Vlist && v2 instanceof Vlist)
-				throw new Todo(); // à compléter (question 5)
+			if (v1 instanceof Vlist && v2 instanceof Vlist) {
+				return new Vlist( ((Vlist)v1).l , ((Vlist)v2).l );
+			}
 			break;
 		case Beq:
 			return new Vbool(v1.compareTo(v2) == 0);
@@ -304,9 +305,19 @@ class Interp implements Interpreter {
 	public Value interp(Ecall e) {
 		switch (e.f) {
 		case "len":
-			throw new Todo(); // à compléter (question 5)
+			if (e.l.size() != 1) { throw new Error("more than 1 list not supported");	}
+			Value v = e.l.get(0).accept(this);
+			if (v instanceof Vlist) { return new Vint( ((Vlist)v).l.length ); }
+			else if (v instanceof Vstring) { return new Vint( ((Vstring) v).s.length() ); }
+			else { throw new Error("This value has no length"); }
 		case "range":
-			throw new Todo(); // à compléter (question 5)
+			if (e.l.size() != 1) { throw new Error("more than 1 element not supported"); }
+			int n = e.l.get(0).accept(this).asInt();
+			if (n <= 0) { throw new Error("Negative or Null size for range"); }
+			Vlist vlist = new Vlist(n);
+			for (int i = 0; i < n; i++) {
+				vlist.l[i] = new Vint(i); // Create array [0, 1, 2, ..., n];
+			}
 		default:
 			Def def = functions.get(e.f);
 			if (def == null) { throw new Error("unbound function " + e.f); }
@@ -326,7 +337,11 @@ class Interp implements Interpreter {
 
 	@Override
 	public Value interp(Elist e) {
-		throw new Todo(); // à compléter (question 5)
+		Vlist v = new Vlist(e.l.size());
+		for (int i = 0; i < e.l.size(); i++) {
+			v.l[i] = e.l.get(i).accept(this);
+		}
+		return v;
 	}
 
 	@Override
@@ -342,8 +357,11 @@ class Interp implements Interpreter {
 	}
 
 	@Override
-	public Value interp(Lnth lv) {
-		throw new Todo(); // à compléter (question 5)
+	public Value interp(Lnth lv) { // returns the value of the list e1 at the index e2
+		Vlist v = lv.e1.accept(this).asList();
+		int i = lv.e2.accept(this).asInt();
+		if (i < 0 || i >= v.l.length) {	throw new Error("index out of bounds"); }
+		return v.l[i];
 	}
 
 	@Override
@@ -353,7 +371,11 @@ class Interp implements Interpreter {
 
 	@Override
 	public void assign(Lnth lv, Expr e) {
-		throw new Todo(); // à compléter (question 5)
+		Vlist v = lv.e1.accept(this).asList();
+		int i = lv.e2.accept(this).asInt();
+		if (i < 0 || i >= v.l.length)
+			throw new Error("index out of bounds");
+		v.l[i] = e.accept(this);
 	}
 
 	/* instructions */
@@ -392,7 +414,11 @@ class Interp implements Interpreter {
 
 	@Override
 	public void interp(Sfor s) throws Return {
-		throw new Todo(); // à compléter (question 5)
+		Vlist l = s.e.accept(this).asList();
+		for (Value v: l.l) {
+			vars.put(s.x, v);
+			s.s.accept(this);
+		}
 	}
 
 }

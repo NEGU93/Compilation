@@ -21,16 +21,15 @@
     <favorites_list name="" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file leaf-file-name="Interp.java" pinned="false" current-in-tab="true">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
+      <file leaf-file-name="Interp.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/mini_python/Interp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33230293">
-              <caret line="251" column="60" selection-start-line="251" selection-start-column="50" selection-end-line="251" selection-end-column="60" />
+            <state vertical-scroll-proportion="-12.617647">
+              <caret line="165" column="5" selection-start-line="165" selection-start-column="5" selection-end-line="165" selection-end-column="5" />
               <folding>
-                <element signature="class#Value#0" expanded="false" />
+                <element signature="imports" expanded="true" />
                 <element signature="method#asInt#0;class#Value#0" expanded="false" />
-                <element signature="method#asList#0;class#Value#0" expanded="false" />
                 <element signature="class#Vnone#0" expanded="false" />
                 <element signature="class#Vbool#0" expanded="false" />
                 <element signature="method#compareTo#0;class#Vbool#0" expanded="false" />
@@ -38,24 +37,34 @@
                 <element signature="method#compareTo#0;class#Vint#0" expanded="false" />
                 <element signature="class#Vstring#0" expanded="false" />
                 <element signature="method#compareTo#0;class#Vstring#0" expanded="false" />
-                <element signature="class#Vlist#0" expanded="false" />
-                <element signature="method#Vlist#1;class#Vlist#0" expanded="false" />
                 <element signature="method#toString#0;class#Vlist#0" expanded="false" />
                 <element signature="method#compareTo#0;class#Vlist#0" expanded="false" />
                 <element signature="class#Todo#0" expanded="false" />
-                <element signature="method#interp#1;class#Interp#0" expanded="false" />
-                <element signature="method#interp#2;class#Interp#0" expanded="false" />
-                <element signature="e#7268#7269#0" expanded="true" />
-                <element signature="e#7319#7320#0" expanded="true" />
-                <element signature="e#7363#7364#0" expanded="true" />
-                <element signature="e#7394#7395#0" expanded="true" />
-                <element signature="e#7592#7593#0" expanded="true" />
-                <element signature="e#7643#7644#0" expanded="true" />
-                <element signature="e#7696#7697#0" expanded="true" />
-                <element signature="e#7733#7734#0" expanded="true" />
-                <element signature="e#7784#7785#0" expanded="true" />
-                <element signature="e#7835#7836#0" expanded="true" />
+                <element signature="e#8017#8018#0" expanded="true" />
+                <element signature="e#8048#8049#0" expanded="true" />
+                <element signature="e#8526#8527#0" expanded="true" />
+                <element signature="e#8563#8564#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Lexer.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/mini_python/Lexer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.33235726">
+              <caret line="868" column="0" selection-start-line="868" selection-start-column="0" selection-end-line="868" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MyLexer.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/mini_python/MyLexer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -64,7 +73,7 @@
         <entry file="file://$PROJECT_DIR$/src/mini_python/Syntax.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="90" column="27" selection-start-line="90" selection-start-column="27" selection-end-line="90" selection-end-column="27" />
+              <caret line="212" column="0" selection-start-line="212" selection-start-column="0" selection-end-line="212" selection-end-column="0" />
               <folding>
                 <element signature="class#Unop#0" expanded="false" />
                 <element signature="class#Binop#0" expanded="false" />
@@ -77,7 +86,6 @@
                 <element signature="method#interp#0;class#Cstring#0" expanded="false" />
                 <element signature="class#Cint#0" expanded="false" />
                 <element signature="method#interp#0;class#Cint#0" expanded="false" />
-                <element signature="class#Expr#0" expanded="false" />
                 <element signature="class#Ecst#0" expanded="false" />
                 <element signature="method#accept#0;class#Ecst#0" expanded="false" />
                 <element signature="class#Ebinop#0" expanded="false" />
@@ -86,10 +94,6 @@
                 <element signature="class#Eunop#0" expanded="false" />
                 <element signature="method#Eunop#0;class#Eunop#0" expanded="false" />
                 <element signature="method#accept#0;class#Eunop#0" expanded="false" />
-                <element signature="method#Ecall#0;class#Ecall#0" expanded="false" />
-                <element signature="class#Elist#0" expanded="false" />
-                <element signature="method#Elist#0;class#Elist#0" expanded="false" />
-                <element signature="method#accept#0;class#Elist#0" expanded="false" />
                 <element signature="class#Eleft#0" expanded="false" />
                 <element signature="method#Eleft#0;class#Eleft#0" expanded="false" />
                 <element signature="method#accept#0;class#Eleft#0" expanded="false" />
@@ -98,8 +102,6 @@
                 <element signature="method#Lident#0;class#Lident#0" expanded="false" />
                 <element signature="method#accept#0;class#Lident#0" expanded="false" />
                 <element signature="method#assign#0;class#Lident#0" expanded="false" />
-                <element signature="class#Lnth#0" expanded="false" />
-                <element signature="method#Lnth#0;class#Lnth#0" expanded="false" />
                 <element signature="method#accept#0;class#Lnth#0" expanded="false" />
                 <element signature="method#assign#0;class#Lnth#0" expanded="false" />
                 <element signature="class#Stmt#0" expanded="false" />
@@ -116,7 +118,6 @@
                 <element signature="class#Sblock#0" expanded="false" />
                 <element signature="method#Sblock#1;class#Sblock#0" expanded="false" />
                 <element signature="method#accept#0;class#Sblock#0" expanded="false" />
-                <element signature="class#Sfor#0" expanded="false" />
                 <element signature="method#Sfor#0;class#Sfor#0" expanded="false" />
                 <element signature="method#accept#0;class#Sfor#0" expanded="false" />
                 <element signature="class#Seval#0" expanded="false" />
@@ -144,7 +145,7 @@
         <entry file="file://$PROJECT_DIR$/src/mini_python/Main.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <caret line="9" column="43" selection-start-line="9" selection-start-column="43" selection-end-line="9" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -160,9 +161,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/test.py" />
         <option value="C:/Program Files/Java/jdk1.8.0_65/src.zip!/java/lang/Error.java" />
         <option value="$PROJECT_DIR$/src/mini_python/Syntax.java" />
+        <option value="$PROJECT_DIR$/test.py" />
         <option value="$PROJECT_DIR$/src/mini_python/Interp.java" />
       </list>
     </option>
@@ -198,19 +199,17 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="" />
+              <option name="myItemId" value="mini-python-java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="" />
+              <option name="myItemId" value="mini-python-java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -220,7 +219,7 @@
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="" />
+              <option name="myItemId" value="mini-python-java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -238,7 +237,7 @@
           </PATH>
           <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="" />
+              <option name="myItemId" value="mini-python-java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -261,6 +260,8 @@
         </subPane>
       </pane>
       <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -561,30 +562,30 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1048" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21748634" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="true" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21748634" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1453125" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32896176" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -600,7 +601,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="7" />
+      <option name="time" value="13" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -609,10 +610,95 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/mini_python/Lexer.java">
+    <entry file="file://$PROJECT_DIR$/src/mini_python/Interp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43045387">
-          <caret line="16" column="6" selection-start-line="16" selection-start-column="6" selection-end-line="16" selection-end-column="6" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#asInt#0;class#Value#0" expanded="false" />
+            <element signature="class#Vnone#0" expanded="false" />
+            <element signature="class#Vbool#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vbool#0" expanded="false" />
+            <element signature="class#Vint#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vint#0" expanded="false" />
+            <element signature="class#Vstring#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vstring#0" expanded="false" />
+            <element signature="method#toString#0;class#Vlist#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vlist#0" expanded="false" />
+            <element signature="class#Todo#0" expanded="false" />
+            <element signature="e#8017#8018#0" expanded="true" />
+            <element signature="e#8048#8049#0" expanded="true" />
+            <element signature="e#8526#8527#0" expanded="true" />
+            <element signature="e#8563#8564#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/Syntax.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="88" column="6" selection-start-line="88" selection-start-column="6" selection-end-line="88" selection-end-column="6" />
+          <folding>
+            <element signature="class#Unop#0" expanded="false" />
+            <element signature="class#Binop#0" expanded="false" />
+            <element signature="class#Constant#0" expanded="false" />
+            <element signature="class#Cnone#0" expanded="false" />
+            <element signature="method#interp#0;class#Cnone#0" expanded="false" />
+            <element signature="class#Cbool#0" expanded="false" />
+            <element signature="method#interp#0;class#Cbool#0" expanded="false" />
+            <element signature="class#Cstring#0" expanded="false" />
+            <element signature="method#interp#0;class#Cstring#0" expanded="false" />
+            <element signature="class#Cint#0" expanded="false" />
+            <element signature="method#interp#0;class#Cint#0" expanded="false" />
+            <element signature="class#Ecst#0" expanded="false" />
+            <element signature="method#accept#0;class#Ecst#0" expanded="false" />
+            <element signature="class#Ebinop#0" expanded="false" />
+            <element signature="method#Ebinop#0;class#Ebinop#0" expanded="false" />
+            <element signature="method#accept#0;class#Ebinop#0" expanded="false" />
+            <element signature="class#Eunop#0" expanded="false" />
+            <element signature="method#Eunop#0;class#Eunop#0" expanded="false" />
+            <element signature="method#accept#0;class#Eunop#0" expanded="false" />
+            <element signature="class#Eleft#0" expanded="false" />
+            <element signature="method#Eleft#0;class#Eleft#0" expanded="false" />
+            <element signature="method#accept#0;class#Eleft#0" expanded="false" />
+            <element signature="class#LeftValue#0" expanded="false" />
+            <element signature="class#Lident#0" expanded="false" />
+            <element signature="method#Lident#0;class#Lident#0" expanded="false" />
+            <element signature="method#accept#0;class#Lident#0" expanded="false" />
+            <element signature="method#assign#0;class#Lident#0" expanded="false" />
+            <element signature="method#accept#0;class#Lnth#0" expanded="false" />
+            <element signature="method#assign#0;class#Lnth#0" expanded="false" />
+            <element signature="class#Stmt#0" expanded="false" />
+            <element signature="class#Sif#0" expanded="false" />
+            <element signature="method#Sif#0;class#Sif#0" expanded="false" />
+            <element signature="method#accept#0;class#Sif#0" expanded="false" />
+            <element signature="method#Sreturn#0;class#Sreturn#0" expanded="false" />
+            <element signature="class#Sassign#0" expanded="false" />
+            <element signature="method#Sassign#0;class#Sassign#0" expanded="false" />
+            <element signature="method#accept#0;class#Sassign#0" expanded="false" />
+            <element signature="class#Sprint#0" expanded="false" />
+            <element signature="method#Sprint#0;class#Sprint#0" expanded="false" />
+            <element signature="method#accept#0;class#Sprint#0" expanded="false" />
+            <element signature="class#Sblock#0" expanded="false" />
+            <element signature="method#Sblock#1;class#Sblock#0" expanded="false" />
+            <element signature="method#accept#0;class#Sblock#0" expanded="false" />
+            <element signature="method#Sfor#0;class#Sfor#0" expanded="false" />
+            <element signature="method#accept#0;class#Sfor#0" expanded="false" />
+            <element signature="class#Seval#0" expanded="false" />
+            <element signature="method#Seval#0;class#Seval#0" expanded="false" />
+            <element signature="method#accept#0;class#Seval#0" expanded="false" />
+            <element signature="class#File#0" expanded="false" />
+            <element signature="method#File#0;class#File#0" expanded="false" />
+            <element signature="class#Interpreter#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/MyParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -625,29 +711,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.27118644">
-          <caret line="8" column="0" selection-start-line="8" selection-start-column="0" selection-end-line="8" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/mini_python/MyParser.java">
+    <entry file="file://$PROJECT_DIR$/src/mini_python/Interp.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.8.0_65/src.zip!/java/lang/Error.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.6282272">
-          <caret line="68" column="11" selection-start-line="68" selection-start-column="11" selection-end-line="68" selection-end-column="11" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#1855#1856#0" expanded="true" />
-            <element signature="e#1885#1886#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="method#asInt#0;class#Value#0" expanded="false" />
+            <element signature="class#Vnone#0" expanded="false" />
+            <element signature="class#Vbool#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vbool#0" expanded="false" />
+            <element signature="class#Vint#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vint#0" expanded="false" />
+            <element signature="class#Vstring#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vstring#0" expanded="false" />
+            <element signature="method#toString#0;class#Vlist#0" expanded="false" />
+            <element signature="method#compareTo#0;class#Vlist#0" expanded="false" />
+            <element signature="class#Todo#0" expanded="false" />
+            <element signature="e#8017#8018#0" expanded="true" />
+            <element signature="e#8048#8049#0" expanded="true" />
+            <element signature="e#8526#8527#0" expanded="true" />
+            <element signature="e#8563#8564#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -668,7 +752,6 @@
             <element signature="method#interp#0;class#Cstring#0" expanded="false" />
             <element signature="class#Cint#0" expanded="false" />
             <element signature="method#interp#0;class#Cint#0" expanded="false" />
-            <element signature="class#Expr#0" expanded="false" />
             <element signature="class#Ecst#0" expanded="false" />
             <element signature="method#accept#0;class#Ecst#0" expanded="false" />
             <element signature="class#Ebinop#0" expanded="false" />
@@ -677,10 +760,6 @@
             <element signature="class#Eunop#0" expanded="false" />
             <element signature="method#Eunop#0;class#Eunop#0" expanded="false" />
             <element signature="method#accept#0;class#Eunop#0" expanded="false" />
-            <element signature="method#Ecall#0;class#Ecall#0" expanded="false" />
-            <element signature="class#Elist#0" expanded="false" />
-            <element signature="method#Elist#0;class#Elist#0" expanded="false" />
-            <element signature="method#accept#0;class#Elist#0" expanded="false" />
             <element signature="class#Eleft#0" expanded="false" />
             <element signature="method#Eleft#0;class#Eleft#0" expanded="false" />
             <element signature="method#accept#0;class#Eleft#0" expanded="false" />
@@ -689,8 +768,6 @@
             <element signature="method#Lident#0;class#Lident#0" expanded="false" />
             <element signature="method#accept#0;class#Lident#0" expanded="false" />
             <element signature="method#assign#0;class#Lident#0" expanded="false" />
-            <element signature="class#Lnth#0" expanded="false" />
-            <element signature="method#Lnth#0;class#Lnth#0" expanded="false" />
             <element signature="method#accept#0;class#Lnth#0" expanded="false" />
             <element signature="method#assign#0;class#Lnth#0" expanded="false" />
             <element signature="class#Stmt#0" expanded="false" />
@@ -707,7 +784,6 @@
             <element signature="class#Sblock#0" expanded="false" />
             <element signature="method#Sblock#1;class#Sblock#0" expanded="false" />
             <element signature="method#accept#0;class#Sblock#0" expanded="false" />
-            <element signature="class#Sfor#0" expanded="false" />
             <element signature="method#Sfor#0;class#Sfor#0" expanded="false" />
             <element signature="method#accept#0;class#Sfor#0" expanded="false" />
             <element signature="class#Seval#0" expanded="false" />
@@ -720,14 +796,131 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/MyParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_65/src.zip!/java/lang/Error.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.6282272">
+          <caret line="68" column="11" selection-start-line="68" selection-start-column="11" selection-end-line="68" selection-end-column="11" />
+          <folding>
+            <element signature="e#1855#1856#0" expanded="false" />
+            <element signature="e#1885#1886#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mini-python-java.iml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.02494331">
+          <caret line="1" column="62" selection-start-line="1" selection-start-column="62" selection-end-line="1" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/MyParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="70" selection-start-line="0" selection-start-column="70" selection-end-line="0" selection-end-column="70" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/Syntax.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="212" column="0" selection-start-line="212" selection-start-column="0" selection-end-line="212" selection-end-column="0" />
+          <folding>
+            <element signature="class#Unop#0" expanded="false" />
+            <element signature="class#Binop#0" expanded="false" />
+            <element signature="class#Constant#0" expanded="false" />
+            <element signature="class#Cnone#0" expanded="false" />
+            <element signature="method#interp#0;class#Cnone#0" expanded="false" />
+            <element signature="class#Cbool#0" expanded="false" />
+            <element signature="method#interp#0;class#Cbool#0" expanded="false" />
+            <element signature="class#Cstring#0" expanded="false" />
+            <element signature="method#interp#0;class#Cstring#0" expanded="false" />
+            <element signature="class#Cint#0" expanded="false" />
+            <element signature="method#interp#0;class#Cint#0" expanded="false" />
+            <element signature="class#Ecst#0" expanded="false" />
+            <element signature="method#accept#0;class#Ecst#0" expanded="false" />
+            <element signature="class#Ebinop#0" expanded="false" />
+            <element signature="method#Ebinop#0;class#Ebinop#0" expanded="false" />
+            <element signature="method#accept#0;class#Ebinop#0" expanded="false" />
+            <element signature="class#Eunop#0" expanded="false" />
+            <element signature="method#Eunop#0;class#Eunop#0" expanded="false" />
+            <element signature="method#accept#0;class#Eunop#0" expanded="false" />
+            <element signature="class#Eleft#0" expanded="false" />
+            <element signature="method#Eleft#0;class#Eleft#0" expanded="false" />
+            <element signature="method#accept#0;class#Eleft#0" expanded="false" />
+            <element signature="class#LeftValue#0" expanded="false" />
+            <element signature="class#Lident#0" expanded="false" />
+            <element signature="method#Lident#0;class#Lident#0" expanded="false" />
+            <element signature="method#accept#0;class#Lident#0" expanded="false" />
+            <element signature="method#assign#0;class#Lident#0" expanded="false" />
+            <element signature="method#accept#0;class#Lnth#0" expanded="false" />
+            <element signature="method#assign#0;class#Lnth#0" expanded="false" />
+            <element signature="class#Stmt#0" expanded="false" />
+            <element signature="class#Sif#0" expanded="false" />
+            <element signature="method#Sif#0;class#Sif#0" expanded="false" />
+            <element signature="method#accept#0;class#Sif#0" expanded="false" />
+            <element signature="method#Sreturn#0;class#Sreturn#0" expanded="false" />
+            <element signature="class#Sassign#0" expanded="false" />
+            <element signature="method#Sassign#0;class#Sassign#0" expanded="false" />
+            <element signature="method#accept#0;class#Sassign#0" expanded="false" />
+            <element signature="class#Sprint#0" expanded="false" />
+            <element signature="method#Sprint#0;class#Sprint#0" expanded="false" />
+            <element signature="method#accept#0;class#Sprint#0" expanded="false" />
+            <element signature="class#Sblock#0" expanded="false" />
+            <element signature="method#Sblock#1;class#Sblock#0" expanded="false" />
+            <element signature="method#accept#0;class#Sblock#0" expanded="false" />
+            <element signature="method#Sfor#0;class#Sfor#0" expanded="false" />
+            <element signature="method#accept#0;class#Sfor#0" expanded="false" />
+            <element signature="class#Seval#0" expanded="false" />
+            <element signature="method#Seval#0;class#Seval#0" expanded="false" />
+            <element signature="method#accept#0;class#Seval#0" expanded="false" />
+            <element signature="class#File#0" expanded="false" />
+            <element signature="method#File#0;class#File#0" expanded="false" />
+            <element signature="class#Interpreter#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/MyLexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/mini_python/Interp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33230293">
-          <caret line="251" column="60" selection-start-line="251" selection-start-column="50" selection-end-line="251" selection-end-column="60" />
+        <state vertical-scroll-proportion="-12.617647">
+          <caret line="165" column="5" selection-start-line="165" selection-start-column="5" selection-end-line="165" selection-end-column="5" />
           <folding>
-            <element signature="class#Value#0" expanded="false" />
+            <element signature="imports" expanded="true" />
             <element signature="method#asInt#0;class#Value#0" expanded="false" />
-            <element signature="method#asList#0;class#Value#0" expanded="false" />
             <element signature="class#Vnone#0" expanded="false" />
             <element signature="class#Vbool#0" expanded="false" />
             <element signature="method#compareTo#0;class#Vbool#0" expanded="false" />
@@ -735,24 +928,30 @@
             <element signature="method#compareTo#0;class#Vint#0" expanded="false" />
             <element signature="class#Vstring#0" expanded="false" />
             <element signature="method#compareTo#0;class#Vstring#0" expanded="false" />
-            <element signature="class#Vlist#0" expanded="false" />
-            <element signature="method#Vlist#1;class#Vlist#0" expanded="false" />
             <element signature="method#toString#0;class#Vlist#0" expanded="false" />
             <element signature="method#compareTo#0;class#Vlist#0" expanded="false" />
             <element signature="class#Todo#0" expanded="false" />
-            <element signature="method#interp#1;class#Interp#0" expanded="false" />
-            <element signature="method#interp#2;class#Interp#0" expanded="false" />
-            <element signature="e#7268#7269#0" expanded="true" />
-            <element signature="e#7319#7320#0" expanded="true" />
-            <element signature="e#7363#7364#0" expanded="true" />
-            <element signature="e#7394#7395#0" expanded="true" />
-            <element signature="e#7592#7593#0" expanded="true" />
-            <element signature="e#7643#7644#0" expanded="true" />
-            <element signature="e#7696#7697#0" expanded="true" />
-            <element signature="e#7733#7734#0" expanded="true" />
-            <element signature="e#7784#7785#0" expanded="true" />
-            <element signature="e#7835#7836#0" expanded="true" />
+            <element signature="e#8017#8018#0" expanded="true" />
+            <element signature="e#8048#8049#0" expanded="true" />
+            <element signature="e#8526#8527#0" expanded="true" />
+            <element signature="e#8563#8564#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="43" selection-start-line="9" selection-start-column="43" selection-end-line="9" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/mini_python/Lexer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33235726">
+          <caret line="868" column="0" selection-start-line="868" selection-start-column="0" selection-end-line="868" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
