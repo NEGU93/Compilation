@@ -8,7 +8,7 @@ terminal INCINDENT;
 terminal Integer DECINDENT;
 terminal  DEF, IF, ELSE, RETURN, PRINT, FOR, IN, AND, OR, NOT,
 	     LP, RP, LSQ, RSQ, COMMA, EQUAL, COLON, BEGIN, END, NEWLINE,
-		  PLUS, MINUS, TIMES, DIV, MOD;
+		  PLUS, MINUS, TIMES, DIV, MOD, MAIN, RB, LB;
 terminal UMINUS;
 
 non terminal File file;

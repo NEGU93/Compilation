@@ -11,7 +11,7 @@ import static mini_c.sym.*;
 %cupdebug			/* ? */
 %line				/* Decompose by line */
 %column				/* Decompose by column */
-%yylexthrow Exception		/* Can throw exceptions */
+// %yylexthrow Exception		/* Can throw exceptions */
 
 %{
 	/* No need for preamble in JAVA */
@@ -28,6 +28,7 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 	"{"
 		{ return new Symbol(LB, yyline, yycolumn); }
 	"}"	{ return new Symbol(RB, yyline, yycolumn); }
+	";"	{ return new Symbol(SEMICOLON, yyline, yycolumn);}
 	"return"
 		{ return new Symbol(RETURN, yyline, yycolumn): }
 	{Integer}
