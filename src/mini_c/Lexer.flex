@@ -5,7 +5,7 @@ import static mini_c.sym.*;
 
 %%
 
-%class Lexer			/* Class Lexer */
+%class Lexer
 %unicode			/* The characters are unicode */
 %cup				/* Syntax analyser with cup (Parser part) */
 %cupdebug			/* ? */
@@ -30,7 +30,7 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 	"}"	{ return new Symbol(RB, yyline, yycolumn); }
 	";"	{ return new Symbol(SEMICOLON, yyline, yycolumn);}
 	"return"
-		{ return new Symbol(RETURN, yyline, yycolumn): }
+		{ return new Symbol(RETURN, yyline, yycolumn); }
 	{Integer}
 		{ return new Symbol(CST, yyline, yycolumn, Integer.parseInt(yytext())); }
 	{Identifier}

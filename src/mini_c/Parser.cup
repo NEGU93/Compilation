@@ -1,9 +1,11 @@
+package mini_c;
+
 import java_cup.runtime.*;
 import java.util.*;
 
 terminal String IDENT;
 terminal Constant CST;
-terminal RETURN, LP, RP, RB, LB, SEMICOLON;
+terminal RETURN, LPAR, RPAR, RB, LB, SEMICOLON;
 
 non terminal File file;
 non terminal Decl_function  decl_function;
@@ -20,7 +22,7 @@ file ::=
 ;
 
 decl_function ::=
-  CST IDENT:f LP RP RB stmt:s LB	// of the syntax: int f() { s }
+  CST IDENT:f LPAR RPAR RB stmt:s LB	// of the syntax: int f() { s }
     {: RESULT = new Decl_function(f, s); :}
 ;
 
