@@ -19,7 +19,9 @@ import static mini_c.sym.*;
 %}
 
 WhiteSpace	= [ \t\r\n]+
-Integer		= [:digit:]+	// Digit is defined on jflex
+Octal_int   = ("0") ([0-7])+
+Hex_int     = ("0x") ([0-9a-fA-f])+
+Integer		= [:digit:]+                  // Digit is defined on jflex
 Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be used to read function names
 
 %%
@@ -73,6 +75,10 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 		{ return new Symbol(INT, yyline, yycolumn); }
 	{Integer}
 		{ return new Symbol(CST, yyline, yycolumn, new Constant(Integer.parseInt(yytext()))); }
+	{Hex_int}
+	    { return new Symbol(CST, yyline, yycolumn, new Constant(Integer.decode(yytext()))); }
+	{Octal_int}
+    	{ return new Symbol(CST, yyline, yycolumn, new Constant(Integer.parseInt(yytext(), 8))); }
 	{Identifier}
 		{ return new Symbol(IDENT, yyline, yycolumn, yytext()); }
 	{WhiteSpace}

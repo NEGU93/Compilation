@@ -51,7 +51,7 @@ expr ::=
   CST:c
     {: RESULT = new Ecst(c); :}
 | IDENT:x
-    {: RESULT = new Evar(x); :}     // Here is just a variable (TODO: why not a function?)
+    {: RESULT = new Evar(x); :}     // Here is just a variable (TODO: why not a function?) is this correct?
 | MINUS expr:e
 	{: RESULT =  new Eunop(Unop.Uneg, e); :}
 | NOT expr:e
