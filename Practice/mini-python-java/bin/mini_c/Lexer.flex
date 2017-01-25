@@ -24,6 +24,36 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 
 %%
 <YYINITIAL> {
+	/* Operators */
+	"=" { return new Symbol(EQUAL, yyline, yycolumn); }
+	"==" 
+		{ return new Symbol(CMP, yyline, yycolumn, Binop.Beqeq); }
+	"!="
+		{ return new Symbol(CMP, yyline, yycolumn, Binop.Bneq); }
+	"<"
+		{ return new Symbol(CMP, yyline, yycolumn, Binop.Blt); }
+	"<="
+		{ return new Symbol(CMP, yyline, yycolumn, Binop.Ble); }
+	">"
+		{ return new Symbol(CMP, yyline, yycolumn, Binop.Bgt); }
+	">="
+		{ return new Symbol(CMP, yyline, yycolumn, Binop.Bge); }
+	"+"
+		{ return new Symbol(PLUS, yyline, yycolumn); }
+	"-"
+		{ return new Symbol(MINUS, yyline, yycolumn); }
+	"*"
+		{ return new Symbol(TIMES, yyline, yycolumn); }
+	"/"
+		{ return new Symbol(DIV, yyline, yycolumn); }
+	"&&"
+		{ return new Symbol(AND, yyline, yycolumn); }
+	"||"
+		{ return new Symbol(OR, yyline, yycolumn); }
+	"!"
+		{ return new Symbol(NOT, yyline, yycolumn); }
+	/* ********** */
+	
 	"("	{ return new Symbol(LPAR, yyline, yycolumn); }
 	")"	{ return new Symbol(RPAR, yyline, yycolumn); }
 	"{"

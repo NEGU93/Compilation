@@ -9,8 +9,8 @@ enum Unop { Uneg, Unot }
 
 enum Binop {
   Badd , Bsub , Bmul , Bdiv , Bmod,
-  Beq , Bneq , Blt , Ble , Bgt , Bge, // comparaison structurelle
-  Band , Bor // paresseux
+  Beqeq , Bneq , Blt , Ble , Bgt , Bge, // comparaison structurelle
+  Band , Bor, Beq // paresseux
 }
 
 /* constantes litérales */
