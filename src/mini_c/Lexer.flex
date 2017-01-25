@@ -35,5 +35,5 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 		{ return new Symbol(CST, yyline, yycolumn, Integer.parseInt(yytext())); }
 	{Identifier}
 		{ return new Symbol(IDENT, yyline, yycolumn, yytext()); }
-	.	{ throw new Exception(String.format("Error in line %d, column %d: illegal character '%s'\n", yyline, yycolumn, yytexy())); }
+	.	{ throw new Exception(String.format("Error in line %d, column %d: illegal character '%s'\n", yyline, yycolumn, yytext())); }
 }

@@ -40,7 +40,7 @@ list_decl_function ::=
 
 stmt ::=
   RETURN expr:e SEMICOLON
-	{: RESULT=null; :}
+	{: RESULT = null; :}
 ;
 	
 

@@ -1,0 +1,52 @@
+package mini_c;
+
+import java_cup.runtime.*;
+import java.util.*;
+
+terminal String IDENT;
+terminal Constant CST;
+terminal RETURN, LPAR, RPAR, RB, LB, SEMICOLON;
+
+non terminal File file;
+non terminal Decl_function  decl_function;
+non terminal LinkedList<Decl_function> list_decl_function;
+non terminal LinkedList<Stmt> list_stmt;
+non terminal Expr expr;
+non terminal Stmt stmt;
+
+start with file;
+
+file ::=
+  list_decl_function:l list_stmt:b
+    {: RESULT = new File(l, new Sblock(b)); :}
+;
+
+decl_function ::=
+  CST IDENT:f LPAR RPAR RB stmt:s LB	// of the syntax: int f() { s }
+    {: RESULT = new Decl_function(f, s); :}
+;
+
+expr ::=
+  CST:c
+    {: RESULT = new Ecst(c); :}
+;
+
+list_decl_function ::=
+  decl_function:d list_decl_function:l
+   {: l.addFirst(d); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Decl_function>(); :}
+;
+
+stmt ::=
+  RETURN expr:e SEMICOLON
+	{: RESULT = null; :}
+;
+	
+
+list_stmt ::=
+  stmt:s list_stmt:l
+   {: l.addFirst(s); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Stmt>(); :}
+;
