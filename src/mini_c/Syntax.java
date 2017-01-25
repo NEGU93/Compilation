@@ -17,6 +17,11 @@ enum Binop {
 
 class Constant {
 	int c;
+
+	public Constant(int c) {
+		super();
+		this.c = c;
+	}
 }	
 
 /* expressions */
@@ -130,6 +135,12 @@ class Decl_function { 			// Declaration of a function
 		this.f = f; 			// the functions name
 		this.l = l; 			// arguments it has
 		this.s = s; 			// what the function do
+	}
+	Decl_function(String f, Stmt s) {
+		super();
+		this.f = f;
+		this.l = new LinkedList<String>();
+		this.s = s;
 	}
 }
 

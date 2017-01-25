@@ -5,7 +5,7 @@ import java.util.*;
 
 terminal String IDENT;
 terminal Constant CST;
-terminal RETURN, LPAR, RPAR, RB, LB, SEMICOLON;
+terminal INT, RETURN, LPAR, RPAR, RB, LB, SEMICOLON;
 
 non terminal File file;
 non terminal Decl_function  decl_function;
@@ -13,6 +13,7 @@ non terminal LinkedList<Decl_function> list_decl_function;
 non terminal LinkedList<Stmt> list_stmt;
 non terminal Expr expr;
 non terminal Stmt stmt;
+non terminal LinkedList<String> list_comma_ident;
 
 start with file;
 
@@ -22,8 +23,11 @@ file ::=
 ;
 
 decl_function ::=
-  CST IDENT:f LPAR RPAR RB stmt:s LB	// of the syntax: int f() { s }
+  INT IDENT:f LPAR RPAR LB stmt:s RB	// of the syntax: int f() { s }
     {: RESULT = new Decl_function(f, s); :}
+|
+  INT IDENT:f LPAR list_comma_ident:x RPAR LB stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
+  	{: RESULT = new Decl_function(f, x, s); :}
 ;
 
 expr ::=

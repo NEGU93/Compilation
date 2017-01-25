@@ -1,6 +1,5 @@
 package mini_c;
 
-import java.io.File;
 
 public class Main {
 

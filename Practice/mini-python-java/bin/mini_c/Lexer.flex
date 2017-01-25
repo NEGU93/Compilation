@@ -11,7 +11,8 @@ import static mini_c.sym.*;
 %cupdebug			/* ? */
 %line				/* Decompose by line */
 %column				/* Decompose by column */
-// %yylexthrow Exception		/* Can throw exceptions */
+%yylexthrow Exception
+		/* Can throw exceptions */
 
 %{
 	/* No need for preamble in JAVA */
@@ -31,9 +32,13 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 	";"	{ return new Symbol(SEMICOLON, yyline, yycolumn);}
 	"return"
 		{ return new Symbol(RETURN, yyline, yycolumn); }
+	"int"
+		{ return new Symbol(INT, yyline, yycolumn); }
 	{Integer}
-		{ return new Symbol(CST, yyline, yycolumn, Integer.parseInt(yytext())); }
+		{ return new Symbol(CST, yyline, yycolumn, new Constant(Integer.parseInt(yytext()))); }
 	{Identifier}
 		{ return new Symbol(IDENT, yyline, yycolumn, yytext()); }
+	{WhiteSpace}
+		{ }
 	.	{ throw new Exception(String.format("Error in line %d, column %d: illegal character '%s'\n", yyline, yycolumn, yytext())); }
 }
