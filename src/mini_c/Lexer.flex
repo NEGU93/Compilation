@@ -69,10 +69,16 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 		{ return new Symbol(LB, yyline, yycolumn); }
 	"}"	{ return new Symbol(RB, yyline, yycolumn); }
 	";"	{ return new Symbol(SEMICOLON, yyline, yycolumn);}
+	/* Fixed Words */
 	"return"
 		{ return new Symbol(RETURN, yyline, yycolumn); }
 	"int"
 		{ return new Symbol(INT, yyline, yycolumn); }
+	"struct"
+	    { return new Symbol(STRUCT, yyline, yycolumn); }
+	"sizeof"
+	    { return new Symbol(SIZEOF, yyline, yycolumn); }
+    /* Ints, chars & spaces */
 	{Integer}
 		{ return new Symbol(CST, yyline, yycolumn, new Constant(Integer.parseInt(yytext()))); }
 	{Hex_int}

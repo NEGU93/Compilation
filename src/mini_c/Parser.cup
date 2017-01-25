@@ -7,13 +7,17 @@ terminal String IDENT;
 terminal Constant CST;
 terminal Binop CMP;
 terminal    IF, ELSE, WHILE,
-            INT, RETURN, LPAR, RPAR, RB, LB, SEMICOLON,
+            INT, RETURN, STRUCT, SIZEOF,
+            LPAR, RPAR, RB, LB, SEMICOLON,
             EQUAL, PLUS, MINUS, DIV, TIMES, AND, OR, NOT;
 
 non terminal File file;
 non terminal Decl_function  decl_function;
 non terminal Decl_variable  decl_variable;
+non terminal Decl_struct    decl_struct;
 non terminal LinkedList<Decl_function> list_decl_function;
+non terminal LinkedList<Decl_variable> list_decl_variable;
+non terminal LinkedList<Decl_struct> list_decl_struct;
 non terminal LinkedList<Stmt> list_stmt;
 non terminal Expr expr;
 non terminal Stmt stmt;
@@ -37,6 +41,11 @@ file ::=
 decl_variable ::=
   INT IDENT:x SEMICOLON
     {: RESULT = new Decl_variable(x); :} //TODO: is not working. It says that it never reduces
+;
+
+decl_struct ::=
+  STRUCT IDENT:s LB list_decl_variable:l RB SEMICOLON
+    {: RESULT = new Decl_struct(s, l); :}
 ;
 
 decl_function ::=
@@ -74,6 +83,8 @@ expr ::=
     {: RESULT = new Ebinop(Binop.Bor, e1, e2); :}
 | LPAR expr:e RPAR
     {: RESULT = e; :}
+| SIZEOF LPAR STRUCT IDENT:s RPAR       // sizeof( struct <ident> )
+    {: RESULT = null; :}                //TODO: have to make a class for this?
 ;
 
 list_decl_function ::=
@@ -81,6 +92,13 @@ list_decl_function ::=
    {: l.addFirst(d); RESULT = l; :}
 |
    {: RESULT = new LinkedList<Decl_function>(); :}
+;
+
+list_decl_variable ::=
+  decl_variable:v list_decl_variable:l
+   {: l.addFirst(v); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Decl_variable>(); :}
 ;
 
 stmt ::=

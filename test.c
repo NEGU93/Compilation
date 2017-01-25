@@ -12,3 +12,7 @@ int main() {
 	5 * (8 + 4);
 	return 2+3;
 }
+
+int foo() {
+	5;
+}

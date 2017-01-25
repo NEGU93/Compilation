@@ -1,6 +1,7 @@
 package mini_c;
 import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
+import javax.crypto.spec.DESedeKeySpec;
 import java.util.LinkedList;
 import java.util.StringJoiner;
 
@@ -149,7 +150,17 @@ class Declarations {}
 class Decl_variable extends Declarations {
 	final Evar v;
 	Decl_variable(String x) {
+		super();
 		this.v = new Evar(x);
+	}
+}
+class Decl_struct extends Declarations {
+	final String s;
+	final LinkedList<Decl_variable> l;
+	Decl_struct(String s, LinkedList<Decl_variable> l) {
+		super();
+		this.s = s;
+		this.l = l;
 	}
 }
 class Decl_function extends Declarations { 			// Declaration of a function
