@@ -72,6 +72,8 @@ expr ::=
     {: RESULT = new Ebinop(Binop.Band, e1, e2); :}
 | expr:e1 OR expr:e2
     {: RESULT = new Ebinop(Binop.Bor, e1, e2); :}
+| LPAR expr:e RPAR
+    {: RESULT = e; :}
 ;
 
 list_decl_function ::=
@@ -95,7 +97,6 @@ stmt ::=
 | WHILE LPAR expr:e RPAR LB list_stmt:s RB
     {: RESULT = new Swhile(e, s);  :}
 ;
-	
 
 list_stmt ::=
   stmt:s list_stmt:l

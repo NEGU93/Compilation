@@ -115,15 +115,6 @@ class Sreturn extends Stmt {
 		this.e = e;
 	}
 }
-/*
-class Sprint extends Stmt {
-	final Expr e;
-
-	Sprint(Expr e) {
-		super();
-		this.e = e;
-	}
-}*/
 class Sblock extends Stmt {
 	final LinkedList<Stmt> l;
 	Sblock() {
@@ -154,16 +145,14 @@ class Seval extends Stmt {
 	}
 }
 /* Declarations */
-class Decl_variable {
+class Declarations {}
+class Decl_variable extends Declarations {
 	final Evar v;
 	Decl_variable(String x) {
 		this.v = new Evar(x);
 	}
 }
-
-/* définition de fonction */
-
-class Decl_function { 			// Declaration of a function
+class Decl_function extends Declarations { 			// Declaration of a function
 	final String f;
 	final LinkedList<String> l; // arguments formels
 	final LinkedList<Stmt> s;
@@ -180,7 +169,7 @@ class Decl_function { 			// Declaration of a function
 		this.s = s;
 	}
 }
-
+/* File */
 class File {
 	final LinkedList<Decl_function> l;
 	final Stmt s;
