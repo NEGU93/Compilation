@@ -32,11 +32,11 @@ file ::=
 ;
 
 decl_function ::=
-  INT IDENT:f LPAR RPAR LB stmt:s RB	// of the syntax: int f() { s }
-    {: RESULT = new Decl_function(f, new Sblock(s)); :}
+  INT IDENT:f LPAR RPAR LB list_stmt:s RB	// of the syntax: int f() { s }
+    {: RESULT = new Decl_function(f, s); :}
 |
   INT IDENT:f LPAR list_comma_ident:x RPAR LB list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
-  	{: RESULT = new Decl_function(f, x, new Sblock(s)); :}
+  	{: RESULT = new Decl_function(f, x, s); :}
 ;
 
 expr ::=

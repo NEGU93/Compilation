@@ -129,14 +129,14 @@ class Seval extends Stmt {
 class Decl_function { 			// Declaration of a function
 	final String f;
 	final LinkedList<String> l; // arguments formels
-	final Stmt s;
-	Decl_function(String f, LinkedList<String> l, Stmt s) {
+	final LinkedList<Stmt> s;
+	Decl_function(String f, LinkedList<String> l, LinkedList<Stmt> s) {
 		super();
 		this.f = f; 			// the functions name
 		this.l = l; 			// arguments it has
 		this.s = s; 			// what the function do
 	}
-	Decl_function(String f, Stmt s) {
+	Decl_function(String f, LinkedList<Stmt> s) {
 		super();
 		this.f = f;
 		this.l = new LinkedList<String>();
