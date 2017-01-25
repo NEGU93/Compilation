@@ -30,7 +30,6 @@ class Constant {
 /* expressions */
 
 abstract class Expr {}
-
 class Ecst extends Expr { // Integer
 	final Constant c;
 	Ecst(Constant c) {
@@ -65,8 +64,7 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 		this.l = l;
 	}
 }
-
-class Evar extends Expr {
+class Evar extends Expr { //TODO: is this ok?
 	final String f;
 	final Ecst c;
 	Evar(String f, int c) {
@@ -80,9 +78,7 @@ class Evar extends Expr {
 }
 
 /* instruction */
-
 abstract class Stmt {}
-
 class Sif extends Stmt {
 	final Expr e;
 	final LinkedList<Stmt> s1, s2;
@@ -139,7 +135,6 @@ class Sblock extends Stmt {
 }*/
 class Seval extends Stmt {
 	final Expr e;
-
 	Seval(Expr e) {
 		super();
 		this.e = e;
