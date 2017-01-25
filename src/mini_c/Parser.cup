@@ -33,10 +33,10 @@ file ::=
 
 decl_function ::=
   INT IDENT:f LPAR RPAR LB stmt:s RB	// of the syntax: int f() { s }
-    {: RESULT = new Decl_function(f, s); :}
+    {: RESULT = new Decl_function(f, new Sblock(s)); :}
 |
-  INT IDENT:f LPAR list_comma_ident:x RPAR LB stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
-  	{: RESULT = new Decl_function(f, x, s); :}
+  INT IDENT:f LPAR list_comma_ident:x RPAR LB list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
+  	{: RESULT = new Decl_function(f, x, new Sblock(s)); :}
 ;
 
 expr ::=
@@ -62,8 +62,6 @@ expr ::=
     {: RESULT = new Ebinop(Binop.Band, e1, e2); :}
 | expr:e1 OR expr:e2
     {: RESULT = new Ebinop(Binop.Bor, e1, e2); :}
-	
-	
 ;
 
 list_decl_function ::=
@@ -77,7 +75,7 @@ stmt ::=
   RETURN expr:e SEMICOLON
 	{: RESULT = null; :}
 | expr:e SEMICOLON
-	{: RESULT = null; :}
+	{: RESULT = new Seval(e); :}
 ;
 	
 
