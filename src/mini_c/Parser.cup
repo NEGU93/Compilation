@@ -6,11 +6,13 @@ import java.util.*;
 terminal String IDENT;
 terminal Constant CST;
 terminal Binop CMP;
-terminal INT, RETURN, LPAR, RPAR, RB, LB, SEMICOLON, EQUAL, 
-			PLUS, MINUS, DIV, TIMES, AND, OR, NOT;
+terminal    IF, ELSE, WHILE,
+            INT, RETURN, LPAR, RPAR, RB, LB, SEMICOLON,
+            EQUAL, PLUS, MINUS, DIV, TIMES, AND, OR, NOT;
 
 non terminal File file;
 non terminal Decl_function  decl_function;
+non terminal Decl_variable  decl_variable;
 non terminal LinkedList<Decl_function> list_decl_function;
 non terminal LinkedList<Stmt> list_stmt;
 non terminal Expr expr;
@@ -23,12 +25,18 @@ precedence left AND;
 precedence nonassoc CMP;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
+precedence right NOT; //TODO: how to put minus again?
 
 start with file;
 
 file ::=
   list_decl_function:l list_stmt:b
     {: RESULT = new File(l, new Sblock(b)); :}
+;
+
+decl_variable ::=
+  INT IDENT:x SEMICOLON
+    {: RESULT = new Decl_variable(x); :} //TODO: is not working. It says that it never reduces
 ;
 
 decl_function ::=
@@ -42,6 +50,8 @@ decl_function ::=
 expr ::=
   CST:c
     {: RESULT = new Ecst(c); :}
+| IDENT:x
+    {: RESULT = new Evar(x); :}     // Here is just a variable (TODO: why not a function?)
 | MINUS expr:e
 	{: RESULT =  new Eunop(Unop.Uneg, e); :}
 | NOT expr:e
@@ -76,6 +86,14 @@ stmt ::=
 	{: RESULT = null; :}
 | expr:e SEMICOLON
 	{: RESULT = new Seval(e); :}
+| SEMICOLON
+    {: RESULT = null; :}
+| IF LPAR expr:e RPAR LB list_stmt:s1 RB ELSE LB list_stmt:s2 RB
+    {: RESULT = new Sif(e, s1, s2); :}
+| IF LPAR expr:e RPAR LB list_stmt:s RB
+    {: RESULT = new Sif(e, s); :}
+| WHILE LPAR expr:e RPAR LB list_stmt:s RB
+    {: RESULT = new Swhile(e, s);  :}
 ;
 	
 

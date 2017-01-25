@@ -52,8 +52,14 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 		{ return new Symbol(OR, yyline, yycolumn); }
 	"!"
 		{ return new Symbol(NOT, yyline, yycolumn); }
-	/* ********** */
-	
+	/* loops */
+	"if"
+    	    { return new Symbol(IF); }
+	"else"
+	    { return new Symbol(ELSE); }
+	"while"
+	    { return new Symbol(WHILE); }
+	/* More stuff */
 	"("	{ return new Symbol(LPAR, yyline, yycolumn); }
 	")"	{ return new Symbol(RPAR, yyline, yycolumn); }
 	"{"

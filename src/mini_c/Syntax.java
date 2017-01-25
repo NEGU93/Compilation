@@ -1,5 +1,8 @@
 package mini_c;
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+
 import java.util.LinkedList;
+import java.util.StringJoiner;
 
 /* Syntaxe abstraite de Mini-Python */
 
@@ -17,7 +20,6 @@ enum Binop {
 
 class Constant {
 	int c;
-
 	public Constant(int c) {
 		super();
 		this.c = c;
@@ -63,20 +65,48 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 	}
 }
 
+class Evar extends Expr {
+	final String f;
+	final Ecst c;
+	Evar(String f, int c) {
+		this.f = f;
+		this.c = new Ecst(new Constant(c));
+	}
+	Evar(String f) {
+		this.f = f;
+		this.c = new Ecst(new Constant(0));
+	}
+}
+
 /* instruction */
 
 abstract class Stmt {}
 
-/*class Sif extends Stmt {
+class Sif extends Stmt {
 	final Expr e;
-	final Stmt s1, s2;
-	Sif(Expr e, Stmt s1, Stmt s2) {
+	final LinkedList<Stmt> s1, s2;
+	Sif(Expr e, LinkedList<Stmt> s) {
+		super();
+		this.e = e;
+		this.s1 = s;
+		this.s2 = new LinkedList<Stmt>();
+	}
+	Sif(Expr e, LinkedList<Stmt> s1, LinkedList<Stmt> s2) {
 		super();
 		this.e = e;
 		this.s1 = s1;
 		this.s2 = s2;
 	}
-}*/
+}
+class Swhile extends Stmt {
+	final Expr e;
+	final LinkedList<Stmt> s;
+	Swhile(Expr e, LinkedList<Stmt> s) {
+		super();
+		this.e = e;
+		this.s = s;
+	}
+}
 class Sreturn extends Stmt {
 	final Expr e;
 
@@ -121,6 +151,13 @@ class Seval extends Stmt {
 	Seval(Expr e) {
 		super();
 		this.e = e;
+	}
+}
+/* Declarations */
+class Decl_variable {
+	final Evar v;
+	Decl_variable(String x) {
+		this.v = new Evar(x);
 	}
 }
 
