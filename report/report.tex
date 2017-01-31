@@ -1,4 +1,5 @@
 \documentclass[conference]{IEEEtran}
+%\usepackage[backend=bibtex]{biblatex}
 % Some Computer Society conferences also require the compsoc mode option,
 % but others use the standard conference format.
 %
@@ -29,7 +30,7 @@
 
 % *** CITATION PACKAGES ***
 %
-%\usepackage{cite}
+\usepackage{cite}
 % cite.sty was written by Donald Arseneau
 % V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
 % \cite{} output to follow that of the IEEE. Loading the cite package will
@@ -86,7 +87,7 @@
 % http://www.tug.org/applications/pdftex
 
 % *** MATH PACKAGES ***
-%
+\usepackage{mathtools} %with mathtools there is no need to add amsmath
 %\usepackage{amsmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics.
@@ -235,7 +236,7 @@ This is a 100\% C-compatible fragment, in the sense that any Mini C program is a
 \IEEEpeerreviewmaketitle
 
 \section{Introduction}
-"Optimizing compilers are so difficult to get right that we dare say that no optimizing compiler is error-free! Thus, the most important objective in writing a compiler is that it is correct" (Dragon Book, 2006)
+"Optimizing compilers are so difficult to get right that we dare say that no optimizing compiler is error-free! Thus, the most important objective in writing a compiler is that it is correct"\cite{DRAGON_BOOK}
 \subsection{Structure of a Compiler}
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
@@ -328,9 +329,28 @@ This is a 100\% C-compatible fragment, in the sense that any Mini C program is a
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
 \section{Lexical Analyzer}
-A lexical analyzer is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating an input token stream for parsers. The so called Lexer reads input from the programming language to compile (mini c in our case) and matches it against regular expressions and runs a corresponding action if such an expression is matched.
+A lexical analyzer (\textit{Lexer}) is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating a token stream for parsers called \textit{lexemes}. The Lexer reads input from the programming language to compile (mini c in our case) and matches it against regular expressions and runs a corresponding action if such an expression is matched.
+
+To make the Lexer are going to use:
+\begin{itemize}
+	\item Regular Expresions: To describe the lexemes
+	\item Finite Automata: To recongnize the expresions
+\end{itemize}
+\subsection{Regular Expresions}
+The concept of regular expression arose in the 1950's when the American mathematician Stephen Cole Kleene formalized the description of a regular language.
+
+A regular expression is a sequence of characters that define a search pattern. In other words, there are a conjunction of letters and digits that follow a certain rule.
+
+Let us define \textit{<letter>} as any letter in the Latin alphabet and \textit{<digit>} any number [0-9]. Then we can define rules as follow: 
+\begin{equation}
+0 | [1-9] (<digit>* | [])
+\end{equation}
+
+
 The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
-For the lexical analyzer, a flex library was used. A .flex file was created and then, by means of jflex, converted to the final java class.
+
+For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was created and then, by means of jflex, converted to the final java class.
+
 \section{Syntax Analyzer}
 \section{Semantic Analyzer}
 \section{Code Generation}
@@ -341,13 +361,12 @@ For the lexical analyzer, a flex library was used. A .flex file was created and 
 \section*{Acknowledgment}
 
 \newpage
-\bibliography{lesson7a1} 
 
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page
 % adjust value as needed - may need to be readjusted if
 % the document is modified later
-%\IEEEtriggeratref{8}
+\IEEEtriggeratref{8}
 % The "triggered" command can be changed if desired:
 %\IEEEtriggercmd{\enlargethispage{-5in}}
 
@@ -358,7 +377,7 @@ For the lexical analyzer, a flex library was used. A .flex file was created and 
 % http://mirror.ctan.org/biblio/bibtex/contrib/doc/
 % The IEEEtran BibTeX style support page is at:
 % http://www.michaelshell.org/tex/ieeetran/bibtex/
-\bibliographystyle{plain}
+\bibliographystyle{IEEEtran}
 % argument is your BibTeX string definitions and bibliography database(s)
 \bibliography{ref}
 %
