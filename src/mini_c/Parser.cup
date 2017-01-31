@@ -155,9 +155,9 @@ nonempty_list_comma_ident ::=
 ;
 
 list_comma_param ::=
-  IDENT:x COMMA list_comma_param:l
+  param:x COMMA list_comma_param:l
    {: l.addFirst(x); RESULT = l; :}
-| IDENT:x
+| param:x
    {: LinkedList<Param> l = new LinkedList<Param>();
       l.add(x); RESULT = l; :}
 |
