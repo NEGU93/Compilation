@@ -40,7 +40,7 @@ file ::=
   list_decl:l
     {: RESULT = new File(l); :}
 ;
-
+    /* Declarations */
 declarations ::=
     decl_variable:d
     {: RESULT = d; :}
@@ -52,9 +52,7 @@ declarations ::=
 
 decl_variable ::=
   INT IDENT:x SEMICOLON
-    {: RESULT = new Decl_variable(x); :}
-| INT nonempty_list_comma_ident:l SEMICOLON //TODO: For now we cannot declare like: int x, y;
-    {: RESULT = new Decl_variable(l); :}
+    {: RESULT = new Decl_variable(x); :} //TODO: For now we cannot declare like: int x, y;
 | STRUCT IDENT:s LPAR nonempty_list_comma_ident:l RPAR SEMICOLON
     {: RESULT = new Decl_variable(s, l); :}
 ;
@@ -70,7 +68,7 @@ decl_function ::=
 | STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB
     {: RESULT = new Decl_function(f, l, s, "struct"); :}
 ;
-
+/* Param, expr & stmt */
 param ::=
  INT IDENT:x
     {: RESULT = new Param(x); :}
@@ -112,13 +110,6 @@ expr ::=
     {: RESULT = new Sizeof(s); :}
 ;
 
-list_decl ::=
-  declarations:d list_decl:l
-   {: l.addFirst(d); RESULT = l; :}
-|
-   {: RESULT = new LinkedList<Declarations>(); :}
-;
-
 stmt ::=
   RETURN expr:e SEMICOLON
 	{: RESULT = null; :}
@@ -132,6 +123,13 @@ stmt ::=
     {: RESULT = new Sif(e, s); :}
 | WHILE LPAR expr:e RPAR LB list_stmt:s RB
     {: RESULT = new Swhile(e, s);  :}
+;
+    /* Lists */
+list_decl ::=
+  declarations:d list_decl:l
+   {: l.addFirst(d); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Declarations>(); :}
 ;
 
 list_stmt ::=
