@@ -71,9 +71,9 @@ decl_function ::=
 /* Param, expr & stmt */
 param ::=
  INT IDENT:x
-    {: RESULT = new Param(x); :}
+    {: RESULT = new Param(new Evar(x)); :}
 | STRUCT IDENT:s TIMES IDENT:x
-    {: RESULT = new Param(x, s); :}
+    {: RESULT = new Param(new Evar(x), s); :}
 ;
 
 expr ::=
@@ -87,7 +87,7 @@ expr ::=
 | NOT expr:e
 	{: RESULT =  new Eunop(Unop.Unot, e); :}
 | expr:e ARROW IDENT:x
-    {: RESULT = new Binop(Binop.Bobj, e, x); :}
+    {: RESULT = new Ebinop(Binop.Bobj, e, new Evar(x)); :}
 | expr:e1 EQUAL expr:e2
     {: RESULT =  new Ebinop(Binop.Beq, e1, e2); :} 
 | expr:e1 CMP:c expr:e2
@@ -107,7 +107,7 @@ expr ::=
 | LPAR expr:e RPAR
     {: RESULT = e; :}
 | SIZEOF LPAR STRUCT IDENT:s RPAR
-    {: RESULT = new Sizeof(s); :}
+    {: RESULT = null; :}
 ;
 
 stmt ::=

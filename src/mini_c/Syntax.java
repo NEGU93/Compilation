@@ -163,8 +163,8 @@ class Decl_variable extends Declarations {
 }
 class Decl_struct extends Declarations {
 	final String s;
-	final LinkedList<Decl_variable> l;
-	Decl_struct(String s, LinkedList<Decl_variable> l) {
+	final LinkedList<Param> l;
+	Decl_struct(String s, LinkedList<Param> l) {
 		super();
 		this.s = s;
 		this.l = l;
@@ -172,10 +172,10 @@ class Decl_struct extends Declarations {
 }
 class Decl_function extends Declarations { 			// Declaration of a function
 	final String f;
-	final LinkedList<String> l; // arguments formels
+	final LinkedList<Param> l; // arguments formels
 	final LinkedList<Stmt> s;
 	final Type r;
-	Decl_function(String f, LinkedList<String> l, LinkedList<Stmt> s, String t) throws Exception {
+	Decl_function(String f, LinkedList<Param> l, LinkedList<Stmt> s, String t) throws Exception {
 		super();
 		this.f = f; 			// the functions name
 		this.l = l; 			// arguments it has
