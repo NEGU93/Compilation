@@ -21,8 +21,9 @@ import static mini_c.sym.*;
 WhiteSpace	= [ \t\r\n]+
 Octal_int   = ("0") ([0-7])+
 Hex_int     = ("0x") ([0-9a-fA-f])+
-Integer		= [:digit:]+                  // Digit is defined on jflex
+Integer		= ([1-9]) ([:digit:]+ | [_])                            // The first whould not be 0
 Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be used to read function names
+Character   = "'" [:jletter:] "'"
 
 %%
 <YYINITIAL> {
@@ -54,6 +55,8 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 		{ return new Symbol(OR, yyline, yycolumn); }
 	"!"
 		{ return new Symbol(NOT, yyline, yycolumn); }
+    "->"
+        { return new Symbol(ARROW, yyline, yycolumn); }
 	/* loops */
 	"if"
     	    { return new Symbol(IF); }
@@ -69,6 +72,7 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
 		{ return new Symbol(LB, yyline, yycolumn); }
 	"}"	{ return new Symbol(RB, yyline, yycolumn); }
 	";"	{ return new Symbol(SEMICOLON, yyline, yycolumn);}
+	"," { return new Symbol(COMMA, yyline, yycolumn);}
 	/* Fixed Words */
 	"return"
 		{ return new Symbol(RETURN, yyline, yycolumn); }
@@ -87,6 +91,8 @@ Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be us
     	{ return new Symbol(CST, yyline, yycolumn, new Constant(Integer.parseInt(yytext(), 8))); }
 	{Identifier}
 		{ return new Symbol(IDENT, yyline, yycolumn, yytext()); }
+	{Character}
+	    { return new Symbol(IDENT, yyline, yycolumn, yytext()); }
 	{WhiteSpace}
 		{ }
 	.	{ throw new Exception(String.format("Error in line %d, column %d: illegal character '%s'\n", yyline, yycolumn, yytext())); }

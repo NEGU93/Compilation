@@ -14,7 +14,7 @@ enum Unop { Uneg, Unot }
 enum Binop {
   Badd , Bsub , Bmul , Bdiv , Bmod,
   Beqeq , Bneq , Blt , Ble , Bgt , Bge, // comparaison structurelle
-  Band , Bor, Beq // paresseux
+  Band , Bor, Beq, Bobj // paresseux
 }
 
 /* constantes litérales */
@@ -64,16 +64,18 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 		this.l = l;
 	}
 }
-class Evar extends Expr { //TODO: is this ok?
-	final String f;
-	final Ecst c;
-	Evar(String f, int c) {
-		this.f = f;
-		this.c = new Ecst(new Constant(c));
+class Evar extends Expr {
+	final String x;
+	public Evar(String x) {
+		this.x = x;
 	}
-	Evar(String f) {
-		this.f = f;
-		this.c = new Ecst(new Constant(0));
+}
+
+class Type {
+	final String t;
+	Type(String t) throws Exception {
+		if ((t == "int") || (t == "struct") ) { this.t = t; }
+		else { throw new Exception("Type incorrect"); }
 	}
 }
 
@@ -144,9 +146,19 @@ class Seval extends Stmt {
 class Declarations {}
 class Decl_variable extends Declarations {
 	final Evar v;
-	Decl_variable(String x) {
+	final Type t;
+	final LinkedList<String> l;
+	Decl_variable(String x) throws Exception {
 		super();
 		this.v = new Evar(x);
+		this.t = new Type("int");
+		this.l = new LinkedList<String>();
+	}
+	Decl_variable(String x, LinkedList<String> l) throws Exception {
+		super();
+		this.v = new Evar(x);
+		this.t = new Type("struct");
+		this.l = l;
 	}
 }
 class Decl_struct extends Declarations {
@@ -162,27 +174,39 @@ class Decl_function extends Declarations { 			// Declaration of a function
 	final String f;
 	final LinkedList<String> l; // arguments formels
 	final LinkedList<Stmt> s;
-	Decl_function(String f, LinkedList<String> l, LinkedList<Stmt> s) {
+	final Type r;
+	Decl_function(String f, LinkedList<String> l, LinkedList<Stmt> s, String t) throws Exception {
 		super();
 		this.f = f; 			// the functions name
 		this.l = l; 			// arguments it has
 		this.s = s; 			// what the function do
+		this.r = new Type(t);
 	}
-	Decl_function(String f, LinkedList<Stmt> s) {
-		super();
-		this.f = f;
-		this.l = new LinkedList<String>();
+}
+class Sizeof {
+	final String s;
+	public Sizeof(String s) {
 		this.s = s;
+	}
+}
+class Param {
+	final Evar v;
+	final Type t;
+	public Param(Evar v, String s) throws Exception {
+		this.v = v;
+		this.t = new Type("struct");
+	}
+	public Param(Evar v) throws Exception {
+		this.v = v;
+		this.t = new Type("int");
 	}
 }
 /* File */
 class File {
-	final LinkedList<Decl_function> l;
-	final Stmt s;
-	File(LinkedList<Decl_function> l, Stmt s) {
+	final LinkedList<Declarations> l;
+	File(LinkedList<Declarations> l) {
 		super();
 		this.l = l;
-		this.s = s;
 	}
 }
 
