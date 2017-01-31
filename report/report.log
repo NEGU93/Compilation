@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  31 JAN 2017 17:55
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  31 JAN 2017 18:52
 entering extended mode
 **report.tex
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
@@ -141,6 +141,33 @@ Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
+(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.24 \end{thebibliography}
+                          
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+) (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
+
+! LaTeX Error: Something's wrong--perhaps a missing \item.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.24 \end{thebibliography}
+                          
+Try typing  <return>  to proceed.
+If that doesn't work, type  X <return>  to quit.
+
+)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -155,14 +182,13 @@ Before submitting the final camera ready copy, remember to:
 [1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
-
 ]
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
 Here is how much of TeX's memory you used:
- 1045 strings out of 493921
- 19499 string characters out of 3144879
+ 1057 strings out of 493921
+ 19881 string characters out of 3144879
  70562 words of memory out of 3000000
- 4409 multiletter control sequences out of 15000+200000
+ 4416 multiletter control sequences out of 15000+200000
  33007 words of font info for 62 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
  26i,7n,19p,372b,237s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -172,7 +198,7 @@ Here is how much of TeX's memory you used:
 /fonts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
 e1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/time
 s/utmri8a.pfb>
-Output written on report.pdf (1 page, 50472 bytes).
+Output written on report.pdf (1 page, 50515 bytes).
 PDF statistics:
  23 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
