@@ -52,7 +52,7 @@ declarations ::=
 
 decl_variable ::=
   INT IDENT:x SEMICOLON
-    {: RESULT = new Decl_variable(x); :} //TODO: For now we cannot declare like: int x, y;
+    {: RESULT = new Decl_variable(x); :}    //TODO: For now we cannot declare like: int x, y;
 | STRUCT IDENT:s LPAR nonempty_list_comma_ident:l RPAR SEMICOLON
     {: RESULT = new Decl_variable(s, l); :}
 ;

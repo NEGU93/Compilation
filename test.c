@@ -1,18 +1,22 @@
-int main() {
+struct struct_test {
+
+};
+
+int main(int x, int y) {
 	0x4F;
-	if ( 4 ) {
+	if ( x == z ) {
 		045;
 	}
 	else {
 		;
 	}
-	while (4 + 6 - 5) {
+	while (4 + y - 5) {
 		5 / 10;
 	}
 	5 * (8 + 4);
 	return 2+3;
 }
 
-int foo() {
-	5;
+int foo(int p) {
+	p = 5;
 }
