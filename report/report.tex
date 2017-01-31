@@ -228,12 +228,15 @@ Université Saclay-Paris}
 \maketitle
 
 \begin{abstract}
-In this project, a compilator was created to generate a x86-64 assembler code from a Java program.
+In this project, a compilator was created to generate a x86-64 assembler code from a C fragment called mini-C.
+This is a 100\% C-compatible fragment, in the sense that any Mini C program is also a C program. 
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
 
 \section{Introduction}
+"Optimizing compilers are so difficult to get right that we dare say that no optimizing compiler is error-free! Thus, the most important objective in writing a compiler is that it is correct" (Dragon Book, 2006)
+\subsection{Structure of a Compiler}
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
 % For figures, \caption should occur after the \includegraphics.
@@ -324,11 +327,26 @@ In this project, a compilator was created to generate a x86-64 assembler code fr
 % Note that, LaTeX2e, unlike IEEE journals/conferences, places
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
+\section{Lexical Analyzer}
+A lexical analyzer is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating an input token stream for parsers. The so called Lexer reads input from the programming language to compile (mini c in our case) and matches it against regular expressions and runs a corresponding action if such an expression is matched.
+The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
+For the lexical analyzer, a flex library was used. A .flex file was created and then, by means of jflex, converted to the final java class.
+\section{Syntax Analyzer}
+\section{Semantic Analyzer}
+\section{Code Generation}
 
 \section{Conclusion}
 
 % use section* for acknowledgment
 \section*{Acknowledgment}
+
+\begin{thebibliography}{1}
+	
+	\bibitem{Dragon Book}
+	P.~Carribault and F.~Traemph{INF560 Evaluation}, 3rd~ed.\hskip 1em plus
+	0.5em minus 0.4em\relax https://wwwhay, \.enseignement.polytechnique.fr/profs/informatique/Francois.Trahay/www/TD/projects/INF560-projects-0.html
+	
+\end{thebibliography}
 
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page

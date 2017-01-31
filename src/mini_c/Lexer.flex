@@ -22,8 +22,8 @@ WhiteSpace	= [ \t\r\n]+
 Octal_int   = ("0") ([0-7])+
 Hex_int     = ("0x") ([0-9a-fA-f])+
 Integer		= (0 | [1-9]\d* )                                           // If it starts by 0 but has more stuff after, then it's not a decimal Int
-Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )* // Will be used to read function names
-Character   = "'" [:jletter:] "'"
+Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )*
+Character   = "'" [:jletter:] "'"                                       // TODO: not yet well implemented
 
 %%
 <YYINITIAL> {

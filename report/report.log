@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  11 JAN 2017 19:06
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  31 JAN 2017 17:55
 entering extended mode
 **report.tex
-(F:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
+(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -13,7 +13,7 @@ german-x-2013-05-26, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
 ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
 an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
 ishmax, welsh, loaded.
-(F:\HardDiskDrive\Documentos\GitHub\Compilation\report\IEEEtran.cls
+(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\IEEEtran.cls
 Document Class: IEEEtran 2015/08/26 V1.8b by Michael Shell
 -- See the "IEEEtran_HOWTO" manual for usage information.
 -- http://www.michaelshell.org/tex/ieeetran/
@@ -120,7 +120,7 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <24> not available
 \IEEEPARstartletwidth=\dimen125
 \c@IEEEbiography=\count93
 \@IEEEtranrubishbin=\box27
-) (F:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux)
+) (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 220.
 LaTeX Font Info:    ... okay on input line 220.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 220.
@@ -136,15 +136,9 @@ LaTeX Font Info:    ... okay on input line 220.
 
 -- Lines per column: 56 (exact).
 Missing character: There is no Ã in font ptmr7t!
-Missing character: There is no ‰ in font ptmr7t!
-Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
 Missing character: There is no Ã in font ptmr7t!
-Missing character: There is no ‰ in font ptmr7t!
-Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
-Missing character: There is no Ã in font ptmr7t!
-Missing character: There is no ‰ in font ptmr7t!
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
 
@@ -163,23 +157,24 @@ Before submitting the final camera ready copy, remember to:
 
 
 ]
-(F:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
+(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
 Here is how much of TeX's memory you used:
- 1043 strings out of 493921
- 19484 string characters out of 3144879
- 68562 words of memory out of 3000000
- 4408 multiletter control sequences out of 15000+200000
- 31871 words of font info for 61 fonts, out of 3000000 for 9000
+ 1045 strings out of 493921
+ 19499 string characters out of 3144879
+ 70562 words of memory out of 3000000
+ 4409 multiletter control sequences out of 15000+200000
+ 33007 words of font info for 62 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
- 26i,7n,19p,202b,236s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 26i,7n,19p,372b,237s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program
  Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x86)
 /MiKTeX 2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9
 /fonts/type1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
-e1/urw/times/utmr8a.pfb>
-Output written on report.pdf (1 page, 35273 bytes).
+e1/urw/times/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/time
+s/utmri8a.pfb>
+Output written on report.pdf (1 page, 50472 bytes).
 PDF statistics:
- 19 PDF objects out of 1000 (max. 8388607)
+ 23 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

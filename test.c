@@ -17,6 +17,11 @@ int main(int x, int y) {
 	return 2+3;
 }
 
+struct s  * foo2() {
+	p = 5;
+}
+
 int foo(int p) {
 	p = 5;
 }
+
