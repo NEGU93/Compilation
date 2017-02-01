@@ -59,7 +59,7 @@ decl_variable ::=
 ;
 
 decl_struct ::=
-  STRUCT IDENT:s LB list_comma_param:l RB SEMICOLON
+  STRUCT IDENT:s LB list_decl_variable:l RB SEMICOLON
     {: RESULT = new Decl_struct(s, l); :}
 ;
 

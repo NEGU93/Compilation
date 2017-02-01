@@ -163,8 +163,8 @@ class Decl_variable extends Declarations {
 }
 class Decl_struct extends Declarations {
 	final String s;
-	final LinkedList<Param> l;
-	Decl_struct(String s, LinkedList<Param> l) {
+	final LinkedList<Decl_variable> l;
+	Decl_struct(String s, LinkedList<Decl_variable> l) {
 		super();
 		this.s = s;
 		this.l = l;
