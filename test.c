@@ -29,6 +29,15 @@ int main() { int x; }
 //int main() { { int x; } x; }
 int n() { x; }
 int n() { x; }
+int f(int x, int y, int z, int t) {
+	if (!x) return 10;
+	putchar(x);
+	return f(y, z, t, x);
+}
+
+int main() {
+	putchar(f('A', 'B', 'C', 0));
+}
 int f;
 struct S { int a; int a; };
 int main() {}
