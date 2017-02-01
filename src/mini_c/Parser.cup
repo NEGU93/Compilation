@@ -81,6 +81,8 @@ expr ::=
     {: RESULT = new Ecst(c); :}
 | IDENT:x
     {: RESULT = new Evar(x); :}
+| IDENT:f LPAR list_comma_ident:l RPAR
+    {: RESULT = new Ecall(f, l); :}
 | MINUS expr:e
 	{: RESULT =  new Eunop(Unop.Uneg, e); :}
 	%prec NEG

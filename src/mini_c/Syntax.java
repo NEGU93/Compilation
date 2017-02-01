@@ -57,8 +57,8 @@ class Eunop extends Expr { // Operation with only one Expr
 } 
 class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 	final String f;
-	final LinkedList<Expr> l;
-	Ecall(String f, LinkedList<Expr> l) {
+	final LinkedList<String> l;
+	Ecall(String f, LinkedList<String> l) {
 		super();
 		this.f = f;
 		this.l = l;
