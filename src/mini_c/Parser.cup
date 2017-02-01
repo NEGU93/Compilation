@@ -65,7 +65,7 @@ decl_struct ::=
 decl_function ::=
   INT IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
   	{: RESULT = new Decl_function(f, l, s, "int"); :}
-| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB
+| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB // TODO: the problem is stmt cannot have a declaration
     {: RESULT = new Decl_function(f, l, s, "struct"); :}
 ;
 /* Param, expr & stmt */

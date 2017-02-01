@@ -1,6 +1,7 @@
 struct struct_test {
 
 };
+int x;
 /*
 	This is a block comment
 */
@@ -9,7 +10,7 @@ int main(int x, int y) { // Comment
 	if ( x == z ) {
 		045;
 	}
-	//int x;
+	
 	//foo(g);
 	else {
 		;
