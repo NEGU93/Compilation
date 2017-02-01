@@ -224,8 +224,13 @@
 \author{\IEEEauthorblockN{J. Agust\'{i}n Barrachina}
 \IEEEauthorblockA{IEEE Student Member\\
 \'{E}cole Polytechnique\\
-Université Saclay-Paris}
-}
+Universit\'{e} Saclay-Paris}
+\and
+\IEEEauthorblockN{Fran\c{c}ois Bidet}
+\IEEEauthorblockA{\'{E}cole Polytechnique\\
+	Université Paris-Saclay\\
+	Route de Saclay, 91128 Palaiseau, France\\
+	Email: francois.bidet@polytechnique.edu}}
 \maketitle
 
 \begin{abstract}
@@ -341,7 +346,7 @@ The concept of regular expression arose in the 1950's when the American mathemat
 
 A regular expression is a sequence of characters that define a search pattern. In other words, there are a conjunction of letters and digits that follow a certain rule.
 
-Let us define \textit{<letter>} as any letter in the Latin alphabet and \textit{<digit>} any number [0-9]. Then we can define rules as follow: 
+Let us define \textit{letter} as any letter in the Latin alphabet and \textit{digit} any number [0-9]. Then we can define rules as follow: 
 \begin{equation}
 0 | [1-9] (<digit>* | [])\label{reg_expr_example}
 \end{equation}
@@ -349,15 +354,37 @@ Let us define \textit{<letter>} as any letter in the Latin alphabet and \textit{
 Last equation \ref{reg_expr_example} is a declaration of a decimal digit. The "|" is a logic or, it means, either the digit is 0 or it will be another thing. If it is not only 0, the number cannot start by 0 in C syntax, so it must start with a digit different from 0, which is range from 1 to 9 (encoded as [0-9]). Secondly, this digit can be followed by either nothing (represented by: []) or by any digit for as many digits are they must be. The format <rule>* means the repetition of a rule for as many times as necessary, or no repetition at all.
 
 % We could add another example here, for example a comment line or sth.
-\subsection{Automata}
+\subsection{Finite Automata}
+A \textit{finite automata} is basically a binary graph which just say "yes" or "no" by means of a \textit{recognizer} to each possible string.
+
+There are two different classes of automatas:
+\begin{enumerate}
+	\item \textit{Nondeterministic Finite Automata} (NFA)
+	\item \textit{Deterministic Finite Automata} (DFA)
+\end{enumerate}
+The first class (NFA) have no restrictions on the labels of their edges. A symbol can label several edges out of the same state. The DFA on the other hand have for each state and symbol exactly one edge with that symbol leaving that state. 
+%translate to english...
 
 \subsection{Implementation}
-The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
+%The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
+
 For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was created and then, by means of jflex, converted to the final java class.
-For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
+
+Jflex lexers are based on a DFA automata. For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
 
 \section{Syntax Analyzer}
+The \textit{syntax analyzer's} job is to detect error of syntax and display the error that corresponds.  
 \section{Semantic Analyzer}
+\textit{"Well typed programs do not go wrong"}
+
+A \textit{Semantic Analyzer} uses the syntax tree and the information in the symbol table to check the source program for semantic consistency with the language definition. 
+
+An important part of the semantic analysis is the type checking where it gathers type information and checks that each operator has matching operands.
+
+An example of the type checking will be to make sure the index which whom an array is accessed is an integer and not any other incompatible type.
+
+In a equation like \(8.0 + 4\), the type checking will make sure to convert the integer "4" into a floating point before making the operation. 
+
 \section{Code Generation}
 
 \section{Conclusion}

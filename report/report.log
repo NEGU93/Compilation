@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  31 JAN 2017 23:42
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  1 FEB 2017 02:43
 entering extended mode
 **report.tex
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
@@ -274,14 +274,14 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 )))
 \Gin@req@height=\dimen146
 \Gin@req@width=\dimen147
+) [1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
+
+
+]
+(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
+Missing character: There is no Ã in font ptmr7t!
+Missing character: There is no © in font ptmr7t!
 )
-Missing character: There is no Ã in font ptmr7t!
-Missing character: There is no © in font ptmr7t!
-Missing character: There is no Ã in font ptmr7t!
-Missing character: There is no © in font ptmr7t!
-Missing character: There is no Ã in font ptmr7t!
-Missing character: There is no © in font ptmr7t!
- (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl)
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -293,32 +293,30 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
+[2
 
-
-]
-(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
+] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
 Here is how much of TeX's memory you used:
- 3189 strings out of 493921
- 49536 string characters out of 3144879
- 110900 words of memory out of 3000000
- 6486 multiletter control sequences out of 15000+200000
+ 3192 strings out of 493921
+ 49576 string characters out of 3144879
+ 112911 words of memory out of 3000000
+ 6489 multiletter control sequences out of 15000+200000
  34597 words of font info for 65 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
- 33i,7n,22p,411b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Program
- Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x86)
-/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/M
-iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MiKT
-eX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX
- 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.
-9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
-e1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/tim
-es/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.
-pfb>
-Output written on report.pdf (1 page, 90768 bytes).
+ 33i,7n,22p,583b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Progr
+am Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x8
+6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)
+/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/Mi
+KTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKT
+eX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 
+2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
+ype1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/t
+imes/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8
+a.pfb>
+Output written on report.pdf (2 pages, 96809 bytes).
 PDF statistics:
- 39 PDF objects out of 1000 (max. 8388607)
+ 42 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

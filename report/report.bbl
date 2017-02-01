@@ -32,4 +32,7 @@ J.~Team. (2015, mar) Jflex - the fast scanner generator for java. [Online].
   Available: \url{http://jflex.de/}
 \BIBentrySTDinterwordspacing
 
+\bibitem{JFLEX_MANUAL}
+G.~K. S. R.~R. Décamps, \emph{JFlex User's Manual}, apr 2015.
+
 \end{thebibliography}
