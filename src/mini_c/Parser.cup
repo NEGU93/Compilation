@@ -24,6 +24,7 @@ non terminal LinkedList<Declarations> list_decl;
 non terminal LinkedList<Stmt> list_stmt;
 non terminal LinkedList<String> list_comma_ident, nonempty_list_comma_ident;
 non terminal LinkedList<Param> list_comma_param;
+non terminal LinkedList<Decl_variable> list_decl_variable;
 
 precedence right EQUAL;
 precedence left OR;
@@ -63,9 +64,9 @@ decl_struct ::=
 ;
 
 decl_function ::=
-  INT IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
+  INT IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
   	{: RESULT = new Decl_function(f, l, s, "int"); :}
-| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB // TODO: the problem is stmt cannot have a declaration
+| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB // TODO: the problem is stmt cannot have a declaration
     {: RESULT = new Decl_function(f, l, s, "struct"); :}
 ;
 /* Param, expr & stmt */
@@ -139,6 +140,13 @@ list_stmt ::=
    {: l.addFirst(s); RESULT = l; :}
 |
    {: RESULT = new LinkedList<Stmt>(); :}
+;
+
+list_decl_variable ::=
+  decl_variable:d list_decl_variable:l
+    {: l.addFirst(d); RESULT = l; :}
+|
+    {: RESULT = new LinkedList<Decl_variable>(); :}
 ;
 
 list_comma_ident ::=
