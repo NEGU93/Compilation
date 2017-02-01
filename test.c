@@ -1,8 +1,10 @@
 struct struct_test {
 
 };
-
-int main(int x, int y) {
+/*
+	This is a block comment
+*/
+int main(int x, int y) { // Comment
 	0x4F;
 	if ( x == z ) {
 		045;

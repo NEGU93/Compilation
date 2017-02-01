@@ -24,6 +24,7 @@ Hex_int     = ("0x") ([0-9a-fA-f])+
 Integer		= (0 | [1-9]\d* )                                           // If it starts by 0 but has more stuff after, then it's not a decimal Int
 Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )*
 Character   = "'" [:jletter:] "'"                                       // TODO: not yet well implemented
+BlockComment= [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 
 %%
 <YYINITIAL> {
@@ -57,6 +58,11 @@ Character   = "'" [:jletter:] "'"                                       // TODO:
 		{ return new Symbol(NOT, yyline, yycolumn); }
     "->"
         { return new Symbol(ARROW, yyline, yycolumn); }
+        /* Comments */
+    "//".* // Normal comment
+        { /* DO NOTHING */ }
+    {BlockComment}
+        { /* DO NOTHING */ }
 	/* loops */
 	"if"
     	    { return new Symbol(IF); }
@@ -94,6 +100,6 @@ Character   = "'" [:jletter:] "'"                                       // TODO:
 	{Character}
 	    { return new Symbol(IDENT, yyline, yycolumn, yytext()); }
 	{WhiteSpace}
-		{ }
+		{ /* DO NOTHING */ }
 	.	{ throw new Exception(String.format("Error in line %d, column %d: illegal character '%s'\n", yyline, yycolumn, yytext())); }
 }
