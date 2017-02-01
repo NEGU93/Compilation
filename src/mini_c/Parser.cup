@@ -25,6 +25,7 @@ non terminal LinkedList<Stmt> list_stmt;
 non terminal LinkedList<String> list_comma_ident, nonempty_list_comma_ident;
 non terminal LinkedList<Param> list_comma_param;
 non terminal LinkedList<Decl_variable> list_decl_variable;
+non terminal LinkedList<Expr> list_comma_expr;
 
 precedence right EQUAL;
 precedence left OR;
@@ -52,9 +53,9 @@ declarations ::=
 ;
 
 decl_variable ::=
-  INT IDENT:x SEMICOLON
-    {: RESULT = new Decl_variable(x); :}    //TODO: For now we cannot declare like: int x, y;
-| STRUCT IDENT:s LPAR nonempty_list_comma_ident:l RPAR SEMICOLON
+  INT nonempty_list_comma_ident:x SEMICOLON
+    {: RESULT = new Decl_variable(x); :}
+| STRUCT nonempty_list_comma_ident:s TIMES nonempty_list_comma_ident:l SEMICOLON
     {: RESULT = new Decl_variable(s, l); :}
 ;
 
@@ -64,9 +65,9 @@ decl_struct ::=
 ;
 
 decl_function ::=
-  INT IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
+  INT IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { v s }
   	{: RESULT = new Decl_function(f, l, s, "int"); :}
-| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB // TODO: the problem is stmt cannot have a declaration
+| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB
     {: RESULT = new Decl_function(f, l, s, "struct"); :}
 ;
 /* Param, expr & stmt */
@@ -82,7 +83,7 @@ expr ::=
     {: RESULT = new Ecst(c); :}
 | IDENT:x
     {: RESULT = new Evar(x); :}
-| IDENT:f LPAR list_comma_ident:l RPAR
+| IDENT:f LPAR list_comma_expr:l RPAR // Call a function
     {: RESULT = new Ecall(f, l); :}
 | MINUS expr:e
 	{: RESULT =  new Eunop(Unop.Uneg, e); :}
@@ -172,4 +173,14 @@ list_comma_param ::=
       l.add(x); RESULT = l; :}
 |
    {: RESULT = new LinkedList<Param>(); :}
+;
+
+list_comma_expr ::=
+  expr:e COMMA list_comma_expr:l
+   {: l.addFirst(e); RESULT = l; :}
+| expr:e
+   {: LinkedList<Expr> l = new LinkedList<Expr>();
+      l.add(e); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Expr>(); :}
 ;

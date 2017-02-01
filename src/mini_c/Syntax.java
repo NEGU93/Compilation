@@ -57,8 +57,8 @@ class Eunop extends Expr { // Operation with only one Expr
 } 
 class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 	final String f;
-	final LinkedList<String> l;
-	Ecall(String f, LinkedList<String> l) {
+	final LinkedList<Expr> l;
+	Ecall(String f, LinkedList<Expr> l) {
 		super();
 		this.f = f;
 		this.l = l;
@@ -145,18 +145,18 @@ class Seval extends Stmt {
 /* Declarations */
 class Declarations {}
 class Decl_variable extends Declarations {
-	final Evar v;
+	final LinkedList<String> v;
 	final Type t;
 	final LinkedList<String> l;
-	Decl_variable(String x) throws Exception {
+	Decl_variable(LinkedList<String> x) throws Exception {
 		super();
-		this.v = new Evar(x);
+		this.v = x;
 		this.t = new Type("int");
 		this.l = new LinkedList<String>();
 	}
-	Decl_variable(String x, LinkedList<String> l) throws Exception {
+	Decl_variable(LinkedList<String> x, LinkedList<String> l) throws Exception {
 		super();
-		this.v = new Evar(x);
+		this.v = x;
 		this.t = new Type("struct");
 		this.l = l;
 	}
