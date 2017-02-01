@@ -343,12 +343,18 @@ A regular expression is a sequence of characters that define a search pattern. I
 
 Let us define \textit{<letter>} as any letter in the Latin alphabet and \textit{<digit>} any number [0-9]. Then we can define rules as follow: 
 \begin{equation}
-0 | [1-9] (<digit>* | [])
+0 | [1-9] (<digit>* | [])\label{reg_expr_example}
 \end{equation}
 
-The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
+Last equation \ref{reg_expr_example} is a declaration of a decimal digit. The "|" is a logic or, it means, either the digit is 0 or it will be another thing. If it is not only 0, the number cannot start by 0 in C syntax, so it must start with a digit different from 0, which is range from 1 to 9 (encoded as [0-9]). Secondly, this digit can be followed by either nothing (represented by: []) or by any digit for as many digits are they must be. The format <rule>* means the repetition of a rule for as many times as necessary, or no repetition at all.
 
+% We could add another example here, for example a comment line or sth.
+\subsection{Automata}
+
+\subsection{Implementation}
+The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
 For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was created and then, by means of jflex, converted to the final java class.
+For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
 
 \section{Syntax Analyzer}
 \section{Semantic Analyzer}
