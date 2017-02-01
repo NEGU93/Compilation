@@ -1,9 +1,6 @@
 package mini_c;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
-import javax.crypto.spec.DESedeKeySpec;
 import java.util.LinkedList;
-import java.util.StringJoiner;
 
 /* Syntaxe abstraite de Mini-Python */
 
@@ -114,16 +111,19 @@ class Sreturn extends Stmt {
 		this.e = e;
 	}
 }
-class Sblock extends Stmt {
+/*class Sblock extends Stmt {
 	final LinkedList<Stmt> l;
+	final LinkedList<Decl_variable> v;
 	Sblock() {
+		this.v = new LinkedList<Decl_variable>();
 		this.l = new LinkedList<Stmt>();
 	}
-	Sblock(LinkedList<Stmt> l) {
+	Sblock(LinkedList<Stmt> l, LinkedList<Decl_variable> v) {
 		super();
 		this.l = l;
+		this.v = v;
 	}
-}
+}*/
 /*class Sfor extends Stmt {
 	final String x;
 	final Expr e;

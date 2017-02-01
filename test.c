@@ -8,6 +8,13 @@ int x;
 	This is a block comment
 */
 struct S { int a; };
+struct S { int a; };
+struct S { int a; };
+int main() {}
+int main() {}
+int f;
+int f() {}
+int main() {}
 int foo() {}
 int main() { 1 = 2; }
 int main() { 0 = 1; }
@@ -16,6 +23,22 @@ int main() { (foo())->a; }
 int arith2() { struct S *p; 1 - p; }
 int arrow() { 1->a; }
 int arrow2() { int x; x->a; }
+int f() {}
+int main(int x) { }
+int main() { int x; }
+//int main() { { int x; } x; }
+int n() { x; }
+int n() { x; }
+int f;
+struct S { int a; int a; };
+int main() {}
+struct S { int a; };
+int main() { while (x) y; }
+int main() { int x; if (x) { y; } else y; z; }
+int main() { struct S *s; -s; }
+int main() { x; }
+int main() {}
+int main() { int x, x; }
 int arith3() { 
 	int p; 
 	struct S *q; 

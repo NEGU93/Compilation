@@ -123,10 +123,20 @@ stmt ::=
     {: RESULT = null; :}
 | IF LPAR expr:e RPAR LB list_stmt:s1 RB ELSE LB list_stmt:s2 RB
     {: RESULT = new Sif(e, s1, s2); :}
+| IF LPAR expr:e RPAR LB list_stmt:s1 RB ELSE stmt:s2                   // No brackets on the else
+      {: LinkedList<Stmt> l2 = new LinkedList<Stmt>(); l2.addFirst(s2);
+         RESULT = new Sif(e, s1, l2); :}
+ // Here I should implement for each if case without brackets
+/*| IF LPAR expr:e RPAR stmt:s1 ELSE LB list_stmt:s2 RB                  // No brackets on the if
+      {: LinkedList<Stmt> l1 = new LinkedList<Stmt>(); l1.addFirst(s1);
+         RESULT = new Sif(e, l1, s2); :}*/
 | IF LPAR expr:e RPAR LB list_stmt:s RB
     {: RESULT = new Sif(e, s); :}
-| WHILE LPAR expr:e RPAR LB list_stmt:s RB
+| WHILE LPAR expr:e RPAR LB list_stmt:s RB // While with brackets
     {: RESULT = new Swhile(e, s);  :}
+| WHILE LPAR expr:e RPAR stmt:s // While without brackets
+    {: LinkedList<Stmt> l = new LinkedList<Stmt>(); l.addFirst(s);
+       RESULT = new Swhile(e, l);  :}
 ;
     /* Lists */
 list_decl ::=
