@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  1 FEB 2017 08:35
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  1 FEB 2017 09:30
 entering extended mode
 **report.tex
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
@@ -297,10 +297,10 @@ Before submitting the final camera ready copy, remember to:
 
 ] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
 Here is how much of TeX's memory you used:
- 3192 strings out of 493921
- 49576 string characters out of 3144879
- 113911 words of memory out of 3000000
- 6489 multiletter control sequences out of 15000+200000
+ 3193 strings out of 493921
+ 49588 string characters out of 3144879
+ 113914 words of memory out of 3000000
+ 6490 multiletter control sequences out of 15000+200000
  34597 words of font info for 65 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
  33i,7n,22p,583b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -314,7 +314,7 @@ eX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX
 ype1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/t
 imes/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8
 a.pfb>
-Output written on report.pdf (2 pages, 97540 bytes).
+Output written on report.pdf (2 pages, 98059 bytes).
 PDF statistics:
  42 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

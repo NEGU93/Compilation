@@ -26,6 +26,10 @@ A.~V. A. M. S. L. R. S. J.~D. Ullman, \emph{Compilers. Principles, Techiniques
   \& Tools}, 2nd~ed.\hskip 1em plus 0.5em minus 0.4em\relax Addison Wesley,
   2006.
 
+\bibitem{LANGUAGE_C}
+B.~K. .~D. Richie, \emph{The C Programming Language}, 2nd~ed.\hskip 1em plus
+  0.5em minus 0.4em\relax Prentice Hall, mar 1988.
+
 \bibitem{JFLEX}
 \BIBentryALTinterwordspacing
 J.~Team. (2015, mar) Jflex - the fast scanner generator for java. [Online].
