@@ -37,7 +37,7 @@ abstract class Value implements Comparable<Value> {
 class Vnone extends Value {
 	@Override
 	boolean isFalse() {
-		return true; 
+		return true;
 	}
 
 	@Override
@@ -192,7 +192,7 @@ class Vlist extends Value {
 
 class Return extends Exception {
 	private static final long serialVersionUID = 1L;
-	
+
 	final Value v;
 
 	Return(Value v) { this.v = v; }
@@ -379,7 +379,7 @@ class Interp implements Interpreter {
 	}
 
 	/* instructions */
-	
+
 	@Override
 	public void interp(Seval s) throws Return {
 		s.e.accept(this);

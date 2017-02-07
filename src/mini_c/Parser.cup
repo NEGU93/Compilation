@@ -1,50 +1,203 @@
+package mini_c;
+
 import java_cup.runtime.*;
 import java.util.*;
 
 terminal String IDENT;
 terminal Constant CST;
-terminal RETURN, LP, RP, RB, LB, SEMICOLON;
+terminal Binop CMP;
+terminal    IF, ELSE, WHILE,
+            INT, RETURN, STRUCT, SIZEOF,
+            LPAR, RPAR, RB, LB, SEMICOLON, COMMA,
+            EQUAL, PLUS, MINUS, DIV, TIMES, AND, OR, NOT, ARROW;
+terminal    NEG;
 
 non terminal File file;
+non terminal Declarations   declarations;
 non terminal Decl_function  decl_function;
-non terminal LinkedList<Decl_function> list_decl_function;
-non terminal LinkedList<Stmt> list_stmt;
+non terminal Decl_variable  decl_variable;
+non terminal Decl_struct    decl_struct;
+non terminal Param param;
 non terminal Expr expr;
 non terminal Stmt stmt;
+non terminal LinkedList<Declarations> list_decl;
+non terminal LinkedList<Stmt> list_stmt;
+non terminal LinkedList<String> list_comma_ident, nonempty_list_comma_ident;
+non terminal LinkedList<Param> list_comma_param;
+non terminal LinkedList<Decl_variable> list_decl_variable;
+non terminal LinkedList<Expr> list_comma_expr;
+
+precedence right EQUAL;
+precedence left OR;
+precedence left AND;
+precedence nonassoc CMP;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV;
+precedence right NOT, NEG;
+precedence left ARROW;
 
 start with file;
 
 file ::=
-  list_decl_function:l list_stmt:b
-    {: RESULT = new File(l, new Sblock(b)); :}
+  list_decl:l
+    {: RESULT = new File(l); :}
+;
+    /* Declarations */
+declarations ::=
+    decl_variable:d
+    {: RESULT = d; :}
+| decl_struct:d
+    {: RESULT = d; :}
+| decl_function:d
+    {: RESULT = d; :}
+;
+
+decl_variable ::=
+  INT nonempty_list_comma_ident:x SEMICOLON
+    {: RESULT = new Decl_variable(x); :}
+| STRUCT nonempty_list_comma_ident:s TIMES nonempty_list_comma_ident:l SEMICOLON
+    {: RESULT = new Decl_variable(s, l); :}
+;
+
+decl_struct ::=
+  STRUCT IDENT:s LB list_decl_variable:l RB SEMICOLON
+    {: RESULT = new Decl_struct(s, l); :}
 ;
 
 decl_function ::=
-  CST IDENT:f LP RP RB stmt:s LB	// of the syntax: int f() { s }
-    {: RESULT = new Decl_function(f, s); :}
+  INT IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { v s }
+  	{: RESULT = new Decl_function(f, l, s, "int"); :}
+| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB
+    {: RESULT = new Decl_function(f, l, s, "struct"); :}
+;
+/* Param, expr & stmt */
+param ::=
+ INT IDENT:x
+    {: RESULT = new Param(new Evar(x)); :}
+| STRUCT IDENT:s TIMES IDENT:x
+    {: RESULT = new Param(new Evar(x), s); :}
 ;
 
 expr ::=
   CST:c
     {: RESULT = new Ecst(c); :}
-;
-
-list_decl_function ::=
-  decl_function:d list_decl_function:l
-   {: l.addFirst(d); RESULT = l; :}
-|
-   {: RESULT = new LinkedList<Decl_function>(); :}
+| IDENT:x
+    {: RESULT = new Evar(x); :}
+| IDENT:f LPAR list_comma_expr:l RPAR // Call a function
+    {: RESULT = new Ecall(f, l); :}
+| MINUS expr:e
+	{: RESULT =  new Eunop(Unop.Uneg, e); :}
+	%prec NEG
+| NOT expr:e
+	{: RESULT =  new Eunop(Unop.Unot, e); :}
+| expr:e ARROW IDENT:x
+    {: RESULT = new Ebinop(Binop.Bobj, e, new Evar(x)); :}
+| expr:e1 EQUAL expr:e2
+    {: RESULT =  new Ebinop(Binop.Beq, e1, e2); :}
+| expr:e1 CMP:c expr:e2
+	{: RESULT = new Ebinop(c, e1, e2); :}
+| expr:e1 PLUS expr:e2
+    {: RESULT = new Ebinop(Binop.Badd, e1, e2); :}
+| expr:e1 MINUS expr:e2
+    {: RESULT = new Ebinop(Binop.Bsub, e1, e2); :}
+| expr:e1 TIMES expr:e2
+    {: RESULT = new Ebinop(Binop.Bmul, e1, e2); :}
+| expr:e1 DIV expr:e2
+	{: RESULT = new Ebinop(Binop.Bdiv, e1, e2); :}
+| expr:e1 AND expr:e2
+    {: RESULT = new Ebinop(Binop.Band, e1, e2); :}
+| expr:e1 OR expr:e2
+    {: RESULT = new Ebinop(Binop.Bor, e1, e2); :}
+| LPAR expr:e RPAR
+    {: RESULT = e; :}
+| SIZEOF LPAR STRUCT IDENT:s RPAR
+    {: RESULT = null; :}
 ;
 
 stmt ::=
   RETURN expr:e SEMICOLON
-	{: RESULT=null; :}
+	{: RESULT = null; :}
+| expr:e SEMICOLON
+	{: RESULT = new Seval(e); :}
+| SEMICOLON
+    {: RESULT = null; :}
+| IF LPAR expr:e RPAR LB list_stmt:s1 RB ELSE LB list_stmt:s2 RB // Brackets everywhere
+    {: RESULT = new Sif(e, s1, s2); :}
+/*| IF LPAR expr:e RPAR stmt:s1 ELSE stmt:s2                    // Brackets nowhere
+    {: LinkedList<Stmt> l1 = new LinkedList<Stmt>(); l1.addFirst(s1);
+       LinkedList<Stmt> l2 = new LinkedList<Stmt>(); l2.addFirst(s2);
+       RESULT = new Sif(e, l1, l2); :}*/
+| IF LPAR expr:e RPAR LB list_stmt:s1 RB ELSE stmt:s2           // No brackets on the else
+      {: LinkedList<Stmt> l2 = new LinkedList<Stmt>(); l2.addFirst(s2);
+         RESULT = new Sif(e, s1, l2); :}
+ // Here I should implement for each if case without brackets
+/*| IF LPAR expr:e RPAR stmt:s1 ELSE LB list_stmt:s2 RB                  // No brackets on the if
+      {: LinkedList<Stmt> l1 = new LinkedList<Stmt>(); l1.addFirst(s1);
+         RESULT = new Sif(e, l1, s2); :}*/
+| IF LPAR expr:e RPAR LB list_stmt:s RB     // no else and brackets
+    {: RESULT = new Sif(e, s); :}
+| IF LPAR expr:e RPAR stmt:s                 // No brackets if only
+      {: LinkedList<Stmt> l = new LinkedList<Stmt>(); l.addFirst(s);
+         RESULT = new Sif(e, l); :}
+| WHILE LPAR expr:e RPAR LB list_stmt:s RB // While with brackets
+    {: RESULT = new Swhile(e, s);  :}
+| WHILE LPAR expr:e RPAR stmt:s // While without brackets
+    {: LinkedList<Stmt> l = new LinkedList<Stmt>(); l.addFirst(s);
+       RESULT = new Swhile(e, l);  :}
 ;
-	
+    /* Lists */
+list_decl ::=
+  declarations:d list_decl:l
+   {: l.addFirst(d); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Declarations>(); :}
+;
 
 list_stmt ::=
   stmt:s list_stmt:l
    {: l.addFirst(s); RESULT = l; :}
 |
    {: RESULT = new LinkedList<Stmt>(); :}
+;
+
+list_decl_variable ::=
+  decl_variable:d list_decl_variable:l
+    {: l.addFirst(d); RESULT = l; :}
+|
+    {: RESULT = new LinkedList<Decl_variable>(); :}
+;
+
+list_comma_ident ::=
+  nonempty_list_comma_ident:l
+   {: RESULT = l; :}
+|
+   {: RESULT = new LinkedList<String>(); :}
+;
+
+nonempty_list_comma_ident ::=
+  IDENT:x COMMA nonempty_list_comma_ident:l
+   {: l.addFirst(x); RESULT = l; :}
+| IDENT:x
+   {: LinkedList<String> l = new LinkedList<String>();
+      l.add(x); RESULT = l; :}
+;
+
+list_comma_param ::=
+  param:x COMMA list_comma_param:l
+   {: l.addFirst(x); RESULT = l; :}
+| param:x
+   {: LinkedList<Param> l = new LinkedList<Param>();
+      l.add(x); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Param>(); :}
+;
+
+list_comma_expr ::=
+  expr:e COMMA list_comma_expr:l
+   {: l.addFirst(e); RESULT = l; :}
+| expr:e
+   {: LinkedList<Expr> l = new LinkedList<Expr>();
+      l.add(e); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Expr>(); :}
 ;
