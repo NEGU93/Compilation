@@ -59,7 +59,7 @@ declarations ::=
 decl_variable ::=
   INT nonempty_list_comma_ident:x SEMICOLON
     {: RESULT = new Decl_variable(x); :}
-| STRUCT nonempty_list_comma_ident:s nonempty_list_times_comma_list:l SEMICOLON
+| STRUCT IDENT:s nonempty_list_times_comma_list:l SEMICOLON
     {: RESULT = new Decl_variable(s, l); :}
 ;
 

@@ -143,18 +143,15 @@ class Declarations {}
 class Decl_variable extends Declarations {
 	final LinkedList<String> v;
 	final Type t;
-	final LinkedList<String> l;
 	Decl_variable(LinkedList<String> x) throws Exception {
 		super();
 		this.v = x;
 		this.t = new Type("int");
-		this.l = new LinkedList<String>();
 	}
-	Decl_variable(LinkedList<String> x, LinkedList<String> l) throws Exception {
+	Decl_variable(String x, LinkedList<String> l) throws Exception {
 		super();
-		this.v = x;
+		this.v = l;
 		this.t = new Type("struct");
-		this.l = l;
 	}
 }
 class Decl_struct extends Declarations {
