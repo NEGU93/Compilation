@@ -23,7 +23,6 @@ non terminal Stmt stmt;
 non terminal Sblock block;
 non terminal LinkedList<Declarations> list_decl;
 non terminal LinkedList<Stmt> list_stmt;
-//non terminal LinkedList<String> list_comma_ident, 
 non terminal LinkedList<String> nonempty_list_comma_ident;
 non terminal LinkedList<Param> list_comma_param;
 non terminal LinkedList<Decl_variable> list_decl_variable;
@@ -161,13 +160,6 @@ list_decl_variable ::=
 |
     {: RESULT = new LinkedList<Decl_variable>(); :}
 ;
-
-/*list_comma_ident ::=
-  nonempty_list_comma_ident:l
-   {: RESULT = l; :}
-|
-   {: RESULT = new LinkedList<String>(); :}
-;*/
 
 nonempty_list_comma_ident ::=
   IDENT:x COMMA nonempty_list_comma_ident:l

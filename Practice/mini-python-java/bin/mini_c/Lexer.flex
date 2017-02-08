@@ -21,9 +21,9 @@ import static mini_c.sym.*;
 WhiteSpace	= [ \t\r\n]+
 Octal_int   = ("0") ([0-7])+
 Hex_int     = ("0x") ([0-9a-fA-f])+
-Integer		= (0 | [1-9]\d* )                                           // If it starts by 0 but has more stuff after, then it's not a decimal Int
-Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )*
-Character   = "'" [:jletter:] "'"                                       // TODO: not yet well implemented
+Character   = ("'") [^\\'\"] ("'")
+Integer		= ( 0 | [1-9] [0-9]* )     // If it starts by 0 but has more stuff after, then it's not a decimal Int
+Identifier	= ([:jletter:] | [_]) ([:jletter:] | [:digit:] | [_] )*      
 BlockComment= [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 
 %%
@@ -91,14 +91,14 @@ BlockComment= [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
     /* Ints, chars & spaces */
 	{Integer}
 		{ return new Symbol(CST, yyline, yycolumn, new Constant(Integer.parseInt(yytext()))); }
+	{Character}
+		{ return new Symbol(CST, yyline, yycolumn, new Constant(yytext().charAt(1))); }
 	{Hex_int}
 	    { return new Symbol(CST, yyline, yycolumn, new Constant(Integer.decode(yytext()))); }
 	{Octal_int}
     	{ return new Symbol(CST, yyline, yycolumn, new Constant(Integer.parseInt(yytext(), 8))); }
 	{Identifier}
 		{ return new Symbol(IDENT, yyline, yycolumn, yytext()); }
-	{Character}
-	    { return new Symbol(IDENT, yyline, yycolumn, yytext()); }
 	{WhiteSpace}
 		{ /* DO NOTHING */ }
 	.	{ throw new Exception(String.format("Error in line %d, column %d: illegal character '%s'\n", yyline, yycolumn, yytext())); }
