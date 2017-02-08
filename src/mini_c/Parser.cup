@@ -61,7 +61,7 @@ decl_variable ::=
     {: RESULT = new Decl_variable(x); :}
 | STRUCT nonempty_list_comma_ident:s TIMES nonempty_list_comma_ident:l SEMICOLON
 =======
-  INT IDENT:x SEMICOLON
+|INT IDENT:x SEMICOLON
     {: RESULT = new Decl_variable(x); :}    //TODO: For now we cannot declare like: int x, y;
 | STRUCT IDENT:s LPAR nonempty_list_comma_ident:l RPAR SEMICOLON
 >>>>>>> 527c37bbfd643fb8e6c67ab49712e476e0fa1e11
@@ -69,24 +69,15 @@ decl_variable ::=
 ;
 
 decl_struct ::=
-<<<<<<< HEAD
-  STRUCT IDENT:s LB list_decl_variable:l RB SEMICOLON
-=======
   STRUCT IDENT:s LB list_comma_param:l RB SEMICOLON
->>>>>>> 527c37bbfd643fb8e6c67ab49712e476e0fa1e11
     {: RESULT = new Decl_struct(s, l); :}
 ;
 
 decl_function ::=
-<<<<<<< HEAD
-  INT IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { v s }
-  	{: RESULT = new Decl_function(f, l, s, "int"); :}
-| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_decl_variable:v list_stmt:s RB
-=======
+
   INT IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
   	{: RESULT = new Decl_function(f, l, s, "int"); :}
 | STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR LB list_stmt:s RB
->>>>>>> 527c37bbfd643fb8e6c67ab49712e476e0fa1e11
     {: RESULT = new Decl_function(f, l, s, "struct"); :}
 ;
 /* Param, expr & stmt */
@@ -102,11 +93,7 @@ expr ::=
     {: RESULT = new Ecst(c); :}
 | IDENT:x
     {: RESULT = new Evar(x); :}
-<<<<<<< HEAD
-| IDENT:f LPAR list_comma_expr:l RPAR // Call a function
-=======
 | IDENT:f LPAR list_comma_ident:l RPAR
->>>>>>> 527c37bbfd643fb8e6c67ab49712e476e0fa1e11
     {: RESULT = new Ecall(f, l); :}
 | MINUS expr:e
 	{: RESULT =  new Eunop(Unop.Uneg, e); :}
@@ -116,11 +103,7 @@ expr ::=
 | expr:e ARROW IDENT:x
     {: RESULT = new Ebinop(Binop.Bobj, e, new Evar(x)); :}
 | expr:e1 EQUAL expr:e2
-<<<<<<< HEAD
     {: RESULT =  new Ebinop(Binop.Beq, e1, e2); :}
-=======
-    {: RESULT =  new Ebinop(Binop.Beq, e1, e2); :} 
->>>>>>> 527c37bbfd643fb8e6c67ab49712e476e0fa1e11
 | expr:e1 CMP:c expr:e2
 	{: RESULT = new Ebinop(c, e1, e2); :}
 | expr:e1 PLUS expr:e2
