@@ -30,7 +30,11 @@ BlockComment= [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 <YYINITIAL> {
 	/* Operators */
 	"=" { return new Symbol(EQUAL, yyline, yycolumn); }
+<<<<<<< HEAD
 	"=="
+=======
+	"==" 
+>>>>>>> 527c37bbfd643fb8e6c67ab49712e476e0fa1e11
 		{ return new Symbol(CMP, yyline, yycolumn, Binop.Beqeq); }
 	"!="
 		{ return new Symbol(CMP, yyline, yycolumn, Binop.Bneq); }

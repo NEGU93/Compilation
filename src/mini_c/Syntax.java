@@ -1,9 +1,16 @@
 package mini_c;
 
+
 import java.util.LinkedList;
 import java.util.*;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
+
+import javax.crypto.spec.DESedeKeySpec;
+import java.util.LinkedList;
+import java.util.StringJoiner;
 
 /* Syntaxe abstraite de Mini-Python */
 
@@ -241,6 +248,7 @@ class Type {
 
 /* instruction */
 abstract class Stmt {}
+
   class Sif extends Stmt {
     final Expr e;
     final LinkedList<Stmt> s1, s2;

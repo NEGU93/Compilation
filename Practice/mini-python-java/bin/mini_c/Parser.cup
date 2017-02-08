@@ -1,0 +1,87 @@
+package mini_c;
+
+import java_cup.runtime.*;
+import java.util.*;
+
+terminal String IDENT;
+terminal Constant CST;
+terminal Binop CMP;
+terminal INT, RETURN, LPAR, RPAR, RB, LB, SEMICOLON, EQUAL, 
+			PLUS, MINUS, DIV, TIMES, AND, OR, NOT;
+
+non terminal File file;
+non terminal Decl_function  decl_function;
+non terminal LinkedList<Decl_function> list_decl_function;
+non terminal LinkedList<Stmt> list_stmt;
+non terminal Expr expr;
+non terminal Stmt stmt;
+non terminal LinkedList<String> list_comma_ident;
+
+precedence right EQUAL;
+precedence left OR;
+precedence left AND;
+precedence nonassoc CMP;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV;
+
+start with file;
+
+file ::=
+  list_decl_function:l list_stmt:b
+    {: RESULT = new File(l, new Sblock(b)); :}
+;
+
+decl_function ::=
+  INT IDENT:f LPAR RPAR LB stmt:s RB	// of the syntax: int f() { s }
+    {: RESULT = new Decl_function(f, new Sblock(s)); :}
+|
+  INT IDENT:f LPAR list_comma_ident:x RPAR LB list_stmt:s RB 	// of the syntax: int f(x, y, z, ...) { s }
+  	{: RESULT = new Decl_function(f, x, new Sblock(s)); :}
+;
+
+expr ::=
+  CST:c
+    {: RESULT = new Ecst(c); :}
+| MINUS expr:e
+	{: RESULT =  new Eunop(Unop.Uneg, e); :}
+| NOT expr:e
+	{: RESULT =  new Eunop(Unop.Unot, e); :}
+| expr:e1 EQUAL expr:e2
+    {: RESULT =  new Ebinop(Binop.Beq, e1, e2); :} 
+| expr:e1 CMP:c expr:e2
+	{: RESULT = new Ebinop(c, e1, e2); :}
+| expr:e1 PLUS expr:e2
+    {: RESULT = new Ebinop(Binop.Badd, e1, e2); :}
+| expr:e1 MINUS expr:e2
+    {: RESULT = new Ebinop(Binop.Bsub, e1, e2); :}
+| expr:e1 TIMES expr:e2
+    {: RESULT = new Ebinop(Binop.Bmul, e1, e2); :}
+| expr:e1 DIV expr:e2
+	{: RESULT = new Ebinop(Binop.Bdiv, e1, e2); :}
+| expr:e1 AND expr:e2
+    {: RESULT = new Ebinop(Binop.Band, e1, e2); :}
+| expr:e1 OR expr:e2
+    {: RESULT = new Ebinop(Binop.Bor, e1, e2); :}
+;
+
+list_decl_function ::=
+  decl_function:d list_decl_function:l
+   {: l.addFirst(d); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Decl_function>(); :}
+;
+
+stmt ::=
+  RETURN expr:e SEMICOLON
+	{: RESULT = null; :}
+| expr:e SEMICOLON
+	{: RESULT = new Seval(e); :}
+;
+	
+
+list_stmt ::=
+  stmt:s list_stmt:l
+   {: l.addFirst(s); RESULT = l; :}
+|
+   {: RESULT = new LinkedList<Stmt>(); :}
+;

@@ -1,4 +1,5 @@
 \documentclass[conference]{IEEEtran}
+%\usepackage[backend=bibtex]{biblatex}
 % Some Computer Society conferences also require the compsoc mode option,
 % but others use the standard conference format.
 %
@@ -29,7 +30,7 @@
 
 % *** CITATION PACKAGES ***
 %
-%\usepackage{cite}
+\usepackage{cite}
 % cite.sty was written by Donald Arseneau
 % V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
 % \cite{} output to follow that of the IEEE. Loading the cite package will
@@ -86,7 +87,7 @@
 % http://www.tug.org/applications/pdftex
 
 % *** MATH PACKAGES ***
-%
+\usepackage{mathtools} %with mathtools there is no need to add amsmath
 %\usepackage{amsmath}
 % A popular package from the American Mathematical Society that provides
 % many useful and powerful commands for dealing with mathematics.
@@ -223,17 +224,23 @@
 \author{\IEEEauthorblockN{J. Agust\'{i}n Barrachina}
 \IEEEauthorblockA{IEEE Student Member\\
 \'{E}cole Polytechnique\\
-Université Saclay-Paris}
-}
+Universit\'{e} Saclay-Paris}
+\and
+\IEEEauthorblockN{Philemon Poux}
+\IEEEauthorblockA{\'{E}cole Polytechnique\\
+	Universit\'{e} Saclay-Paris}}
 \maketitle
 
 \begin{abstract}
-In this prject, a compilator was created to generate a x86-64 assembler code from a Java program.
+In this project, a compilator was created to generate a x86-64 assembler code from a C fragment called mini-C.
+This is a 100\% C-compatible fragment, in the sense that any Mini C program is also a C program. 
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
 
 \section{Introduction}
+\textit{"Optimizing compilers are so difficult to get right that we dare say that no optimizing compiler is error-free! Thus, the most important objective in writing a compiler is that it is correct"}\cite{DRAGON_BOOK}
+\subsection{Structure of a Compiler}
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
 % For figures, \caption should occur after the \includegraphics.
@@ -324,17 +331,72 @@ In this prject, a compilator was created to generate a x86-64 assembler code fro
 % Note that, LaTeX2e, unlike IEEE journals/conferences, places
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
+\section{Lexical Analyzer}
+A lexical analyzer (\textit{Lexer}) is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating a token stream for parsers called \textit{lexemes}. The Lexer reads input from the programming language to compile (mini c in our case) and matches it against regular expressions and runs a corresponding action if such an expression is matched.
+
+To make the Lexer are going to use:
+\begin{itemize}
+	\item Regular Expresions: To describe the lexemes
+	\item Finite Automata: To recongnize the expresions
+\end{itemize}
+\subsection{Regular Expresions}
+The concept of regular expression arose in the 1950's when the American mathematician Stephen Cole Kleene formalized the description of a regular language.
+
+A regular expression is a sequence of characters that define a search pattern. In other words, there are a conjunction of letters and digits that follow a certain rule.
+
+Let us define \textit{letter} as any letter in the Latin alphabet and \textit{digit} any number [0-9]. Then we can define rules as follow: 
+\begin{equation}
+0 | [1-9] (<digit>* | [])\label{reg_expr_example}
+\end{equation}
+
+Last equation \ref{reg_expr_example} is a declaration of a decimal digit. The "|" is a logic or, it means, either the digit is 0 or it will be another thing. If it is not only 0, the number cannot start by 0 in C syntax, so it must start with a digit different from 0, which is range from 1 to 9 (encoded as [0-9]). Secondly, this digit can be followed by either nothing (represented by: []) or by any digit for as many digits are they must be. The format <rule>* means the repetition of a rule for as many times as necessary, or no repetition at all.
+
+% We could add another example here, for example a comment line or sth.
+\subsection{Finite Automata}
+A \textit{finite automata} is basically a binary graph which just say "yes" or "no" by means of a \textit{recognizer} to each possible string.
+
+There are two different classes of automatas:
+\begin{enumerate}
+	\item \textit{Nondeterministic Finite Automata} (NFA)
+	\item \textit{Deterministic Finite Automata} (DFA)
+\end{enumerate}
+The first class (NFA) have no restrictions on the labels of their edges. A symbol can label several edges out of the same state. The DFA on the other hand have for each state and symbol exactly one edge with that symbol leaving that state. 
+%translate to english...
+
+\subsection{Implementation}
+%The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
+
+For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was created and then, by means of jflex, converted to the final java class.
+
+Jflex lexers are based on a DFA automata. For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
+
+\section{Syntax Analyzer}
+The \textit{syntax analyzer's} job is to detect error of syntax and display the error that corresponds.  
+\section{Semantic Analyzer}
+\textit{"Well typed programs do not go wrong"}
+
+A \textit{Semantic Analyzer} uses the syntax tree and the information in the symbol table to check the source program for semantic consistency with the language definition. 
+
+An important part of the semantic analysis is the type checking where it gathers type information and checks that each operator has matching operands.
+
+An example of the type checking will be to make sure the index which whom an array is accessed is an integer and not any other incompatible type.
+
+In a equation like \(8.0 + 4\), the type checking will make sure to convert the integer "4" into a floating point before making the operation. 
+
+\section{Code Generation}
 
 \section{Conclusion}
 
 % use section* for acknowledgment
 \section*{Acknowledgment}
 
+\newpage
+
 % trigger a \newpage just before the given reference
 % number - used to balance the columns on the last page
 % adjust value as needed - may need to be readjusted if
 % the document is modified later
-%\IEEEtriggeratref{8}
+\IEEEtriggeratref{8}
 % The "triggered" command can be changed if desired:
 %\IEEEtriggercmd{\enlargethispage{-5in}}
 
@@ -345,9 +407,9 @@ In this prject, a compilator was created to generate a x86-64 assembler code fro
 % http://mirror.ctan.org/biblio/bibtex/contrib/doc/
 % The IEEEtran BibTeX style support page is at:
 % http://www.michaelshell.org/tex/ieeetran/bibtex/
-%\bibliographystyle{IEEEtran}
+\bibliographystyle{IEEEtran}
 % argument is your BibTeX string definitions and bibliography database(s)
-%\bibliography{IEEEabrv,../bib/paper}
+\bibliography{ref}
 %
 % <OR> manually copy in the resultant .bbl file
 % set second argument of \begin to the number of references
