@@ -4,7 +4,15 @@ package mini_c;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		String file = args.length > 0 ? args[0] : "test.c";
+		String file = "test.c";
+		for (String s: args) {
+			if (s.equals("--parse-only"))
+				;
+			else if (s.equals("--type-only"))
+				;
+			else
+				file = s;
+		}
 		java.io.Reader reader = new java.io.FileReader(file);
 		Lexer lexer = new Lexer(reader);
 		Parser parser = new Parser(lexer);
