@@ -80,14 +80,14 @@ class Type {
 abstract class Stmt {}
 class Sif extends Stmt {
 	final Expr e;
-	final LinkedList<Stmt> s1, s2;
-	Sif(Expr e, LinkedList<Stmt> s) {
+	final Stmt s1, s2;
+	Sif(Expr e, Stmt s) {
 		super();
 		this.e = e;
 		this.s1 = s;
-		this.s2 = new LinkedList<Stmt>();
+		this.s2 = null;
 	}
-	Sif(Expr e, LinkedList<Stmt> s1, LinkedList<Stmt> s2) {
+	Sif(Expr e, Stmt s1, Stmt s2) {
 		super();
 		this.e = e;
 		this.s1 = s1;
@@ -96,8 +96,8 @@ class Sif extends Stmt {
 }
 class Swhile extends Stmt {
 	final Expr e;
-	final LinkedList<Stmt> s;
-	Swhile(Expr e, LinkedList<Stmt> s) {
+	final Stmt s;
+	Swhile(Expr e, Stmt s) {
 		super();
 		this.e = e;
 		this.s = s;
@@ -111,19 +111,15 @@ class Sreturn extends Stmt {
 		this.e = e;
 	}
 }
-/*class Sblock extends Stmt {
+class Sblock extends Stmt {
 	final LinkedList<Stmt> l;
 	final LinkedList<Decl_variable> v;
-	Sblock() {
-		this.v = new LinkedList<Decl_variable>();
-		this.l = new LinkedList<Stmt>();
-	}
 	Sblock(LinkedList<Stmt> l, LinkedList<Decl_variable> v) {
 		super();
 		this.l = l;
 		this.v = v;
 	}
-}*/
+}
 /*class Sfor extends Stmt {
 	final String x;
 	final Expr e;
@@ -173,13 +169,13 @@ class Decl_struct extends Declarations {
 class Decl_function extends Declarations { 			// Declaration of a function
 	final String f;
 	final LinkedList<Param> l; // arguments formels
-	final LinkedList<Stmt> s;
+	final Sblock b;
 	final Type r;
-	Decl_function(String f, LinkedList<Param> l, LinkedList<Stmt> s, String t) throws Exception {
+	Decl_function(String f, LinkedList<Param> l, Sblock b, String t) throws Exception {
 		super();
 		this.f = f; 			// the functions name
 		this.l = l; 			// arguments it has
-		this.s = s; 			// what the function do
+		this.b = b; 			// what the function do
 		this.r = new Type(t);
 	}
 }

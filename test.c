@@ -26,7 +26,7 @@ int arrow2() { int x; x->a; }
 int f() {}
 int main(int x) { }
 int main() { int x; }
-//int main() { { int x; } x; }
+int main() { { int x; } x; }
 int n() { x; }
 int n() { x; }
 int f(int x, int y, int z, int t) {
