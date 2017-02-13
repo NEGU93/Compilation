@@ -381,11 +381,11 @@ class Declarations {}
       this.l = l;
 
       if (!Typing.declStruct.containsKey(x)) {
-          throw new Error("This variable name doesn't exist");
+          throw new Error("This structure does not exist");
 
       }
       for (String s:l){
-        Typing.varType.put(s,x);
+        Typing.varType.put(s, new Var(s,"x"));
     }
   }
   class Decl_struct extends Declarations {
@@ -445,7 +445,8 @@ class Declarations {}
       else {throw new Error("This structure does not exist");}
     }
   }
-  class Param {
+
+class Param {
     final String v;
     final Type t;
     public Param(String v, String s) throws Exception {
@@ -458,7 +459,7 @@ class Declarations {}
     }
   }
   /* File */
-  class File {
+class File {
     final LinkedList<Declarations> l;
     File(LinkedList<Declarations> l) {
       super();
@@ -466,7 +467,7 @@ class Declarations {}
     }
   }
 
-  class Var {
+class Var {
     String name;
     String type;
     Var(String n, String t) {
