@@ -28,7 +28,7 @@ enum Binop {
 
 
 class Typing {
-  public static HashMap<String,LinkedList<Var>> declStruct = new HashMap<String,LinkedList<Param>>(); // there we store the list of pointers a structure contains
+  public static HashMap<String,LinkedList<Param>> declStruct = new HashMap<String,LinkedList<Param>>(); // there we store the list of pointers a structure contains
   public static HashMap<String,Var> varType = new HashMap<String, Var>(); //there we store the variable declared as int, the value doesn't serve anything
   //HashMap<String,String> varsPoints = new HashMap<String, String>(); //there we store the struct id * vars, the key is the name of the pointer, the value is the id
   public static HashMap<String,LinkedList<Var>> funArgsType=new HashMap<String,LinkedList<Var>>(); //we store, for each function the list of the type of its arguments
@@ -82,19 +82,20 @@ class Ebinop extends Expr { // Operation between 2 Expr
     switch (this.op) {
       case Bobj:
       if (this.e1 instanceof Evar) {
+        String x1 = ((Evar)this.e1).x;
         if (this.e2 instanceof Evar) {
+          String x2 = ((Evar)this.e2).x;
           if (Typing.declStruct.containsKey(this.e1)) {
             //int n = Typing.declStruct.get(((Evar)this.e1).x).indexOf();
-            for (Decl_variable v :Typing.declStruct.get(((Evar)this.e1).x)) {
-              if (true) {
-                return Typing.varType.get(((Evar)this.e2).x);
+            for (Param p :Typing.declStruct.get(x1)) {
+              if (p.v.equals(x2)) {
+                return t2;
               }
             }
             throw new Error("This field does not exist");
           }
           else {
             throw new Error("This structure does no exist");
-
           }
         }
         else {
@@ -107,66 +108,33 @@ class Ebinop extends Expr { // Operation between 2 Expr
         }
 
       case Beqeq:
-        if (this.e1.Typer() == this.e2.Typer()) {
-          return (this.e1.Typer());
+        if (t1.equals(t2)) {
+          return (t1);
         }
         else {throw new Error("Bad type expression");}
       case Bneq :
-        if (this.e1.Typer() == this.e2.Typer()) {
-          return ("int");
-        }
-        else {throw new Error("Bad type expression");}
       case Blt:
-        if (this.e1.Typer() == this.e2.Typer()) {
-          return ("int");
-        }
-        else {throw new Error("Bad type expression");}
       case Bgt:
-        if (this.e1.Typer() == this.e2.Typer()) {
-          return ("int");
-        }
-        else {throw new Error("Bad type expression");}
       case Ble:
-        if (this.e1.Typer() == this.e2.Typer()) {
-          return ("int");
-        }
-        else {throw new Error("Bad type expression");}
       case Bge:
-        if (this.e1.Typer() == this.e2.Typer()) {
+        if (t1.equals(t2)) {
           return ("int");
         }
         else {throw new Error("Bad type expression");}
       case Bor:
-        String s1 = this.e1.Typer();
-        String s2 = this.e2.Typer();
-        return("int");
       case Band:
-        String ss1 = this.e1.Typer();
-        String ss2 = this.e2.Typer();
         return("int");
       case Badd:
+      case Bmul:
+      case Bsub:
+      case Bdiv:
         if (t1.equals("int") && t2.equals("int")) {
           return ("int");
         }
-        else {throw new Error("Bad type, impossible to add");}
-      case Bmul:
-        if (this.e1.Typer()== "int" && this.e2.Typer() == "int") {
-          return ("int");
-        }
-        else {throw new Error("Bad type, impossible to add");}
-      case Bsub:
-        if (this.e1.Typer()== "int" && this.e2.Typer() == "int") {
-          return ("int");
-        }
-        else {throw new Error("Bad type, impossible to add");}
-      case Bdiv:
-        if (this.e1.Typer()== "int" && this.e2.Typer() == "int") {
-          return ("int");
-        }
-        else {throw new Error("Bad type, impossible to add");}
+        else {throw new Error("Bad type, operation impossible");}
       case Beq:
           if (this.e1 instanceof Evar) {
-            if (t1 == t2) {
+            if (t1.equals(t2)) {
               return t1;
             }
             else {throw new Error("invalid type");}
@@ -174,10 +142,10 @@ class Ebinop extends Expr { // Operation between 2 Expr
           else if (this.e1 instanceof Ebinop) {
             switch(this.op){
               case Bobj:
-              if (t1 == t2) {
-                return t1;
-              }
-              else {throw new Error("invalid type");}
+                if (t1.equals(t2)) {
+                  return t1;
+                }
+                else {throw new Error("invalid type");}
               default:
               throw new Error("invalid type");
             }
@@ -185,9 +153,8 @@ class Ebinop extends Expr { // Operation between 2 Expr
           else {
             throw new Error("invalid type");
           }
-
-
     }
+    return("");
   }
 }
 class Eunop extends Expr { // Operation with only one Expr
@@ -210,7 +177,7 @@ class Eunop extends Expr { // Operation with only one Expr
         String s=this.e.Typer();
         return("int");
     }
-
+    return ("");
   }
 
 }
@@ -225,13 +192,16 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
   @Override
   String Typer() {
     if (Typing.varType.containsKey(this.f)) {
-      Iterator<String> it= new Typing.funArgsType.get(this.f).iterator();
+      Iterator<Var> it= Typing.funArgsType.get(this.f).iterator();
       for (Expr e:this.l) {
-        if (e.Typer()!=it.next()) {
+        if (e.Typer()!=it.next().type) {
           throw new Error("invalid argument type");
         }
       }
-      return (Typing.varType.get(this.f));
+      return (Typing.varType.get(this.f).type);
+    }
+    else {
+      throw new Error("This function does not exist");
     }
   }
 }
@@ -243,7 +213,10 @@ class Evar extends Expr {
   @Override
   String Typer() {
     if (Typing.varType.get(this.x)!= null) {
-      return (Typing.varType.get(this.x));
+      return (Typing.varType.get(this.x).type);
+    }
+    else if (Typing.varTypeLoc.get(this.x)!=null) {
+      return (Typing.varTypeLoc.get(this.x).type);
     }
     else {throw new Error("This variable does not exist");}
   }
@@ -264,14 +237,14 @@ abstract class Stmt {
 
   class Sif extends Stmt {
     final Expr e;
-    final LinkedList<Stmt> s1, s2;
-    Sif(Expr e, LinkedList<Stmt> s) {
+    final Stmt s1, s2;
+    Sif(Expr e, Stmt s) {
       super();
       this.e = e;
       this.s1 = s;
-      this.s2 = new LinkedList<Stmt>();
+      this.s2 = null;
     }
-    Sif(Expr e, LinkedList<Stmt> s1, LinkedList<Stmt> s2) {
+    Sif(Expr e, Stmt s1, Stmt s2) {
       super();
       this.e = e;
       this.s1 = s1;
@@ -286,8 +259,8 @@ abstract class Stmt {
   }
   class Swhile extends Stmt {
     final Expr e;
-    final LinkedList<Stmt> s;
-    Swhile(Expr e, LinkedList<Stmt> s) {
+    final Stmt s;
+    Swhile(Expr e, Stmt s) {
       super();
       this.e = e;
       this.s = s;
@@ -310,19 +283,24 @@ abstract class Stmt {
       String t=this.e.Typer();
     }
   }
-  /*class Sblock extends Stmt {
-  final LinkedList<Stmt> l;
-  final LinkedList<Decl_variable> v;
-  Sblock() {
-  this.v = new LinkedList<Decl_variable>();
-  this.l = new LinkedList<Stmt>();
-}
-Sblock(LinkedList<Stmt> l, LinkedList<Decl_variable> v) {
-super();
-this.l = l;
-this.v = v;
-}
-}*/
+
+  class Sblock extends Stmt {
+  	final LinkedList<Stmt> l;
+  	final LinkedList<Decl_variable> v;
+  	Sblock(LinkedList<Stmt> l, LinkedList<Decl_variable> v) {
+  		super();
+  		this.l = l;
+  		this.v = v;
+  	}
+    void Typer(){
+      for (Stmt s:l) {
+        s.Typer();
+      }
+      for (Decl_variable d:v) {
+        d.Typer();
+      }
+    }
+  }
 /*class Sfor extends Stmt {
 final String x;
 final Expr e;
@@ -345,7 +323,9 @@ class Seval extends Stmt {
   }
 }
 /* Declarations */
-class Declarations {}
+abstract class Declarations {
+  abstract void Typer();
+}
   class Decl_variable extends Declarations {
     final String x;
     final LinkedList<String> v;
@@ -364,6 +344,7 @@ class Declarations {}
 
     Decl_variable(LinkedList<String> x) throws Exception {
       super();
+      this.x="int";
       this.v = x;
       this.t = new Type("int");
       this.l = new LinkedList<Var>();
@@ -371,26 +352,45 @@ class Declarations {}
         if (Typing.varType.containsKey(s)) {
           throw new Error("This variable name already exists");
         }
-        Typing.varType.put(s,new Var(s,"int"));
+        this.l.addFirst(new Var(s,"int"));
+        //Typing.varType.put(s,new Var(s,"int"));
       }
     }
     Decl_variable(String x, LinkedList<String> l) throws Exception {
       super();
+      this.v=l;
       this.x = x;
       this.t = new Type("struct");
-      this.l = l;
+      this.l = new LinkedList<Var>();
 
       if (!Typing.declStruct.containsKey(x)) {
-          throw new Error("This structure does not exist");
+        throw new Error("This structure does not exist");
 
       }
       for (String s:l){
-        Typing.varType.put(s, new Var(s,"x"));
+        //Typing.varType.put(s, new Var(s,"x"));
+        this.l.addFirst(new Var(s,x));
+      }
     }
-  }
+    @Override
+    void Typer() {
+      if (this.t.t.equals("struct")) {
+        for (Var v:this.l) {
+          Typing.varType.put(v.name,v);
+        }
+      }
+      else {
+        for (Var v:this.l) {
+          Typing.varType.put(v.name,v);
+        }
+      }
+
+      }
+    }
+
   class Decl_struct extends Declarations {
     final String s;
-    final LinkedList<Decl_variable> l;
+    final LinkedList<Param> l;
     Decl_struct(String s, LinkedList<Param> l) {
       super();
       this.s = s;
@@ -403,7 +403,11 @@ class Declarations {}
       if (Typing.declStruct.containsKey(s)) {
         throw new Error("This structure name already exists");
       }
-      Typing.declStruct.put(s,l);
+      //Typing.declStruct.put(s,l);
+    }
+    @Override
+    void Typer() {
+      Typing.declStruct.put(this.s,this.l);
     }
   }
   class Decl_function extends Declarations { 			// Declaration of a function
@@ -417,21 +421,35 @@ class Declarations {}
       this.l = l; 			// arguments it has
       this.s = s; 			// what the function do
       this.r = new Type(t);
-      LinkedList<String> typeArgs = new LinkedList<String>();
+      // LinkedList<Var> typeArgs = new LinkedList<Var>();
+      // for (Param p:this.l) {
+      //   typeArgs.addLast(new Var(p.v,p.t.t));
+      //   Typing.varTypeLoc.put(p.v,new Var(p.v,p.t.t));
+      // }
+      // Typing.funArgsType.put(f,typeArgs);
+      // for (Stmt stmt:s) {
+      //   stmt.Typer();
+      // }
+      // for (Param p:this.l) {
+      //   Typing.varTypeLoc.remove(p.v);
+      // }
+    }
+    @Override
+    void Typer(){
+      LinkedList<Var> typeArgs = new LinkedList<Var>();
       for (Param p:this.l) {
-        typeArgs.addLast(p.t.t);
-        Typing.varTypeLoc.put(p.v.x,new Var(p.v.x,p.t.t));
+        typeArgs.addLast(new Var(p.v,p.t.t));
+        Typing.varTypeLoc.put(p.v,new Var(p.v,p.t.t));
       }
       Typing.funArgsType.put(f,typeArgs);
       for (Stmt stmt:s) {
         stmt.Typer();
       }
       for (Param p:this.l) {
-        Typing.varTypeLoc.remove(p.v.x);
+        Typing.varTypeLoc.remove(p.v);
       }
+
     }
-
-
   }
   class Sizeof {
     final String s;
@@ -454,7 +472,7 @@ class Param {
       this.t = new Type("struct");
     }
     public Param(Evar v) throws Exception {
-      this.v = v;
+      this.v = v.x;
       this.t = new Type("int");
     }
   }
@@ -464,6 +482,11 @@ class File {
     File(LinkedList<Declarations> l) {
       super();
       this.l = l;
+    }
+    void Typer() {
+      for (Declarations d:l) {
+        d.Typer();
+      }
     }
   }
 

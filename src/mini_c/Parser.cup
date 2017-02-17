@@ -77,7 +77,7 @@ decl_function ::=
 /* Param, expr & stmt */
 param ::=
  INT IDENT:x
-    {: RESULT = new Param(new Evar(x)); :}
+    {: RESULT = new Param((x)); :}
 | STRUCT IDENT:s TIMES IDENT:x
     {: RESULT = new Param(new Evar(x), s); :}
 ;
