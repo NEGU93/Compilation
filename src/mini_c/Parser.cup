@@ -120,7 +120,7 @@ expr ::=
 
 stmt ::=
   RETURN expr:e SEMICOLON
-	{: RESULT = null; :}
+	{: RESULT = new Sreturn(e); :}
 | expr:e SEMICOLON
 	{: RESULT = new Seval(e); :}
 | SEMICOLON
