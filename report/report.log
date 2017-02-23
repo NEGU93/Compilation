@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  1 FEB 2017 11:50
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  23 FEB 2017 20:49
 entering extended mode
 **report.tex
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
@@ -218,21 +218,14 @@ LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
 \l_MT_above_shortintertext_sep=\dimen142
 \l_MT_below_shortintertext_sep=\dimen143
 )
-(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 221.
-LaTeX Font Info:    ... okay on input line 221.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 221.
-LaTeX Font Info:    ... okay on input line 221.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 221.
-LaTeX Font Info:    ... okay on input line 221.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 221.
-LaTeX Font Info:    ... okay on input line 221.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 221.
-LaTeX Font Info:    ... okay on input line 221.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 221.
-LaTeX Font Info:    ... okay on input line 221.
-
--- Lines per column: 56 (exact).
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\tools\array.sty"
+Package: array 2008/09/09 v2.4c Tabular extension package (FMi)
+\col@sep=\dimen144
+\extrarowheight=\dimen145
+\NC@list=\toks21
+\extratabsurround=\skip51
+\backup@length=\skip52
+)
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\graphics\graphicx.sty"
 Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
 
@@ -257,28 +250,73 @@ Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
 Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 )
 \Gread@gobject=\count110
-
-("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
-[Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count111
-\scratchdimen=\dimen144
-\scratchbox=\box30
-\nofMPsegments=\count112
-\nofMParguments=\count113
-\everyMPshowfont=\toks21
-\MPscratchCnt=\count114
-\MPscratchDim=\dimen145
-\MPnumerator=\count115
-\makeMPintoPDFobject=\count116
-\everyMPtoPDFconversion=\toks22
-)))
+))
 \Gin@req@height=\dimen146
 \Gin@req@width=\dimen147
-) [1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\float\float.sty"
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count111
+\float@exts=\toks22
+\float@box=\box30
+\@float@everytoks=\toks23
+\@floatcapt=\box31
+)
+(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux)
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 316.
+LaTeX Font Info:    ... okay on input line 316.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 316.
+LaTeX Font Info:    ... okay on input line 316.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 316.
+LaTeX Font Info:    ... okay on input line 316.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 316.
+LaTeX Font Info:    ... okay on input line 316.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 316.
+LaTeX Font Info:    ... okay on input line 316.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 316.
+LaTeX Font Info:    ... okay on input line 316.
+
+-- Lines per column: 56 (exact).
+("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count112
+\scratchdimen=\dimen148
+\scratchbox=\box32
+\nofMPsegments=\count113
+\nofMParguments=\count114
+\everyMPshowfont=\toks24
+\MPscratchCnt=\count115
+\MPscratchDim=\dimen149
+\MPnumerator=\count116
+\makeMPintoPDFobject=\count117
+\everyMPtoPDFconversion=\toks25
+) (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.toc)
+\tf@toc=\write3
+
+<images/Diagram.png, id=1, 102.98476pt x 231.86626pt>
+File: images/Diagram.png Graphic file (type png)
+ <use images/Diagram.png>
+Package pdftex.def Info: images/Diagram.png used on input line 358.
+(pdftex.def)             Requested size: 85.35826pt x 192.18004pt.
+
+[1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
 ]
-(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
+<images/syntax_tree.png, id=10, 113.223pt x 120.45pt>
+File: images/syntax_tree.png Graphic file (type png)
+
+<use images/syntax_tree.png>
+Package pdftex.def Info: images/syntax_tree.png used on input line 413.
+(pdftex.def)             Requested size: 85.35826pt x 90.8096pt.
+ [2 <D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/Diagram.png> 
+<D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/syntax_tree.png>]
+
+Overfull \hbox (0.822pt too wide) in paragraph at lines 470--508
+ [] 
+ []
+
+[3] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
 )
@@ -293,30 +331,33 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[2
+[4
 
 ] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
 Here is how much of TeX's memory you used:
- 3193 strings out of 493921
- 49588 string characters out of 3144879
- 113914 words of memory out of 3000000
- 6490 multiletter control sequences out of 15000+200000
- 34597 words of font info for 65 fonts, out of 3000000 for 9000
+ 3342 strings out of 493921
+ 51605 string characters out of 3144879
+ 117880 words of memory out of 3000000
+ 6617 multiletter control sequences out of 15000+200000
+ 39701 words of font info for 76 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
- 33i,7n,22p,583b,249s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 33i,12n,22p,589b,253s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Progr
 am Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x8
 6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)
-/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/Mi
-KTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKT
-eX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 
-2.9/fonts/type1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
-ype1/urw/times/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/t
-imes/utmr8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8
-a.pfb>
-Output written on report.pdf (2 pages, 98082 bytes).
+/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files (x86)/Mi
+KTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MiKTe
+X 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files (x86)/MiKTeX 2.
+9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/
+fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files (x86)/MiKTeX 2.9/fon
+ts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/
+type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
+e1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/time
+s/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.p
+fb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
+Output written on report.pdf (4 pages, 143755 bytes).
 PDF statistics:
- 42 PDF objects out of 1000 (max. 8388607)
+ 66 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

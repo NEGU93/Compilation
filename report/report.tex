@@ -214,35 +214,11 @@
 % There should be no need to do such things with IEEEtran.cls V1.6 and later.
 % (Unless specifically asked to do so by the journal or conference you plan
 % to submit to, of course. )
+\usepackage{array}
 
-% correct bad hyphenation here
-\hyphenation{op-tical net-works semi-conduc-tor}
 
-\begin{document}
-\title{Building a Compilator on Java for a mini-C Programming Language}
-
-\author{\IEEEauthorblockN{J. Agust\'{i}n Barrachina}
-\IEEEauthorblockA{IEEE Student Member\\
-\'{E}cole Polytechnique\\
-Universit\'{e} Saclay-Paris}
-\and
-\IEEEauthorblockN{Phil\'{e}mon Poux}
-\IEEEauthorblockA{\'{E}cole Polytechnique\\
-	Universit\'{e} Saclay-Paris}}
-\maketitle
-
-\begin{abstract}
-In this project, a compilator was created to generate a x86-64 assembler code from a C fragment called mini-C.
-This is a 100\% C-compatible fragment, in the sense that any Mini C program is also a C program. 
-\end{abstract}
-
-\IEEEpeerreviewmaketitle
-
-\section{Introduction}
-\textit{"Optimizing compilers are so difficult to get right that we dare say that no optimizing compiler is error-free! Thus, the most important objective in writing a compiler is that it is correct"}\cite{DRAGON_BOOK}
-
-Some basic knowledge on C programming language is \cite{LANGUAGE_C}.
-\subsection{Structure of a Compiler}
+\usepackage{graphicx}
+\usepackage{float} %used to force figures in a position
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.
 % For figures, \caption should occur after the \includegraphics.
@@ -333,8 +309,62 @@ Some basic knowledge on C programming language is \cite{LANGUAGE_C}.
 % Note that, LaTeX2e, unlike IEEE journals/conferences, places
 % footnotes above bottom floats. This can be corrected via the
 % \fnbelowfloat command of the stfloats package.
+
+% correct bad hyphenation here
+\hyphenation{op-tical net-works semi-conduc-tor}
+
+\begin{document}
+\title{Building a Compilator on Java for a mini-C Programming Language}
+
+\author{\IEEEauthorblockN{J. Agust\'{i}n Barrachina}
+\IEEEauthorblockA{IEEE Student Member\\
+\'{E}cole Polytechnique\\
+Universit\'{e} Saclay-Paris}
+\and
+\IEEEauthorblockN{Phil\'{e}mon Poux}
+\IEEEauthorblockA{\'{E}cole Polytechnique\\
+	Universit\'{e} Saclay-Paris}}
+\maketitle
+
+\tableofcontents
+\newpage
+
+\begin{abstract}
+In this project, a compilator was created to generate a x86-64 assembler code from a C fragment called mini-C.
+This is a 100\% C-compatible fragment, in the sense that any Mini C program is also a C program. 
+\end{abstract}
+
+\IEEEpeerreviewmaketitle
+
+\section{Introduction}
+\textit{"Optimizing compilers are so difficult to get right that we dare say that no optimizing compiler is error-free! Thus, the most important objective in writing a compiler is that it is correct"}\cite{DRAGON_BOOK}
+
+The reader is suppose to have some basic knowledge of C and for that reason almost no explanation regarding that language will be treated in this report. For further information about C language refer to \cite{LANGUAGE_C}.
+
+Simply stated, a Compiler is a program that can read a code written in a specific programming language and translate it into an equivalent code of another language. A fairly good analogy can be made by a translator between two different languages like Spanish and French for example.
+
+\subsection{Structure of a Compiler}\label{sub_structure_of_a_compiler}
+
+A compiler can be divided into two parts. The \textit{analysis} (front end) and the \textit{synthesis} (back end)
+
+The \textit{analysis} brakes the source program into constituent pieces and imposes a grammatical structure of them in order to create a intermediate representation of the source program. During this part, syntactical formation and semantical unsound is checked. The analysis also collects information about the source program and stores it in a data structure called a \textit{symbol table} which will be used by the \textit{synthesis} part.
+
+The \textit{synthesis} part makes use of the \textit{symbol table} and the intermediate representation constructed by the analysis part and creates the target program.
+
+A more detailed diagram of the structure can be seen in figure \ref{fig_struct_of_compilator}. Where the last part (Code Generation) correspond to the \textit{synthesis} phase and the rest are all from the \textit{analysis} phase. The diagram is longer that the one displayed, having also a converser from the assembler to the machine language and from there to the executable code. But in this project, those stages are not treated.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=3cm]{images/Diagram.png}
+\caption{Structure of a Compiler}
+\label{fig_struct_of_compilator}
+\end{figure}
+
 \section{Lexical Analyzer}
-A lexical analyzer (\textit{Lexer}) is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating a token stream for parsers called \textit{lexemes}. The Lexer reads input from the programming language to compile (mini c in our case) and matches it against regular expressions and runs a corresponding action if such an expression is matched.
+A lexical analyzer (\textit{Lexer}) is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating a token stream for parsers called \textit{lexemes} consisting of a \textit{token name} and the \textit{attribute value}. 
+The \textit{token name} is an abstract symbol that will be used during syntax analysis, while the \textit{attribute value} is an entry in the \textit{symbol table} (discussed on \ref{sub_structure_of_a_compiler}) which will be used during the semantic analysis and the code generation.
+
+The Lexer reads input from the programming language to compile (mini c in our case) and matches it against regular expressions and runs a corresponding action if such an expression is matched.
 
 To make the Lexer are going to use:
 \begin{itemize}
@@ -351,7 +381,7 @@ Let us define \textit{letter} as any letter in the Latin alphabet and \textit{di
 0 | [1-9] (<digit>* | [])\label{reg_expr_example}
 \end{equation}
 
-Last equation \ref{reg_expr_example} is a declaration of a decimal digit. The "|" is a logic or, it means, either the digit is 0 or it will be another thing. If it is not only 0, the number cannot start by 0 in C syntax, so it must start with a digit different from 0, which is range from 1 to 9 (encoded as [0-9]). Secondly, this digit can be followed by either nothing (represented by: []) or by any digit for as many digits are they must be. The format <rule>* means the repetition of a rule for as many times as necessary, or no repetition at all.
+Last equation \ref{reg_expr_example} is a declaration of a decimal digit. The "$|$" is a logic or, it means, either the digit is 0 or it will be another thing. If it is not only 0, the number cannot start by 0 in C syntax, so it must start with a digit different from 0, which is range from 1 to 9 (encoded as [0-9]). Secondly, this digit can be followed by either nothing (represented by: []) or by any digit for as many digits are they must be. The format $<$rule$>$* means the repetition of a rule for as many times as necessary, or no repetition at all.
 
 % We could add another example here, for example a comment line or sth.
 \subsection{Finite Automata}
@@ -373,19 +403,128 @@ For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was
 Jflex lexers are based on a DFA automata. For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
 
 \section{Syntax Analyzer}
-The \textit{syntax analyzer's} job is to detect error of syntax and display the error that corresponds.  
+
+The syntax of a programming language describes the proper form of its programs.
+
+The \textit{syntax analyzer} or \textit{parser} uses the first component of the \textit{lexemes}, the \textit{tokens}. The \textit{parser} creates some kind of tree representation that depicts the grammatical structure of the token stream called the \textit{suntax tree}. In this tree, each node represent an operation and the children of the node represent the arguments of that operation. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=3cm]{images/syntax_tree.png}
+	\caption{Syntax Tree Example}
+	\label{fig_syntax_tree_example}
+\end{figure}
+
+On figure \ref{fig_syntax_tree_example} an example of a tree representation can be seen. Many syntaxes can be the cause of that tree, for example, both \ref{(2*((x)+1))} and \ref{2*(x+1)} can be used to generate such tree.
+
+\begin{equation}
+2*(x+1)
+\label{2*(x+1)}
+\end{equation}
+
+\begin{equation}
+(2*((x)+1))
+\label{(2*((x)+1))}
+\end{equation}
+
+\subsection{Implementation}
+
+The Syntax Analyzer was done using CUP, a parser generator for java \cite{CUP}.
+
+In that file, precedence where applied to each operator using the following table:
+\begin{table}[H]
+	\begin{center}
+	\begin{tabular}{||c c||}
+		\hline
+		Operator & Associativity  \\ [0.5ex] 
+		\hline\hline
+		= & right \\ 
+		\hline
+		$|$$|$ & left  \\
+		\hline
+		\&\& & left  \\
+		\hline
+		== != & left  \\
+		\hline
+		$<$ $<$= $>$ $>$= & left \\ [1ex] 
+		\hline
+		+ - & left \\
+		\hline
+		* / & left \\
+		\hline
+		! -(negative) & right \\
+		\hline
+		-$>$ & left \\
+		\hline
+	\end{tabular}
+	\end{center}
+	\caption{Precedence} \label{tab_precedence}
+\end{table}
+
+The higher the operator is in the table, the last will it be applied. For example, the operator "=" will be applied after all the other operators have been applied. There is a very simple way to apply this table in the .cup file by simply writing the following command: precedence <associativity> <token name>. Where associativity is either left or right and the token name is the token from the \textit{lexem} created by the Lexer.
+
+After the precedence, the following grammar was implemented. The details on how to implement it where omitted. In order to see how to implement the following grammar in cup please refer to the user manual \cite{CUP_MANUAL}.
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{ | m{1.5cm} | m{6.5cm}| } 
+			\hline
+			$<$ file $>$ & $<$ decl $>$* EOF \\ 
+			\hline
+			$<$ decl $>$ & $<$ var $>$ $|$ $<$ type $>$ $|$ $<$ funct $>$ \\ 
+			\hline
+			$<$ var $>$ & int $<$ ident $>^{+},$ ; \newline 
+						struct $<$ ident $>$ ( *$<$ ident $>^{+},$ ) ; \\ 
+			\hline
+			$<$ type $>$ & struct $<$ ident $>$ { $<$ var $>$* } ; \\
+			\hline
+			$<$ funct $>$ & int $<$ ident $>$ ( $<$ param $>^{*},$ ) $<$ bloc $>$ \newline 
+							struct $<$ ident $>$ * $<$ ident $>$ ($<$ param $>^{*},$) $<$ bloc $>$ \\
+			\hline
+			$<$ param $>$ & int $<$ ident $>$ $|$ struct $<$ ident $>$ * $<$ ident $>$ \\
+			\hline
+			$<$ expr $>$ & 	$<$ integer $>$ \newline 
+							$<$ ident $>$ \newline
+							$<$ expr $>$ -$>$ $<$ ident $>$ \newline
+							$<$ ident $>$ ( $<$ expr $>^{*},$ ) \newline 
+							! $<$ expr $>$ $|$ -$<$ expr $>$ \newline
+							$<$ expr $>$ $<$ op $>$ $<$ expr $>$ \newline
+							sizeof ( struct $<$ ident $>$ ) \newline
+							( $<$ expr $>$ )	\\
+			\hline
+			$<$ op $>$ & = $|$ == $|$ != $|$ + $|$ - $|$ * $|$ / $|$ \&\& $|$ $<$ $|$ $<$= $|$ $>$ $|$ $>$= $|$ $|$$|$ \\ 
+			\hline
+			$<$ instr $>$ & ; \newline
+							$<$ expr $>$; \newline
+							if ( $<$ expr $>$ ) $<$ instr $>$\newline
+							if ( $<$ expr $>$ ) $<$ instr $>$ else $<$ instr $>$ \newline
+							while ( $<$ expr $>$ ) $<$ instr $>$ \newline
+							$<$ bloc $>$ \newline
+							return $<$ expr $>$; \\				
+			\hline
+			$<$ instr $>$ & { $<$ var $>*$ $<$ instr $>*$  } \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Grammar} \label{tab_grammar}
+\end{table}
+
 \section{Semantic Analyzer}
 \textit{"Well typed programs do not go wrong"}
 
-A \textit{Semantic Analyzer} uses the syntax tree and the information in the symbol table to check the source program for semantic consistency with the language definition. 
+The semantics of a programming language defines what each program does when executing.
 
-An important part of the semantic analysis is the type checking where it gathers type information and checks that each operator has matching operands.
+A \textit{Semantic Analyzer} uses the \textit{syntax tree} and the information in the \textit{symbol table} to check the source program for semantic consistency with the language definition. 
+
+An important part of the \textit{semantic analysis} is the \textit{type checking} where it gathers type information and checks that each operator has matching operands.
 
 An example of the type checking will be to make sure the index which whom an array is accessed is an integer and not any other incompatible type.
 
 In a equation like \(8.0 + 4\), the type checking will make sure to convert the integer "4" into a floating point before making the operation. 
 
 \section{Code Generation}
+
+
 
 \section{Conclusion}
 
