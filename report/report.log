@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  23 FEB 2017 20:49
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  24 FEB 2017 16:37
 entering extended mode
 **report.tex
-(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
+(C:\Users\NEGU\Desktop\Compilation\report\report.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -13,7 +13,7 @@ german-x-2013-05-26, nynorsk, oriya, panjabi, pinyin, polish, portuguese, roman
 ian, russian, sanskrit, serbian, slovak, slovenian, spanish, swedish, swissgerm
 an, tamil, telugu, turkish, turkmen, ukenglish, ukrainian, uppersorbian, usengl
 ishmax, welsh, loaded.
-(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\IEEEtran.cls
+(C:\Users\NEGU\Desktop\Compilation\report\IEEEtran.cls
 Document Class: IEEEtran 2015/08/26 V1.8b by Michael Shell
 -- See the "IEEEtran_HOWTO" manual for usage information.
 -- http://www.michaelshell.org/tex/ieeetran/
@@ -262,7 +262,7 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@float@everytoks=\toks23
 \@floatcapt=\box31
 )
-(D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux)
+(C:\Users\NEGU\Desktop\Compilation\report\report.aux)
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 316.
 LaTeX Font Info:    ... okay on input line 316.
 LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 316.
@@ -290,7 +290,7 @@ LaTeX Font Info:    ... okay on input line 316.
 \MPnumerator=\count116
 \makeMPintoPDFobject=\count117
 \everyMPtoPDFconversion=\toks25
-) (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.toc)
+) (C:\Users\NEGU\Desktop\Compilation\report\report.toc)
 \tf@toc=\write3
 
 <images/Diagram.png, id=1, 102.98476pt x 231.86626pt>
@@ -309,14 +309,13 @@ File: images/syntax_tree.png Graphic file (type png)
 <use images/syntax_tree.png>
 Package pdftex.def Info: images/syntax_tree.png used on input line 413.
 (pdftex.def)             Requested size: 85.35826pt x 90.8096pt.
- [2 <D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/Diagram.png> 
-<D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/syntax_tree.png>]
-
+ [2 <C:/Users/NEGU/Desktop/Compilation/report/images/Diagram.png> <C:/Users/NEG
+U/Desktop/Compilation/report/images/syntax_tree.png>]
 Overfull \hbox (0.822pt too wide) in paragraph at lines 470--508
  [] 
  []
 
-[3] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
+[3] (C:\Users\NEGU\Desktop\Compilation\report\report.bbl
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
 )
@@ -333,29 +332,29 @@ Before submitting the final camera ready copy, remember to:
 
 [4
 
-] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
+] (C:\Users\NEGU\Desktop\Compilation\report\report.aux) ) 
 Here is how much of TeX's memory you used:
  3342 strings out of 493921
- 51605 string characters out of 3144879
- 117880 words of memory out of 3000000
+ 51436 string characters out of 3144879
+ 118880 words of memory out of 3000000
  6617 multiletter control sequences out of 15000+200000
  39701 words of font info for 76 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
  33i,12n,22p,589b,253s stack positions out of 5000i,500n,10000p,200000b,50000s
-{C:/Progr
-am Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x8
-6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)
-/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files (x86)/Mi
-KTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MiKTe
-X 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files (x86)/MiKTeX 2.
-9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/
-fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files (x86)/MiKTeX 2.9/fon
-ts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/
-type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
-e1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/time
-s/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.p
-fb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (4 pages, 143755 bytes).
+{C:/Program Files (x86
+)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x86)/MiKTeX 2.9
+/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)/MiKTeX 2.9/f
+onts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program Files (x86)/MiKTeX 2.9/font
+s/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
+ype1/public/amsfonts/cm/cmr6.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1
+/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/p
+ublic/amsfonts/cm/cmsy6.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/publ
+ic/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/
+amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/
+utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmbi8a.pfb
+><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.pfb><C:/Progra
+m Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
+Output written on report.pdf (4 pages, 144422 bytes).
 PDF statistics:
  66 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

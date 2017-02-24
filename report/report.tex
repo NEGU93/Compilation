@@ -463,7 +463,7 @@ In that file, precedence where applied to each operator using the following tabl
 
 The higher the operator is in the table, the last will it be applied. For example, the operator "=" will be applied after all the other operators have been applied. There is a very simple way to apply this table in the .cup file by simply writing the following command: precedence <associativity> <token name>. Where associativity is either left or right and the token name is the token from the \textit{lexem} created by the Lexer.
 
-After the precedence, the following grammar was implemented. The details on how to implement it where omitted. In order to see how to implement the following grammar in cup please refer to the user manual \cite{CUP_MANUAL}.
+After the precedence, the following grammar was implemented (table \ref{tab_grammar}). The details on how to implement it where omitted. In order to see how to implement the following grammar in cup please refer to the user manual \cite{CUP_MANUAL}.
 
 \begin{table}[H]
 	\begin{center}
@@ -508,6 +508,11 @@ After the precedence, the following grammar was implemented. The details on how 
 	\end{center}
 	\caption{Grammar} \label{tab_grammar}
 \end{table}
+
+Where '$|$' is either one or the other is found. The '*' is as many as necessary (including none at all), while on the other hand, '+' means as many as necessary but at least one. If under any of those symbols there is a comma (',') it means there are comma indented.
+
+Within a file, one will find a list of declarations. These declarations can be either a variable or structure (global variables) of functions. The declarations of functions have it's own parameters (or none) and a bloc in which it will be the code.
+The bloc is composed by the declarations of the variables followed by instructions. The instructions are loops such as if or while or simply expressions. Expressions can be all type of C \& C ++ expressions such as integers, pointers, negation, call to functions, etc.   
 
 \section{Semantic Analyzer}
 \textit{"Well typed programs do not go wrong"}
