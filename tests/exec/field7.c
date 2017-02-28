@@ -14,4 +14,5 @@ int main() {
   putchar(s->b);
   putchar(p->b);
   putchar(10);
+  return 0;
 }

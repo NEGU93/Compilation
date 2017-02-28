@@ -7,4 +7,6 @@ int main() {
   putchar(10);
   putchar(65 + sizeof(struct T));
   putchar(10);
+  return 0;
 }
+

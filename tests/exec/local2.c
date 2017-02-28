@@ -9,4 +9,5 @@ int main() {
   putchar(x);
   putchar(y);
   putchar(10);
+  return 0;
 }

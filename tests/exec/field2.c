@@ -10,4 +10,5 @@ int main() {
   s->b = 'B';
   putchar(s->b);
   putchar(10);
+  return 0;
 }

@@ -9,4 +9,5 @@ int main() {
   p->b = 'B';
   putchar(p->b);
   putchar(10);
+  return 0;
 }

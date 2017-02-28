@@ -51,14 +51,14 @@ public class Register {
 	static final Register r8  = new Register("%r8");
 	static final Register r9  = new Register("%r9");
 
-	static final List<Register> parameters = new LinkedList<Register>();
+	static final List<Register> parameters = new LinkedList<Register>(); // List of the registers
 	static {
 		parameters.add(rdi); parameters.add(rsi); parameters.add(rdx);
 		parameters.add(rcx); parameters.add(r8); parameters.add(r9);
 	}
 	
 	static final Register r10 = new Register("%r10");
-	static final List<Register> caller_save = new LinkedList<Register>();
+	static final List<Register> caller_save = new LinkedList<Register>();	// Registers for the caller save
 	static {	caller_save.add(rax); caller_save.add(r10); 
 		for (Register r: parameters) caller_save.add(r);
 	}
@@ -69,7 +69,7 @@ public class Register {
 //	static final Register r14 = new Register("%r14");
 //	static final Register r15 = new Register("%r15");
 
-	static final List<Register> callee_save = new LinkedList<Register>();
+	static final List<Register> callee_save = new LinkedList<Register>();		// Registers for callee save
 	static {
 		parameters.add(rbx); parameters.add(r12);
 		// parameters.add(r13); parameters.add(r14); parameters.add(r15);
@@ -85,7 +85,4 @@ public class Register {
 	static final Register rsp = new Register("%rsp");
 	static final Register tmp1 = new Register("%rbp");
 	static final Register tmp2 = new Register("%r11");
-	
-
-	
 }

@@ -13,7 +13,7 @@ enum Unop {
 enum Binop {
 	Badd, Bsub, Bmul, Bdiv, Bmod, Beqeq, Bneq, Blt, Ble, Bgt, Bge, // comparaison
 																	// structurelle
-	Band, Bor, Beq, Bobj // paresseux
+	Band, Bor, Beq, Bobj /* Arrow stuff*/ // paresseux
 }
 
 /* constantes litérales */
@@ -43,10 +43,8 @@ class Ecst extends Expr { // Integer
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
 		Rconst rc = new Rconst(this.c.c, r, l);
-		return g.add(rc);
-
+		return g.add(rc);		// Add item to the graph
 	}
-
 }
 
 class Ebinop extends Expr { // Operation between 2 Expr
@@ -62,8 +60,32 @@ class Ebinop extends Expr { // Operation between 2 Expr
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+		Label L1 = this.e1.toRTL(l, r, g);
+		Register r2 = new Register();
+		Label L2 = this.e2.toRTL(L1, r2, g);
+		Rmbinop rb = new Rmbinop(Binop2Mbinop(this.op), r, r2, L2);
+		return g.add(rb);
+	}
+
+	Mbinop Binop2Mbinop(Binop b) {
+		switch (b) {
+			case Badd: return Mbinop.Madd;
+			case Bsub: return Mbinop.Msub;
+			case Bdiv: return Mbinop.Mdiv;
+			case Bmul: return Mbinop.Mmul;
+			case Bmod: return Mbinop.Mdiv; 	// TODO
+			case Beqeq: return Mbinop.Msete;
+			case Bneq: return Mbinop.Msetne;
+			case Blt: return Mbinop.Msetl;
+			case Ble: return Mbinop.Msetle;
+			case Bgt: return Mbinop.Msetg;
+			case Bge: return Mbinop.Msetge;
+			case Band: return Mbinop.Madd; 	// TODO
+			case Bor: return Mbinop.Madd;	// TODO
+			case Beq: return Mbinop.Msete;
+			case Bobj: return Mbinop.Mmov; 	// TODO: this is struct->obj
+		}
+		return Mbinop.Mmov; // This should never happen but the IDE don't understand all the switches are covered.
 	}
 }
 
@@ -79,9 +101,15 @@ class Eunop extends Expr { // Operation with only one Expr
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+		Ecst c = new Ecst(new Constant(0));
+		Label L1 = c.toRTL(l, r, g);
+		Register r2 = new Register();
+		Label L2 = this.e.toRTL(L1, r2, g);
+		Rmbinop rb = new Rmbinop(Binop2Mbinop(this.op), r, r2, L2);
+		return g.add(rb);
 	}
+
+	
 }
 
 class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
@@ -228,8 +256,7 @@ class Seval extends Stmt {
 }
 
 /* Declarations */
-class Declarations {
-}
+class Declarations { }
 
 class Decl_variable extends Declarations {
 	final LinkedList<String> v;

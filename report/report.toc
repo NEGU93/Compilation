@@ -5,8 +5,7 @@
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-B}}Finite Automata}{2}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-C}}Implementation}{2}
 \contentsline {section}{\numberline {III}Syntax Analyzer}{2}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Implementation}{2}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Implementation}{3}
 \contentsline {section}{\numberline {IV}Semantic Analyzer}{3}
 \contentsline {section}{\numberline {V}Code Generation}{3}
 \contentsline {section}{\numberline {VI}Conclusion}{3}
-\contentsline {section}{References}{4}

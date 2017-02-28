@@ -27,7 +27,7 @@ class Rconst extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov $" + i + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 /** lit dans une variable globale */
 class Raccess_global extends RTL {
@@ -40,7 +40,7 @@ class Raccess_global extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + s + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 /** écrit une variable globale */
 class Rassign_global extends RTL {

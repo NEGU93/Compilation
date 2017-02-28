@@ -32,4 +32,5 @@ int main() {
   putchar(s->u->y);
   putchar(s->b);
   putchar(10);
+  return 0;
 }

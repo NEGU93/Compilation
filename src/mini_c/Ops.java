@@ -4,17 +4,17 @@ package mini_c;
 
 /** opération x86-64 unaire */
 abstract class Munop {}
-class Maddi extends Munop {
+class Maddi extends Munop { // Add integer
 	int n;
 	Maddi(int n) { this.n = n;}
 	public String toString() { return "add $" + n; } 
 }
-class Msetei extends Munop {
+class Msetei extends Munop {	// Set if equal
 	int n;
 	Msetei(int n) { this.n = n;}
 	public String toString() { return "sete $" + n; } 
 }
-class Msetnei extends Munop {
+class Msetnei extends Munop {	// Set if not equal
 	int n;
 	Msetnei(int n) { this.n = n;}
 	public String toString() { return "setne $" + n; } 

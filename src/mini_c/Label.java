@@ -3,13 +3,13 @@ package mini_c;
 /** étiquette */
 public class Label {
 	
-	private static int next = 0;
+	private static int next = 0; // Creates a counter
 	
 	final String name;
 	
 	Label() {
 		next++;
-		this.name = "L" + next;
+		this.name = "L" + next; 	// Labels variables like L1, L2, L..., Ln
 	}
 	
 	@Override
