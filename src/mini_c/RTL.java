@@ -97,7 +97,7 @@ class Rmunop extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 /** instruction x86-64 binaire */
 class Rmbinop extends RTL {
@@ -112,7 +112,7 @@ class Rmbinop extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 /** instruction x86-64 de branchement (unaire) */
 class Rmubranch extends RTL {

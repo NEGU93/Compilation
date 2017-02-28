@@ -73,15 +73,15 @@ class Ebinop extends Expr { // Operation between 2 Expr
 			case Bsub: return Mbinop.Msub;
 			case Bdiv: return Mbinop.Mdiv;
 			case Bmul: return Mbinop.Mmul;
-			case Bmod: return Mbinop.Mdiv; 	// TODO
+			case Bmod: return Mbinop.Mmov; 	// TODO: using mov as default for now
 			case Beqeq: return Mbinop.Msete;
 			case Bneq: return Mbinop.Msetne;
 			case Blt: return Mbinop.Msetl;
 			case Ble: return Mbinop.Msetle;
 			case Bgt: return Mbinop.Msetg;
 			case Bge: return Mbinop.Msetge;
-			case Band: return Mbinop.Madd; 	// TODO
-			case Bor: return Mbinop.Madd;	// TODO
+			case Band: return Mbinop.Mmov; 	// TODO
+			case Bor: return Mbinop.Mmov;	// TODO
 			case Beq: return Mbinop.Msete;
 			case Bobj: return Mbinop.Mmov; 	// TODO: this is struct->obj
 		}
@@ -105,11 +105,17 @@ class Eunop extends Expr { // Operation with only one Expr
 		Label L1 = c.toRTL(l, r, g);
 		Register r2 = new Register();
 		Label L2 = this.e.toRTL(L1, r2, g);
-		Rmbinop rb = new Rmbinop(Binop2Mbinop(this.op), r, r2, L2);
+		Rmbinop rb = new Rmbinop(Unop2Mbinop(this.op), r, r2, L2);
 		return g.add(rb);
 	}
 
-	
+	Mbinop Unop2Mbinop(Unop u) {
+		switch(u) {
+			case Uneg: return Mbinop.Msub;
+			case Unot: return Mbinop.Msub;	// TODO: mmmm
+		}
+		return Mbinop.Mmov; // This should never happen but the IDE don't understand all the switches are covered.
+	}
 }
 
 class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
