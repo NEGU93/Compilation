@@ -53,7 +53,7 @@ class Rassign_global extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r + " " + s + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 /** instruction mov i(r1), r2 */
 class Rload extends RTL { 
@@ -138,7 +138,8 @@ class Rmbbranch extends RTL {
   Label l2;
   
   Rmbbranch(Mbbranch m, Register r1, Register r2, Label l1, Label l2) {
-    this.m = m; this.r1 = r1; this.r2 = r2; this.l1 = l1; this.l2 = l2;  }
+    this.m = m; this.r1 = r1; this.r2 = r2; this.l1 = l1; this.l2 = l2;
+  }
   
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l1 + ", " + l2; }
@@ -161,7 +162,7 @@ class Rcall extends RTL {
   }
 
 /** saut inconditionnel */
-class Rgoto extends RTL {
+class Rgoto extends RTL { //TODO: don't know how to do this. (or more precisely where to use it)
   Label l;
   
   Rgoto(Label l) { this.l = l;  }

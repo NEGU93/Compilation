@@ -1,6 +1,13 @@
 package mini_c;
 
 import java.util.LinkedList;
+import java.util.ListIterator;
+
+import static mini_c.Binop.Beqeq;
+import static mini_c.Mbinop.Msetl;
+import static mini_c.Mbinop.Msetle;
+import static mini_c.Mbinop.Msetne;
+import static mini_c.Unop.Unot;
 
 /* Syntaxe abstraite de Mini-Python */
 
@@ -60,24 +67,25 @@ class Ebinop extends Expr { // Operation between 2 Expr
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		Label L1 = this.e1.toRTL(l, r, g);
 		Register r2 = new Register();
-		Label L2 = this.e2.toRTL(L1, r2, g);
-		Rmbinop rb = new Rmbinop(Binop2Mbinop(this.op), r, r2, L2);
-		return g.add(rb);
+		Rmbinop rb = new Rmbinop(Binop2Mbinop(), r2, r, l);
+		Label L3 = g.add(rb);
+		Label L2 = this.e1.toRTL(L3, r2, g);
+		Label L1 = this.e2.toRTL(L2, r, g);
+		return L1;
 	}
 
-	Mbinop Binop2Mbinop(Binop b) {
-		switch (b) {
+	Mbinop Binop2Mbinop() {
+		switch (this.op) {
 			case Badd: return Mbinop.Madd;
 			case Bsub: return Mbinop.Msub;
 			case Bdiv: return Mbinop.Mdiv;
 			case Bmul: return Mbinop.Mmul;
 			case Bmod: return Mbinop.Mmov; 	// TODO: using mov as default for now
 			case Beqeq: return Mbinop.Msete;
-			case Bneq: return Mbinop.Msetne;
-			case Blt: return Mbinop.Msetl;
-			case Ble: return Mbinop.Msetle;
+			case Bneq: return Msetne;
+			case Blt: return Msetl;
+			case Ble: return Msetle;
 			case Bgt: return Mbinop.Msetg;
 			case Bge: return Mbinop.Msetge;
 			case Band: return Mbinop.Mmov; 	// TODO
@@ -87,6 +95,10 @@ class Ebinop extends Expr { // Operation between 2 Expr
 		}
 		return Mbinop.Mmov; // This should never happen but the IDE don't understand all the switches are covered.
 	}
+
+	Binop getOp() { return this.op; }
+	Expr getE1() { return this.e1; }
+	Expr getE2() { return this.e2; }
 }
 
 class Eunop extends Expr { // Operation with only one Expr
@@ -101,12 +113,13 @@ class Eunop extends Expr { // Operation with only one Expr
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		Ecst c = new Ecst(new Constant(0));
-		Label L1 = c.toRTL(l, r, g);
+		Ecst c = new Ecst(new Constant(0)); // Corresponding to r2? maybe...
 		Register r2 = new Register();
-		Label L2 = this.e.toRTL(L1, r2, g);
-		Rmbinop rb = new Rmbinop(Unop2Mbinop(this.op), r, r2, L2);
-		return g.add(rb);
+		Rmbinop rb = new Rmbinop(Unop2Mbinop(this.op), r2, r, l);
+		Label L3 = g.add(rb);
+		Label L2 = this.e.toRTL(L3, r2, g);
+		Label L1 = c.toRTL(L2, r, g);
+		return L1;
 	}
 
 	Mbinop Unop2Mbinop(Unop u) {
@@ -114,8 +127,11 @@ class Eunop extends Expr { // Operation with only one Expr
 			case Uneg: return Mbinop.Msub;
 			case Unot: return Mbinop.Msub;	// TODO: mmmm
 		}
-		return Mbinop.Mmov; // This should never happen but the IDE don't understand all the switches are covered.
+		return Mbinop.Mmov; // This should never happen but the IDE don't understand all the cases are covered.
 	}
+
+	Unop getOp() { return this.op; }
+	Expr getE() { return this.e; }
 }
 
 class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
@@ -143,9 +159,9 @@ class Evar extends Expr {
 	}
 
 	@Override
-	Label toRTL(Label l, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+	Label toRTL(Label l, Register r, RTLgraph g) { // Here the variable is already created
+		Rassign_global rv = new Rassign_global(r, this.x, l);
+		return g.add(rv);	//TODO: not sure about this... the variable already exist... I add it again?
 	}
 }
 
@@ -186,8 +202,49 @@ class Sif extends Stmt {
 
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+		/* TODO: && and || not yet done */
+		Label truel = s1.toRTL(l, ret, r, g);
+		Label falsel = s2.toRTL(l, ret, r, g); // Should I put truel here or what?
+		if (this.e instanceof Ebinop) {
+			switch(((Ebinop) e).getOp()) {
+				case Beqeq:
+					return doMbbranch( Mbbranch.Mjeqeq, truel, falsel, r, g);
+				case Bneq:
+					return doMbbranch( Mbbranch.Mjneq, truel, falsel, r, g);
+				case Blt:
+					return doMbbranch( Mbbranch.Mjl, truel, falsel, r, g);
+				case Ble:
+					return doMbbranch( Mbbranch.Mjle, truel, falsel, r, g);
+				case Bgt:
+					return doMbbranch( Mbbranch.Mjg, truel, falsel, r, g);
+				case Bge:
+					return doMbbranch( Mbbranch.Mjge, truel, falsel, r, g);
+				case Band:
+					truel = new Sif( ((Ebinop) e).getE2(), s1, s2).toRTL(l, ret, r, g); // TODO: this must be different
+					return doMubranch(new Mjz(), truel, falsel, r, g, ((Ebinop)e).getE1());
+				case Bor:
+					truel = new Sif( ((Ebinop) e).getE2(), s1, s2).toRTL(l, ret, r, g);
+					return doMubranch(new Mjz(), truel, falsel, r, g, ((Ebinop)e).getE1());
+			}
+		}
+		return doMubranch( new Mjz(), truel, falsel, r, g, this.e);
+	}
+
+	Label doMbbranch(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g) {
+		Register r1 = r;
+		Register r2 = new Register();
+		Rmbbranch rb = new Rmbbranch(m, r1, r2, truel, falsel);
+		Label L3 = g.add(rb);
+		Label L2 = ((Ebinop)e).getE2().toRTL(L3, r2, g);
+		Label L1 = ((Ebinop)e).getE1().toRTL(L2, r1, g);
+		return L1;
+	}
+
+	Label doMubranch(Mubranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr re) {
+		Rmubranch rb = new Rmubranch(m, r, falsel, truel);
+		Label L2 = g.add(rb);
+		Label L1 = re.toRTL(L2, r, g);
+		return L1;
 	}
 }
 
@@ -217,7 +274,7 @@ class Sreturn extends Stmt {
 	}
 
 	@Override
-	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
+	Label toRTL(Label l, Label ret, Register r, RTLgraph g) { //TODO: what happened with l?
 		Label lab = this.e.toRTL(ret, r, g);
 		return lab;
 	}
@@ -255,9 +312,9 @@ class Seval extends Stmt {
 	}
 
 	@Override
-	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {	//TODO: what happened with l?
+		Label lab = this.e.toRTL(ret, r, g);
+		return lab;
 	}
 }
 
@@ -279,6 +336,17 @@ class Decl_variable extends Declarations {
 		this.v = l;
 		this.t = new Type("struct");
 	}
+
+	/*@Override
+	Label toRTL(Label l, Register r, RTLgraph g) {
+		Label L = l;
+		ListIterator<String> listIterator = this.v.listIterator();
+		while (listIterator.hasNext()) {
+			Rassign_global rv = new Rassign_global(new Register(), listIterator.next(), l);    // TODO: what to do with the register?
+			L = g.add(rv);
+		}
+		return L;
+	}*/
 }
 
 class Decl_struct extends Declarations {

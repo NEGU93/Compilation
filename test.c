@@ -1,4 +1,7 @@
 int main() {
-  return 40 - (-2);
+  if ( 0 )
+    return 3;
+  else
+    return 4;
 }
 

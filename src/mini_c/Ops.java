@@ -43,6 +43,7 @@ class Mjz extends Mubranch {
 class Mjnz extends Mubranch {
 	public String toString() { return "jnz"; } 	
 }
+/* TODO: not yet implemented */
 class Mjlei  extends Mubranch {
 	int n;
 	Mjlei(int n) { this.n = n;}
@@ -58,4 +59,8 @@ class Mjgi extends Mubranch {
 enum Mbbranch {
   Mjl
 , Mjle
+	, Mjeqeq
+	, Mjneq
+	, Mjg
+	, Mjge
 }
