@@ -1,13 +1,11 @@
 package mini_c;
 
 import java.util.LinkedList;
-import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
-import static mini_c.Binop.Beqeq;
 import static mini_c.Mbinop.Msetl;
 import static mini_c.Mbinop.Msetle;
 import static mini_c.Mbinop.Msetne;
-import static mini_c.Unop.Unot;
 
 /* Syntaxe abstraite de Mini-Python */
 
@@ -180,6 +178,47 @@ class Type {
 /* instruction */
 abstract class Stmt {
 	abstract Label toRTL(Label l, Label ret, Register r, RTLgraph g);
+
+	Label toRTLc(Expr ex, Label truel, Label falsel, Register r, RTLgraph g) {
+		if (ex instanceof Ebinop) {
+			switch(((Ebinop) ex).getOp()) {
+				case Beqeq:
+					return evaluate( Mbbranch.Mjeqeq, truel, falsel, r, g, ex);
+				case Bneq:
+					return evaluate( Mbbranch.Mjneq, truel, falsel, r, g, ex);
+				case Blt:
+					return evaluate( Mbbranch.Mjl, truel, falsel, r, g, ex);
+				case Ble:
+					return evaluate( Mbbranch.Mjle, truel, falsel, r, g, ex);
+				case Bgt:
+					return evaluate( Mbbranch.Mjg, truel, falsel, r, g, ex);
+				case Bge:
+					return evaluate( Mbbranch.Mjge, truel, falsel, r, g, ex);
+				case Band:
+					return evaluate(new Mjz(), toRTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), falsel, r, g, ((Ebinop)ex).getE1());
+				case Bor:
+					return evaluate(new Mjz(), truel, toRTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), r, g, ((Ebinop)ex).getE1());
+			}
+		}
+		return evaluate( new Mjz(), truel, falsel, r, g, ex);
+	}
+
+	Label evaluate(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr e) {
+		Register r1 = r;
+		Register r2 = new Register();
+		Rmbbranch rb = new Rmbbranch(m, r1, r2, truel, falsel);
+		Label L3 = g.add(rb);
+		Label L2 = ((Ebinop)e).getE2().toRTL(L3, r2, g);
+		Label L1 = ((Ebinop)e).getE1().toRTL(L2, r1, g);
+		return L1;
+	}
+
+	Label evaluate(Mubranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr re) {
+		Rmubranch rb = new Rmubranch(m, r, falsel, truel);
+		Label L2 = g.add(rb);
+		Label L1 = re.toRTL(L2, r, g);
+		return L1;
+	}
 }
 
 class Sif extends Stmt {
@@ -203,49 +242,9 @@ class Sif extends Stmt {
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
 		Label truel = s1.toRTL(l, ret, r, g);
-		Label falsel = s2.toRTL(l, ret, r, g);
+		Label falsel = l;
+		if (s2 != null) { falsel = s2.toRTL(l, ret, r, g); } // It will be null if I don't have the "else" statement.
 		return toRTLc(this.e, truel, falsel, r, g);
-	}
-
-	Label toRTLc(Expr ex, Label truel, Label falsel, Register r, RTLgraph g) {
-		if (ex instanceof Ebinop) {
-			switch(((Ebinop) ex).getOp()) {
-				case Beqeq:
-					return doMbbranch( Mbbranch.Mjeqeq, truel, falsel, r, g);
-				case Bneq:
-					return doMbbranch( Mbbranch.Mjneq, truel, falsel, r, g);
-				case Blt:
-					return doMbbranch( Mbbranch.Mjl, truel, falsel, r, g);
-				case Ble:
-					return doMbbranch( Mbbranch.Mjle, truel, falsel, r, g);
-				case Bgt:
-					return doMbbranch( Mbbranch.Mjg, truel, falsel, r, g);
-				case Bge:
-					return doMbbranch( Mbbranch.Mjge, truel, falsel, r, g);
-				case Band:
-					return doMubranch(new Mjz(), toRTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), falsel, r, g, ((Ebinop)ex).getE1());
-				case Bor:
-					return doMubranch(new Mjz(), truel, toRTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), r, g, ((Ebinop)ex).getE1());
-			}
-		}
-		return doMubranch( new Mjz(), truel, falsel, r, g, ex);
-	}
-
-	Label doMbbranch(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g) {
-		Register r1 = r;
-		Register r2 = new Register();
-		Rmbbranch rb = new Rmbbranch(m, r1, r2, truel, falsel);
-		Label L3 = g.add(rb);
-		Label L2 = ((Ebinop)e).getE2().toRTL(L3, r2, g);
-		Label L1 = ((Ebinop)e).getE1().toRTL(L2, r1, g);
-		return L1;
-	}
-
-	Label doMubranch(Mubranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr re) {
-		Rmubranch rb = new Rmubranch(m, r, falsel, truel);
-		Label L2 = g.add(rb);
-		Label L1 = re.toRTL(L2, r, g);
-		return L1;
 	}
 }
 
@@ -261,8 +260,12 @@ class Swhile extends Stmt {
 
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+		Label L = new Label();
+		Label loop = this.s.toRTL(L, ret, r, g);
+		Label Le = toRTLc(e, loop, l, r, g);
+		Rgoto rg = new Rgoto(Le);
+		g.graph.put(L, rg);
+		return Le;
 	}
 }
 
@@ -383,11 +386,23 @@ class Decl_function extends Declarations { // Declaration of a function
 		f.result = new Register();
 		f.exit = new Label();
 		Label current = f.exit;
+		Stmt s = null;
+		do{
+			try { s = lstStmt.removeLast(); }
+			catch (NoSuchElementException e) {
+				f.entry = current;
+				return f;
+			}
+			current = s.toRTL(current, f.exit, f.result, f.body);
+		}
+		while(true);
+		/*
 		for (Stmt s : lstStmt) {
 			current = s.toRTL(current, f.exit, f.result, f.body);
 		}
 		f.entry = current;
 		return f;
+		*/
 	}
 }
 
