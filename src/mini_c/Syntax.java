@@ -158,7 +158,7 @@ class Evar extends Expr {
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) { // Here the variable is already created
-		Rassign_global rv = new Rassign_global(r, this.x, l);
+		Raccess_global rv = new Raccess_global(x, r, l);
 		return g.add(rv);	//TODO: not sure about this... the variable already exist... I add it again?
 	}
 }
@@ -203,7 +203,7 @@ abstract class Stmt {
 		return evaluate( new Mjz(), truel, falsel, r, g, ex);
 	}
 
-	Label evaluate(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr e) {
+	private Label evaluate(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr e) {
 		Register r1 = r;
 		Register r2 = new Register();
 		Rmbbranch rb = new Rmbbranch(m, r1, r2, truel, falsel);
@@ -213,7 +213,7 @@ abstract class Stmt {
 		return L1;
 	}
 
-	Label evaluate(Mubranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr re) {
+	private Label evaluate(Mubranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr re) {
 		Rmubranch rb = new Rmubranch(m, r, falsel, truel);
 		Label L2 = g.add(rb);
 		Label L1 = re.toRTL(L2, r, g);
@@ -241,9 +241,11 @@ class Sif extends Stmt {
 
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
-		Label truel = s1.toRTL(l, ret, r, g);
+		Label truel = s1.toRTL(l, ret, r, g); // Problem here! It gets null???
+		//System.out.println(truel.toString());
 		Label falsel = l;
 		if (s2 != null) { falsel = s2.toRTL(l, ret, r, g); } // It will be null if I don't have the "else" statement.
+		//System.out.println(falsel.toString());
 		return toRTLc(this.e, truel, falsel, r, g);
 	}
 }
@@ -279,8 +281,7 @@ class Sreturn extends Stmt {
 
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) { //TODO: what happened with l?
-		Label lab = this.e.toRTL(ret, r, g);
-		return lab;
+		return this.e.toRTL(ret, r, g);
 	}
 
 }
@@ -297,8 +298,16 @@ class Sblock extends Stmt {
 
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+		Stmt s = null;
+		do{
+			try { s = this.l.removeLast(); }
+			catch (NoSuchElementException e) {
+				return l;
+			}
+			r = new Register();
+			l = s.toRTL(l, ret, r, g);
+		}
+		while(true);
 	}
 }
 
@@ -316,9 +325,8 @@ class Seval extends Stmt {
 	}
 
 	@Override
-	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {	//TODO: what happened with l?
-		Label lab = this.e.toRTL(ret, r, g);
-		return lab;
+	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {	//TODO: what happened with ret?
+		return this.e.toRTL(l, r, g);
 	}
 }
 
@@ -383,7 +391,7 @@ class Decl_function extends Declarations { // Declaration of a function
 		LinkedList<Stmt> lstStmt = this.b.l;
 		LinkedList<Decl_variable> lstVar = this.b.v;
 		f.body = new RTLgraph();
-		f.result = new Register();
+		//f.result = new Register();
 		f.exit = new Label();
 		Label current = f.exit;
 		Stmt s = null;
@@ -393,16 +401,19 @@ class Decl_function extends Declarations { // Declaration of a function
 				f.entry = current;
 				return f;
 			}
+			f.result = new Register();
 			current = s.toRTL(current, f.exit, f.result, f.body);
 		}
 		while(true);
-		/*
+		/*for (Decl_variable dv : lstVar) {
+			// Asign the variables
+		}
 		for (Stmt s : lstStmt) {
 			current = s.toRTL(current, f.exit, f.result, f.body);
 		}
 		f.entry = current;
-		return f;
-		*/
+		return f;*/
+
 	}
 }
 
