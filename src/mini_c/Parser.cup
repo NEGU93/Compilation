@@ -115,12 +115,12 @@ expr ::=
 | LPAR expr:e RPAR
     {: RESULT = e; :}
 | SIZEOF LPAR STRUCT IDENT:s RPAR
-    {: RESULT = null; :}
+    {: RESULT = new Sizeof(s); :}
 ;
 
 stmt ::=
   RETURN expr:e SEMICOLON
-	{: RESULT = null; :}
+	{: RESULT = new Sreturn(e); :}
 | expr:e SEMICOLON
 	{: RESULT = new Seval(e); :}
 | SEMICOLON

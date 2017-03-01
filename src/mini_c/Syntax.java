@@ -34,8 +34,14 @@ class Typing {
   public static HashMap<String,LinkedList<Var>> funArgsType=new HashMap<String,LinkedList<Var>>(); //we store, for each function the list of the type of its arguments
   //HashMap<String,String> funType=new HashMap<String,String>();
   public static HashMap<String,Var> varTypeLoc = new HashMap<String, Var>();
+  
   Typing() {
-
+	  varType.put("putchar", new Var("putchar","int"));
+	  funArgsType.put("putchar",new LinkedList<Var>());
+	  funArgsType.get("putchar").add(new Var("","int"));
+	  varType.put("sbrk", new Var("sbrk","void"));
+	  funArgsType.put("sbrk",new LinkedList<Var>());
+	  funArgsType.get("sbrk").add(new Var("","int"));
   }
 }
 
@@ -194,7 +200,7 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
     if (Typing.varType.containsKey(this.f)) {
       Iterator<Var> it= Typing.funArgsType.get(this.f).iterator();
       for (Expr e:this.l) {
-        if (e.Typer()!=it.next().type) {
+        if (!e.Typer().equals(it.next().type)) {
           throw new Error("invalid argument type");
         }
       }
@@ -242,7 +248,7 @@ abstract class Stmt {
       super();
       this.e = e;
       this.s1 = s;
-      this.s2 = null;
+      this.s2 = new Sblock(new LinkedList<Stmt>(),new LinkedList<Decl_variable>());
     }
     Sif(Expr e, Stmt s1, Stmt s2) {
       super();
@@ -293,12 +299,19 @@ abstract class Stmt {
   		this.v = v;
   	}
     void Typer(){
+	  for (Decl_variable d:v) {
+	        d.TyperLoc();
+	  }
+	  
       for (Stmt s:l) {
         s.Typer();
       }
-      for (Decl_variable d:v) {
-        d.Typer();
-      }
+      
+	  for (Decl_variable d:v) {
+	        Typing.varTypeLoc.remove(d.x);
+	  }
+     
+
     }
   }
 /*class Sfor extends Stmt {
@@ -363,10 +376,10 @@ abstract class Declarations {
       this.t = new Type("struct");
       this.l = new LinkedList<Var>();
 
-      if (!Typing.declStruct.containsKey(x)) {
+   /*   if (!Typing.declStruct.containsKey(x)) {
         throw new Error("This structure does not exist");
 
-      }
+      }*/
       for (String s:l){
         //Typing.varType.put(s, new Var(s,"x"));
         this.l.addFirst(new Var(s,x));
@@ -386,12 +399,25 @@ abstract class Declarations {
       }
 
       }
+    void TyperLoc() {
+        if (this.t.t.equals("struct")) {
+          for (Var v:this.l) {
+            Typing.varTypeLoc.put(v.name,v);
+          }
+        }
+        else {
+          for (Var v:this.l) {
+            Typing.varTypeLoc.put(v.name,v);
+          }
+        }
+
+        }
     }
 
   class Decl_struct extends Declarations {
     final String s;
     final LinkedList<Param> l;
-    Decl_struct(String s, LinkedList<Param> l) {
+  /*  Decl_struct(String s, LinkedList<Param> l) {
       super();
       this.s = s;
       this.l = l;
@@ -404,13 +430,64 @@ abstract class Declarations {
         throw new Error("This structure name already exists");
       }
       //Typing.declStruct.put(s,l);
-    }
+    }*/
+    
+    Decl_struct(String s, LinkedList<Decl_variable> ld) {
+        super();
+        this.s = s;
+        this.l = new LinkedList<Param>();
+        for (Decl_variable d:ld) {
+        	l.add(new Param(d));
+        }
+        
+        HashSet<Param> unique = new HashSet<Param>(l);
+        if (unique.size()!=l.size())
+        {
+          throw new Error("Two fields of the structure have the same name");
+        }
+        if (Typing.declStruct.containsKey(s)) {
+          throw new Error("This structure name already exists");
+        }
+      }
+    
     @Override
     void Typer() {
       Typing.declStruct.put(this.s,this.l);
     }
   }
-  class Decl_function extends Declarations { 			// Declaration of a function
+  
+  class Decl_function extends Declarations { // Declaration of a function
+		final String f;
+		final LinkedList<Param> l; // arguments formels
+		final Sblock b;
+		final Type r;
+
+		Decl_function(String f, LinkedList<Param> l, Sblock b, String t) throws Exception {
+			super();
+			this.f = f; // the functions name
+			this.l = l; // arguments it has
+			this.b = b; // what the function do
+			this.r = new Type(t);
+		}
+		
+	    @Override
+	    void Typer(){
+	      Typing.varType.put(f, new Var(f,r.t));	
+	      LinkedList<Var> typeArgs = new LinkedList<Var>();
+	      for (Param p:this.l) {
+	        typeArgs.addLast(new Var(p.v,p.t.t));
+	        Typing.varTypeLoc.put(p.v,new Var(p.v,p.t.t));
+	      }
+	      Typing.funArgsType.put(f,typeArgs);
+	      this.b.Typer();
+	      for (Param p:this.l) {
+	        Typing.varTypeLoc.remove(p.v);
+	      }
+
+	    }
+
+	}
+/*  class Decl_function extends Declarations { 			// Declaration of a function
     final String f;
     final LinkedList<Param> l; // arguments formels
     final LinkedList<Stmt> s;
@@ -421,37 +498,12 @@ abstract class Declarations {
       this.l = l; 			// arguments it has
       this.s = s; 			// what the function do
       this.r = new Type(t);
-      // LinkedList<Var> typeArgs = new LinkedList<Var>();
-      // for (Param p:this.l) {
-      //   typeArgs.addLast(new Var(p.v,p.t.t));
-      //   Typing.varTypeLoc.put(p.v,new Var(p.v,p.t.t));
-      // }
-      // Typing.funArgsType.put(f,typeArgs);
-      // for (Stmt stmt:s) {
-      //   stmt.Typer();
-      // }
-      // for (Param p:this.l) {
-      //   Typing.varTypeLoc.remove(p.v);
-      // }
     }
-    @Override
-    void Typer(){
-      LinkedList<Var> typeArgs = new LinkedList<Var>();
-      for (Param p:this.l) {
-        typeArgs.addLast(new Var(p.v,p.t.t));
-        Typing.varTypeLoc.put(p.v,new Var(p.v,p.t.t));
-      }
-      Typing.funArgsType.put(f,typeArgs);
-      for (Stmt stmt:s) {
-        stmt.Typer();
-      }
-      for (Param p:this.l) {
-        Typing.varTypeLoc.remove(p.v);
-      }
+    
 
-    }
   }
-  class Sizeof {
+  */
+  class Sizeof extends Expr {
     final String s;
     public Sizeof(String s) {
       this.s = s;
@@ -475,6 +527,19 @@ class Param {
       this.v = v.x;
       this.t = new Type("int");
     }
+    public Param(Evar v, String s) throws Exception {
+        this.v = v.x;
+        this.t = new Type("struct");
+      }
+    public Param(String x) throws Exception {
+        this.v = x;
+        this.t = new Type("int");
+      }
+    public Param(Decl_variable d) {
+    	this.v = d.x;
+    	this.t = d.t;
+    }
+    
   }
   /* File */
 class File {
@@ -484,8 +549,10 @@ class File {
       this.l = l;
     }
     void Typer() {
+    	Typing T=new Typing();
       for (Declarations d:l) {
         d.Typer();
+        System.out.println(Typing.declStruct);
       }
     }
   }
