@@ -1,7 +1,9 @@
 package mini_c;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import static mini_c.Mbinop.Msetl;
 import static mini_c.Mbinop.Msetle;
@@ -65,6 +67,16 @@ class Ebinop extends Expr { // Operation between 2 Expr
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
+		switch (this.op) {
+			case Bobj:
+				Rload rl = new Rload(r, 0, new Register(), l);
+				return g.add(rl);
+			case Beq:
+				Rassign_global rag = new Rassign_global(r, ((Evar)e1).getX(), l);
+				Label L2 = g.add(rag);
+				Label L1 = this.e2.toRTL(L2, r, g);
+				return L1;
+		}
 		Register r2 = new Register();
 		Rmbinop rb = new Rmbinop(Binop2Mbinop(), r2, r, l);
 		Label L3 = g.add(rb);
@@ -144,8 +156,15 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		// TODO Auto-generated method stub
-		return null;
+		LinkedList<Register> rl = new LinkedList<>();
+		Rcall rc = new Rcall(new Register(), this.f, rl, l);
+		Label L = g.add(rc);
+		for ( Expr expr : this.l) { // Save all the variables into registers
+			r = new Register();
+			L = expr.toRTL(L, r, g);
+			rl.add(r);
+		}
+		return L;
 	}
 }
 
@@ -159,8 +178,10 @@ class Evar extends Expr {
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) { // Here the variable is already created
 		Raccess_global rv = new Raccess_global(x, r, l);
-		return g.add(rv);	//TODO: not sure about this... the variable already exist... I add it again?
+		return g.add(rv);
 	}
+
+	String getX() { return this.x; }
 }
 
 class Type {
@@ -242,10 +263,8 @@ class Sif extends Stmt {
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
 		Label truel = s1.toRTL(l, ret, r, g); // Problem here! It gets null???
-		//System.out.println(truel.toString());
 		Label falsel = l;
 		if (s2 != null) { falsel = s2.toRTL(l, ret, r, g); } // It will be null if I don't have the "else" statement.
-		//System.out.println(falsel.toString());
 		return toRTLc(this.e, truel, falsel, r, g);
 	}
 }
@@ -311,11 +330,6 @@ class Sblock extends Stmt {
 	}
 }
 
-/*
- * class Sfor extends Stmt { final String x; final Expr e; final Stmt s;
- * Sfor(String x, Expr e, Stmt s) { super(); this.x = x; this.e = e; this.s = s;
- * } }
- */
 class Seval extends Stmt {
 	final Expr e;
 
@@ -349,16 +363,11 @@ class Decl_variable extends Declarations {
 		this.t = new Type("struct");
 	}
 
-	/*@Override
-	Label toRTL(Label l, Register r, RTLgraph g) {
-		Label L = l;
-		ListIterator<String> listIterator = this.v.listIterator();
-		while (listIterator.hasNext()) {
-			Rassign_global rv = new Rassign_global(new Register(), listIterator.next(), l);    // TODO: what to do with the register?
-			L = g.add(rv);
+	void initializeVar(Set<Register> locals) {
+		for ( String s : v ) {
+			locals.add(new Register());
 		}
-		return L;
-	}*/
+	}
 }
 
 class Decl_struct extends Declarations {
@@ -394,6 +403,9 @@ class Decl_function extends Declarations { // Declaration of a function
 		//f.result = new Register();
 		f.exit = new Label();
 		Label current = f.exit;
+		for (Decl_variable dv : lstVar) {
+			dv.initializeVar(f.locals);
+		}
 		Stmt s = null;
 		do{
 			try { s = lstStmt.removeLast(); }
@@ -405,15 +417,6 @@ class Decl_function extends Declarations { // Declaration of a function
 			current = s.toRTL(current, f.exit, f.result, f.body);
 		}
 		while(true);
-		/*for (Decl_variable dv : lstVar) {
-			// Asign the variables
-		}
-		for (Stmt s : lstStmt) {
-			current = s.toRTL(current, f.exit, f.result, f.body);
-		}
-		f.entry = current;
-		return f;*/
-
 	}
 }
 
