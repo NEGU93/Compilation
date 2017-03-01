@@ -1,0 +1,3 @@
+#!/bin/bash
+java -cp ../Practice/mini-python-java/bin/:../lib/java-cup-11a-runtime.jar mini_c.Main $@
+
