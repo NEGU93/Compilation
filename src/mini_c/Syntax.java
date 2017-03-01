@@ -202,11 +202,14 @@ class Sif extends Stmt {
 
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
-		/* TODO: && and || not yet done */
 		Label truel = s1.toRTL(l, ret, r, g);
-		Label falsel = s2.toRTL(l, ret, r, g); // Should I put truel here or what?
-		if (this.e instanceof Ebinop) {
-			switch(((Ebinop) e).getOp()) {
+		Label falsel = s2.toRTL(l, ret, r, g);
+		return toRTLc(this.e, truel, falsel, r, g);
+	}
+
+	Label toRTLc(Expr ex, Label truel, Label falsel, Register r, RTLgraph g) {
+		if (ex instanceof Ebinop) {
+			switch(((Ebinop) ex).getOp()) {
 				case Beqeq:
 					return doMbbranch( Mbbranch.Mjeqeq, truel, falsel, r, g);
 				case Bneq:
@@ -220,14 +223,12 @@ class Sif extends Stmt {
 				case Bge:
 					return doMbbranch( Mbbranch.Mjge, truel, falsel, r, g);
 				case Band:
-					truel = new Sif( ((Ebinop) e).getE2(), s1, s2).toRTL(l, ret, r, g); // TODO: this must be different
-					return doMubranch(new Mjz(), truel, falsel, r, g, ((Ebinop)e).getE1());
+					return doMubranch(new Mjz(), toRTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), falsel, r, g, ((Ebinop)ex).getE1());
 				case Bor:
-					truel = new Sif( ((Ebinop) e).getE2(), s1, s2).toRTL(l, ret, r, g);
-					return doMubranch(new Mjz(), truel, falsel, r, g, ((Ebinop)e).getE1());
+					return doMubranch(new Mjz(), truel, toRTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), r, g, ((Ebinop)ex).getE1());
 			}
 		}
-		return doMubranch( new Mjz(), truel, falsel, r, g, this.e);
+		return doMubranch( new Mjz(), truel, falsel, r, g, ex);
 	}
 
 	Label doMbbranch(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g) {
