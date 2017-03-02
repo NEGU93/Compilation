@@ -115,7 +115,7 @@ expr ::=
 | LPAR expr:e RPAR
     {: RESULT = e; :}
 | SIZEOF LPAR STRUCT IDENT:s RPAR
-    {: RESULT = null; :}
+    {: RESULT = new Sizeof(s); :}
 ;
 
 stmt ::=

@@ -458,16 +458,19 @@ class Decl_function extends Declarations { // Declaration of a function
 	}
 }
 
-class Sizeof extends Stmt {
-	final String s;
+class Sizeof extends Expr {
+	final private String s;
 
-	public Sizeof(String s) {
+	Sizeof(String s) {
 		this.s = s;
 	}
 
 	@Override
-	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {
-		return null;
+	Label toRTL(Label l, Register r, RTLgraph g) {
+		LinkedList<Expr> structSized = new LinkedList<>();
+		structSized.add(new Evar(this.s));
+		Ecall callSizeOf = new Ecall("sizeof", structSized);
+		return callSizeOf.toRTL(l, r, g);
 	}
 }
 
