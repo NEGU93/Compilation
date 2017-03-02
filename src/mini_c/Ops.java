@@ -3,13 +3,13 @@ package mini_c;
 /** Opérations x86-64 utilisées pendant la sélection d'instructions */
 
 /** opération x86-64 unaire */
-abstract class Munop {}
+abstract class Munop {} //TODO: implement the unary stuff
 class Maddi extends Munop { // Add integer
 	int n;
 	Maddi(int n) { this.n = n;}
 	public String toString() { return "add $" + n; } 
 }
-class Msetei extends Munop {	// Set if equal
+class Msetei extends Munop {	// Set if equal (result == 0 ?)
 	int n;
 	Msetei(int n) { this.n = n;}
 	public String toString() { return "sete $" + n; } 
@@ -40,10 +40,10 @@ abstract class Mubranch {}
 class Mjz extends Mubranch {
 	public String toString() { return "jz"; } 	
 }
+/* TODO: not yet implemented */
 class Mjnz extends Mubranch {
 	public String toString() { return "jnz"; } 	
 }
-/* TODO: not yet implemented */
 class Mjlei  extends Mubranch {
 	int n;
 	Mjlei(int n) { this.n = n;}
