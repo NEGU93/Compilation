@@ -62,7 +62,7 @@ class Rload extends RTL {
   Register r2;
   Label l;
   
-  Rload(Register r1, int i, Register r2, Label l) { 
+  Rload(Register r1, Register r2, int i, Label l) {
 	this.r1 = r1; this.i = i;
     this.r2 = r2; this.l = l;  }
   

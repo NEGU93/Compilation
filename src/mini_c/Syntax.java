@@ -75,15 +75,23 @@ class Ebinop extends Expr { // Operation between 2 Expr
 					Rassign_global rag = new Rassign_global(r, ((Evar) e1).getX(), l);
 					L2 = g.add(rag);
 				}
-				else if (e1 instanceof Ebinop) {	// x is a binop of p->x
-					L2 = e1.toRTL(l, r, g);
+				else if (e1 instanceof Ebinop) {	// p->x = y;
+					Register r2 = new Register();
+					int a = 0; //TODO
+					Rstore rstore = new Rstore(r, r2, a, l); // r2 = p
+					Label L3 = g.add(rstore);
+					L2 = ((Ebinop) e1).getE1().toRTL(L3, r2, g);
 				}
-				else { L2 = new Label(); } // TODO: Should not arrive here
+				else { throw new Error("not lValue"); }
 				Label L1 = this.e2.toRTL(L2, r, g);
 				return L1;
-			case Bobj: // p->a
-				Rstore rs = new Rstore(r, new Register(), 0,  l);
-				return g.add(rs);
+			case Bobj: // p->a (used to load only)
+				Register r2 = new Register();
+				int a = 0; // TODO
+				Rload rs = new Rload(r2, r, a,  l); // r = p, r2 = new register and i = a (offset)
+				Label L4 = g.add(rs);
+				Label L3 = e1.toRTL(L4, r2, g);
+				return L3;
 		}
 		/* If I reached here then they are "normal" opperations (+, /, *, -, <, >, etc )*/
 		Register r2 = new Register();
