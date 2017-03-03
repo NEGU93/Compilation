@@ -404,11 +404,11 @@ For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was
 
 Jflex lexers are based on a DFA automata. For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
 
-\section{Syntax Analyzer}
+\section{Syntax Analyzer} \label{sub_syntax_analyzer}
 
 The syntax of a programming language describes the proper form of its programs.
 
-The \textit{syntax analyzer} or \textit{parser} uses the first component of the \textit{lexemes}, the \textit{tokens}. The \textit{parser} creates some kind of tree representation that depicts the grammatical structure of the token stream called the \textit{suntax tree}. In this tree, each node represent an operation and the children of the node represent the arguments of that operation. 
+The \textit{syntax analyzer} or \textit{parser} uses the first component of the \textit{lexemes}, the \textit{tokens}. The \textit{parser} creates some kind of tree representation that depicts the grammatical structure of the token stream called the \textit{syntax tree}. In this tree, each node represent an operation and the children of the node represent the arguments of that operation. 
 
 \begin{figure}[H]
 	\centering
@@ -531,9 +531,24 @@ The \textit{type checking} will make sure that the variables of a equation like 
 There are some languages that use \textbf{dynamic types}, which means they check they check the type of the variables dynamically. Such languages are for example PHP, Python or Lisp. On the other hand, there are also \textbf{static types} languages which is the compiler the one in charge on checking the types. For example OCaml, Java and C (which will be our case).
 
 \section{Code Generation}
+In this section we will actually generate the assembly code itself. 
+It is too difficult to be able to do this part in only one step. So it will actually be divided into 3 stages:
+\begin{enumerate}
+	\item \textit{Register Transfer Language} (RTL)
+	\item \textit{Explicit Register Transfer Language} (ERTL)
+	\item \textit{Location Transfer Language} (LTL)
+\end{enumerate}
+Each stage will be explained in their corresponding sub section.
 
+\subsection{Register Transfer Language (RTL)}
+For this stage we will use the \textit{syntax tree} created on \ref{sub_syntax_analyzer} in order to create what will be called as \textit{RTL tree}.
 
+\subsubsection{Implementation}
+Each file contains a list of declarations of functions (as can be seen on \ref{tab_grammar}) that contains a bloc statement. Each function, contains a list of parameters and the list of declarations of variables.
+A RTL graph is created for each function in a recursive way. As seen \ref{tab_grammar}, a function has a list of statements that will be converted into one or more assembler commands. For each command a label will be created and saved into the RTL graph. Each statement and expression class will have a "toRTL" method that will save it's label into the graph.
 
+\subsection{Explicit Transfer Language (ERTL)}
+\subsection{Location Transfer Language (LTL)}
 \section{Conclusion}
 
 % use section* for acknowledgment

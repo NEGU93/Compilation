@@ -93,7 +93,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
 				Label L3 = e1.toRTL(L4, r2, g);
 				return L3;
 		}
-		/* If I reached here then they are "normal" opperations (+, /, *, -, <, >, etc )*/
+		/* If I reached here then they are "normal" operations (+, /, *, -, <, >, etc )*/
 		Register r2 = new Register();
 		Rmbinop rb = new Rmbinop(Binop2Mbinop(), r2, r, l);
 		Label L3 = g.add(rb);
@@ -121,7 +121,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
 			//case Beq: return Mbinop.Msete;
 			// Bobj: return Mbinop.Mmov;
 		}
-		return Mbinop.Mmov; // This should never happen.
+		throw new Error("Binop operation that I don't know how to do");
 	}
 	Binop getOp() { return this.op; }
 	Expr getE1() { return this.e1; }
@@ -372,7 +372,7 @@ class Seval extends Stmt {
 	}
 
 	@Override
-	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {	//TODO: what happened with ret?
+	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {	// I send l because it's not a return.
 		return this.e.toRTL(l, r, g);
 	}
 }
@@ -451,7 +451,7 @@ class Decl_function extends Declarations { // Declaration of a function
 				f.entry = current;
 				return f;
 			}
-			f.result = new Register(); // I create the next register to be used? TODO: check if it's like this how it's suppose to be done.
+			f.result = new Register(); // I create the next register to be used
 			current = s.toRTL(current, f.exit, f.result, f.body);
 		}
 		while(true);

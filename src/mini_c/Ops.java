@@ -3,7 +3,7 @@ package mini_c;
 /** Opérations x86-64 utilisées pendant la sélection d'instructions */
 
 /** opération x86-64 unaire */
-abstract class Munop {} //TODO: implement the unary stuff
+abstract class Munop {} //TODO: implement this stuff
 class Maddi extends Munop { // Add integer
 	int n;
 	Maddi(int n) { this.n = n;}

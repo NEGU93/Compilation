@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Debian) (preloaded format=pdflatex 2016.9.25)  25 FEB 2017 19:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016/Debian) (preloaded format=pdflatex 2016.9.25)  3 MAR 2017 15:05
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -400,10 +400,10 @@ LaTeX Warning: There were undefined references.
 
  ) 
 Here is how much of TeX's memory you used:
- 3698 strings out of 494945
- 57344 string characters out of 6181032
- 134852 words of memory out of 5000000
- 6943 multiletter control sequences out of 15000+600000
+ 3699 strings out of 494945
+ 57365 string characters out of 6181032
+ 134862 words of memory out of 5000000
+ 6944 multiletter control sequences out of 15000+600000
  38565 words of font info for 75 fonts, out of 8000000 for 9000
  17 hyphenation exceptions out of 8191
  40i,12n,25p,589b,252s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -419,7 +419,7 @@ cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
 re/texlive/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/urw/times/utmr8a.pfb></usr/share/texlive/texmf-dist/fonts/t
 ype1/urw/times/utmri8a.pfb>
-Output written on report.pdf (3 pages, 134977 bytes).
+Output written on report.pdf (3 pages, 135729 bytes).
 PDF statistics:
  65 PDF objects out of 1000 (max. 8388607)
  45 compressed objects within 1 object stream
