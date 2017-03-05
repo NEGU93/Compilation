@@ -5,9 +5,9 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.List;
 
-import static mini_c.Mbinop.Msetl;
-import static mini_c.Mbinop.Msetle;
-import static mini_c.Mbinop.Msetne;
+import static mini_c.Binop.Bmod;
+import static mini_c.Mbinop.*;
+import static mini_c.Register.callee_saved;
 import static mini_c.Register.parameters;
 import static mini_c.Register.result;
 
@@ -161,6 +161,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
 			case Ble: return Msetle;
 			case Bgt: return Mbinop.Msetg;
 			case Bge: return Mbinop.Msetge;
+			//default: return Mbinop.Mmov;
 			// This cases are made differently. And checked before getting here (Normally once inside this function this cannot happen)
 			//case Bmod: return Mbinop.Mmov;
 			//case Band: return Mbinop.Mmov;
@@ -254,13 +255,14 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 	Label toERTL(Label l, Register r, ERTLgraph g) {
 		//LinkedList<Register> rl = new LinkedList<>();
 		r = result;
-		// TODO: Can't find a Emov that moves one register to another. Or that gets directly the result
+		ERmbinop erb = new ERmbinop(Mmov, r, new Register(), l);
+		l = g.add(erb);
 		// TODO: ask for point 4 in here.
 		ERcall eRcall = new ERcall(this.f, this.l.size(), l);
 		Label L = g.add(eRcall);
 		for (int i = 0; i < this.l.size(); i++) {
-			if (i < 6) { // The first 6 arguments in registers
-				r = parameters.get(i);
+			if (i < parameters.size()) { 	// Using size instead of hardcoding a 6 to make it more general and prone to changes in code
+				r = parameters.get(i);		// The first arguments in registers (
 				L = this.l.get(i).toERTL(L, r, g);
 			}
 			else { // The other arguments in the pile
@@ -497,6 +499,9 @@ class Sreturn extends Stmt {
 	Label toERTL(Label l, ERTLgraph g) {
 		ERreturn eRreturn = new ERreturn();
 		Label L = g.add(eRreturn);
+		// TODO: Recover the callee_saved
+		ERdelete_frame del = new ERdelete_frame(L);
+		L = g.add(del);
 		return this.e.toERTL(L, new Register(), g);
 	}
 }
@@ -636,14 +641,33 @@ class Decl_function extends Declarations { // Declaration of a function
 		LinkedList<Stmt> lstStmt = this.b.l; // List of statements
 		LinkedList<Decl_variable> lstVar = this.b.v; // List of declaration of variables
 		f.body = new ERTLgraph();
+		Label current = new Label();
 		for (Decl_variable dv : lstVar) {
 			dv.initializeVar(f.locals);
 		}
-		Label current = new Label();
 		Stmt s = null;
 		do{
 			try { s = lstStmt.removeLast(); }
 			catch (NoSuchElementException e) {
+				for (int i = 0; i < f.formals; i++) {
+					if (i < parameters.size()) { // Get the first 6 arguments in registers
+						ERmbinop erb = new ERmbinop(Mmov, parameters.get(i), new Register(), current);
+						current = f.body.add(erb);
+					}
+					else { // The other arguments in the pile
+						//TODO: is this the correct order? or it should be the other way?
+						ERget_param getPam = new ERget_param(i - parameters.size(),new Register(), current);
+						current = f.body.add(getPam);
+					}
+				}
+				for (Register r : callee_saved) { // for every input
+					// TODO: does it matter the order?
+					// TODO: How do I save them to recover before the return?
+					ERmbinop er = new ERmbinop(Mmov, r, new Register(), current);
+					current = f.body.add(er);
+				}
+				ERalloc_frame alloc = new ERalloc_frame(current);
+				current = f.body.add(alloc);
 				f.entry = current;
 				return f;
 			}
