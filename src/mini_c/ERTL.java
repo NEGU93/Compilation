@@ -213,8 +213,7 @@ class ERget_param extends ERTL {
   public int i;
   public Register r;
   public Label l;
-  ERget_param(int i, Register r, Label l) { this.i = i; this.r = r;
-    this.l = l;  }
+  ERget_param(int i, Register r, Label l) { this.i = i; this.r = r; this.l = l;  }
   void accept(ERTLVisitor v) { v.visit(this); }
   public String toString() { return "mov stack(" + i + ") --> " + l; }
   Label[] succ() { return new Label[] { l }; }

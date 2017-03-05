@@ -85,7 +85,4 @@ public class Register {
 	static final Register rsp = new Register("%rsp");
 	static final Register tmp1 = new Register("%rbp");
 	static final Register tmp2 = new Register("%r11");
-	
-
-	
 }

@@ -57,8 +57,8 @@ class Mjgi extends Mubranch {
 
 /** opération x86-64 de branchement (binaire) */
 enum Mbbranch {
-  Mjl
-, Mjle
+  	Mjl
+	, Mjle
 	, Mjeqeq
 	, Mjneq
 	, Mjg

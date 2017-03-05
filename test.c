@@ -1,8 +1,3 @@
-struct S { int a; int b; };
 int main() {
-  //struct S *p;
-  //p = sbrk(sizeof(struct S));
-  p->a = 40;
-  p->b = 2;
-  return p->a + p->b;
+  func(x, i, 0, y, 9, 10, 3, f, 45, t);
 }

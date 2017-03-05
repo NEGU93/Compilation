@@ -8,6 +8,8 @@ import java.util.List;
 import static mini_c.Mbinop.Msetl;
 import static mini_c.Mbinop.Msetle;
 import static mini_c.Mbinop.Msetne;
+import static mini_c.Register.parameters;
+import static mini_c.Register.result;
 
 /* Syntaxe abstraite de Mini-Python */
 
@@ -213,10 +215,10 @@ class Eunop extends Expr { // Operation with only one Expr
 				Label L2 = this.e.toERTL(L3, r2, g);
 				Label L1 = c.toERTL(L2, r, g);
 				return L1;
-			/*case Unot: /* if(true) return 0; else return 1;
+			case Unot: // if(true) return 0; else return 1;
 				//Not so fancy (nor effective) but it works...
 				Sif sif = new Sif(this.e, new Seval(new Ecst(new Constant(0))), new Seval(new Ecst(new Constant(1))));
-				return sif.toERTL(l, l, r, g);*/
+				return sif.toERTL(l, g);
 		}
 		return new Label(); // This should never happen but the IDE and compiler don't understand all the cases are covered.
 	}
@@ -250,8 +252,25 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 
 	@Override
 	Label toERTL(Label l, Register r, ERTLgraph g) {
-		// TODO: to implement
-		return null;
+		//LinkedList<Register> rl = new LinkedList<>();
+		r = result;
+		// TODO: Can't find a Emov that moves one register to another. Or that gets directly the result
+		// TODO: ask for point 4 in here.
+		ERcall eRcall = new ERcall(this.f, this.l.size(), l);
+		Label L = g.add(eRcall);
+		for (int i = 0; i < this.l.size(); i++) {
+			if (i < 6) { // The first 6 arguments in registers
+				r = parameters.get(i);
+				L = this.l.get(i).toERTL(L, r, g);
+			}
+			else { // The other arguments in the pile
+				r = new Register();
+				ERpush_param pushPam = new ERpush_param(r, L);
+				Label L1 = g.add(pushPam);
+				L = this.l.get(i).toERTL(L1, r, g);
+			}
+		}
+		return L;
 	}
 }
 
