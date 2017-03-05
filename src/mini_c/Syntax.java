@@ -120,23 +120,23 @@ class Ebinop extends Expr { // Operation between 2 Expr
 					ERassign_global rag = new ERassign_global(r, ((Evar) e1).getX(), l);
 					L2 = g.add(rag);
 				}
-				/*else if (e1 instanceof Ebinop) {	// p->x = y;
+				else if (e1 instanceof Ebinop) {	// p->x = y;
 					Register r2 = new Register();
 					int a = 0; //TODO
-					Rstore rstore = new Rstore(r, r2, a, l); // r2 = p
+					ERstore rstore = new ERstore(r, r2, a, l); // r2 = p
 					Label L3 = g.add(rstore);
-					L2 = ((Ebinop) e1).getE1().toRTL(L3, r2, g);
-				}*/
+					L2 = ((Ebinop) e1).getE1().toERTL(L3, r2, g);
+				}
 				else { throw new Error("not lValue"); }
 				Label L1 = this.e2.toERTL(L2, r, g);
 				return L1;
-			/*case Bobj: // p->a (used to load only)
+			case Bobj: // p->a (used to load only)
 				Register r2 = new Register();
 				int a = 0; // TODO
-				Rload rs = new Rload(r2, r, a,  l); // r = p, r2 = new register and i = a (offset)
+				ERload rs = new ERload(r2, a, r,  l); // r = p, r2 = new register and i = a (offset)
 				Label L4 = g.add(rs);
-				Label L3 = e1.toRTL(L4, r2, g);
-				return L3;*/
+				Label L3 = e1.toERTL(L4, r2, g);
+				return L3;
 		}
 		Register r1 = r;
 		Register r2 = new Register();
@@ -250,6 +250,7 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 
 	@Override
 	Label toERTL(Label l, Register r, ERTLgraph g) {
+		// TODO: to implement
 		return null;
 	}
 }
@@ -321,6 +322,34 @@ abstract class Stmt {
 		}
 		return evaluate( new Mjz(), truel, falsel, r, g, ex);
 	}
+	Label toERTLc(Expr ex, Label truel, Label falsel, Register r, ERTLgraph g) {
+		if (ex instanceof Ebinop) {
+			switch(((Ebinop) ex).getOp()) { // If there is a binary in the equation
+				case Beqeq:	// a == 0
+					return evaluate( Mbbranch.Mjeqeq, truel, falsel, r, g, (Ebinop)ex);
+				case Bneq: 	// a != 0
+					return evaluate( Mbbranch.Mjneq, truel, falsel, r, g, (Ebinop)ex);
+				case Blt:	// a < 0
+					return evaluate( Mbbranch.Mjl, truel, falsel, r, g, (Ebinop)ex);
+				case Ble:	// a <= 0
+					return evaluate( Mbbranch.Mjle, truel, falsel, r, g, (Ebinop)ex);
+				case Bgt:	// a > 0
+					return evaluate( Mbbranch.Mjg, truel, falsel, r, g, (Ebinop)ex);
+				case Bge:	// a >= 0
+					return evaluate( Mbbranch.Mjge, truel, falsel, r, g, (Ebinop)ex);
+				case Band:	// a && 0
+					return evaluate(new Mjz(), toERTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), falsel, r, g, ((Ebinop)ex).getE1());
+				case Bor:	// a || 0
+					return evaluate(new Mjz(), truel, toERTLc(((Ebinop)ex).getE2(), truel, falsel, r, g), r, g, ((Ebinop)ex).getE1());
+			}
+		}	// If it's just a normal statement do the jz.
+		if (ex instanceof Eunop) {
+			switch(((Eunop) ex).getOp()) { // Kept in case I have to implement the Uneg in the future.
+				case Unot: return evaluate( new Mjz(), falsel, truel, r, g, ex); // Give them in the other sense because I will count the e part of !e.
+			}
+		}
+		return evaluate( new Mjz(), truel, falsel, r, g, ex);
+	}
 	private Label evaluate(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g, Ebinop e /* Only used for binoms */) {
 		Register r1 = r; // I know is redundant but I see it more clear... Hope the compiler is intelligent right?
 		Register r2 = new Register();
@@ -341,6 +370,27 @@ abstract class Stmt {
 			}
 		}
 		Label L1 = re.toRTL(L2, r, g); // This should not be called in the !re case.
+		return L1;
+	}
+	private Label evaluate(Mubranch m, Label truel, Label falsel, Register r, ERTLgraph g, Expr re) {
+		ERmubranch rb = new ERmubranch(m, r, falsel, truel); // Turn around the true and false because it will be a jz (so in case it is zero I should do the false one)
+		Label L2 = g.add(rb);
+		if (re instanceof Eunop) {
+			if (((Eunop) re).getOp() == Unop.Unot) {
+				Label L1 = ((Eunop) re).getE().toERTL(L2, r, g);
+				return L1;
+			}
+		}
+		Label L1 = re.toERTL(L2, r, g); // This should not be called in the !re case.
+		return L1;
+	}
+	private Label evaluate(Mbbranch m, Label truel, Label falsel, Register r, ERTLgraph g, Ebinop e /* Only used for binoms */) {
+		Register r1 = r; // I know is redundant but I see it more clear... Hope the compiler is intelligent right?
+		Register r2 = new Register();
+		ERmbbranch rb = new ERmbbranch(m, r1, r2, truel, falsel);
+		Label L3 = g.add(rb);
+		Label L2 = e.getE2().toERTL(L3, r2, g);
+		Label L1 = e.getE1().toERTL(L2, r1, g);
 		return L1;
 	}
 }
@@ -373,7 +423,10 @@ class Sif extends Stmt {
 
 	@Override
 	Label toERTL(Label l, ERTLgraph g) {
-		return null;
+		Label truel = s1.toERTL(l, g);
+		Label falsel = l;
+		if (s2 != null) { falsel = s2.toERTL(l, g); } // It will be null if I don't have the "else" statement.
+		return toERTLc(this.e, truel, falsel, new Register(), g);
 	}
 }
 
@@ -399,7 +452,12 @@ class Swhile extends Stmt {
 
 	@Override
 	Label toERTL(Label l, ERTLgraph g) {
-		return null;
+		Label L = new Label();
+		Label loop = this.s.toERTL(L, g);
+		Label Le = toERTLc(e, loop, l, new Register(), g);
+		ERgoto rg = new ERgoto(Le);
+		g.graph.put(L, rg);
+		return Le;
 	}
 }
 
@@ -439,18 +497,20 @@ class Sblock extends Stmt {
 		Stmt s = null;
 		do{
 			try { s = this.l.removeLast(); }
-			catch (NoSuchElementException e) {
-				return l;
-			}
+			catch (NoSuchElementException e) { return l; }
 			l = s.toRTL(l, ret, r, g);
 			r = new Register();
-		}
-		while(true);
+		} while(true);
 	}
 
 	@Override
 	Label toERTL(Label l, ERTLgraph g) {
-		return null;
+		Stmt s = null;
+		do{
+			try { s = this.l.removeLast(); }
+			catch (NoSuchElementException e) { return l; }
+			l = s.toERTL(l, g);
+		} while(true);
 	}
 }
 
@@ -469,7 +529,7 @@ class Seval extends Stmt {
 
 	@Override
 	Label toERTL(Label l, ERTLgraph g) {
-		return null;
+		return this.e.toERTL(l, new Register(), g);
 	}
 }
 

@@ -42,8 +42,7 @@ class ERaccess_global extends ERTL {
   public String s;
   public Register r;
   public Label l;
-  ERaccess_global(String s, Register r, Label l) { this.s = s; this.r = r;
-    this.l = l;  }
+  ERaccess_global(String s, Register r, Label l) { this.s = s; this.r = r; this.l = l;  }
   void accept(ERTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + s + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
