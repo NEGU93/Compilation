@@ -30,8 +30,7 @@ class ERconst extends ERTL {
   public int i;
   public Register r;
   public Label l;
-  ERconst(int i, Register r, Label l) { this.i = i; this.r = r; this.l = l;
-  }
+  ERconst(int i, Register r, Label l) { this.i = i; this.r = r; this.l = l; }
   void accept(ERTLVisitor v) { v.visit(this); }
   public String toString() { return "mov $" + i + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -56,8 +55,7 @@ class ERassign_global extends ERTL {
   public Register r;
   public String s;
   public Label l;
-  ERassign_global(Register r, String s, Label l) { this.r = r; this.s = s;
-    this.l = l;  }
+  ERassign_global(Register r, String s, Label l) { this.r = r; this.s = s; this.l = l;  }
   void accept(ERTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r + " " + s + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }

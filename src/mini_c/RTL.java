@@ -21,9 +21,7 @@ class Rconst extends RTL {
   int i;
   Register r;
   Label l;
-  
   Rconst(int i, Register r, Label l) { this.i = i; this.r = r; this.l = l;  }
-  
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov $" + i + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }

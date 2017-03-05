@@ -26,18 +26,21 @@ enum Binop {
 /* constantes litérales */
 
 class Constant {
-	int c;
+	private int c;
 
 	public Constant(int c) {
 		super();
 		this.c = c;
 	}
+
+	int getInt() { return c; }
 }
 
 /* expressions */
 
 abstract class Expr {
 	abstract Label toRTL(Label l, Register r, RTLgraph g);
+	abstract Label toERTL(Label l, Register r, ERTLgraph g);
 }
 
 class Ecst extends Expr { // Integer
@@ -49,8 +52,14 @@ class Ecst extends Expr { // Integer
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		Rconst rc = new Rconst(this.c.c, r, l);
+		Rconst rc = new Rconst(this.c.getInt(), r, l);
 		return g.add(rc);		// Add item to the graph
+	}
+
+	@Override
+	Label toERTL(Label l, Register r, ERTLgraph g) {
+		ERconst eRconst = new ERconst(this.c.getInt(), r, l);
+		return g.add(eRconst);
 	}
 }
 
@@ -102,6 +111,42 @@ class Ebinop extends Expr { // Operation between 2 Expr
 		return L1;
 	}
 
+	@Override
+	Label toERTL(Label l, Register r, ERTLgraph g) {
+		switch (this.op) {
+			case Beq: // x = y
+				Label L2;
+				if (e1 instanceof Evar) { // x is a variable
+					ERassign_global rag = new ERassign_global(r, ((Evar) e1).getX(), l);
+					L2 = g.add(rag);
+				}
+				/*else if (e1 instanceof Ebinop) {	// p->x = y;
+					Register r2 = new Register();
+					int a = 0; //TODO
+					Rstore rstore = new Rstore(r, r2, a, l); // r2 = p
+					Label L3 = g.add(rstore);
+					L2 = ((Ebinop) e1).getE1().toRTL(L3, r2, g);
+				}*/
+				else { throw new Error("not lValue"); }
+				Label L1 = this.e2.toERTL(L2, r, g);
+				return L1;
+			/*case Bobj: // p->a (used to load only)
+				Register r2 = new Register();
+				int a = 0; // TODO
+				Rload rs = new Rload(r2, r, a,  l); // r = p, r2 = new register and i = a (offset)
+				Label L4 = g.add(rs);
+				Label L3 = e1.toRTL(L4, r2, g);
+				return L3;*/
+		}
+		Register r1 = r;
+		Register r2 = new Register();
+		ERmbinop erb = new ERmbinop(Binop2Mbinop(), r1, r2, l);
+		Label L3 = g.add(erb);
+		Label L2 = this.e1.toERTL(L3, r2 ,g);
+		Label L1 = this.e2.toERTL(L2, r1, g);
+		return L1;
+	}
+
 	private Mbinop Binop2Mbinop() {
 		switch (this.op) {
 			case Badd: return Mbinop.Madd;
@@ -140,10 +185,6 @@ class Eunop extends Expr { // Operation with only one Expr
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		return Unop2Mbinop(l, r, g);
-	}
-
-	private Label Unop2Mbinop(Label l, Register r, RTLgraph g) {
 		switch(this.op) {
 			case Uneg: /* The -a is done by making "0 - a" */
 				Ecst c = new Ecst(new Constant(0));
@@ -154,9 +195,28 @@ class Eunop extends Expr { // Operation with only one Expr
 				Label L1 = c.toRTL(L2, r, g);
 				return L1;
 			case Unot: /* if(true) return 0; else return 1; */
-				// TODO: Not so fancy (nor effective) but it works...
+				//Not so fancy (nor effective) but it works...
 				Sif sif = new Sif(this.e, new Seval(new Ecst(new Constant(0))), new Seval(new Ecst(new Constant(1))));
 				return sif.toRTL(l, l, r, g);
+		}
+		return new Label(); // This should never happen but the IDE and compiler don't understand all the cases are covered.
+	}
+
+	@Override
+	Label toERTL(Label l, Register r, ERTLgraph g) {
+		switch (this.op) {
+			case Uneg: /* The -a is done by making "0 - a" */
+				Ecst c = new Ecst(new Constant(0));
+				Register r2 = new Register();
+				ERmbinop rb = new ERmbinop(Mbinop.Msub, r2, r, l);
+				Label L3 = g.add(rb);
+				Label L2 = this.e.toERTL(L3, r2, g);
+				Label L1 = c.toERTL(L2, r, g);
+				return L1;
+			/*case Unot: /* if(true) return 0; else return 1;
+				//Not so fancy (nor effective) but it works...
+				Sif sif = new Sif(this.e, new Seval(new Ecst(new Constant(0))), new Seval(new Ecst(new Constant(1))));
+				return sif.toERTL(l, l, r, g);*/
 		}
 		return new Label(); // This should never happen but the IDE and compiler don't understand all the cases are covered.
 	}
@@ -187,6 +247,11 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 		}
 		return L;
 	}
+
+	@Override
+	Label toERTL(Label l, Register r, ERTLgraph g) {
+		return null;
+	}
 }
 
 class Evar extends Expr {
@@ -199,6 +264,12 @@ class Evar extends Expr {
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) { // Here the variable is already created
 		Raccess_global rv = new Raccess_global(x, r, l);
+		return g.add(rv);
+	}
+
+	@Override
+	Label toERTL(Label l, Register r, ERTLgraph g) {
+		ERaccess_global rv = new ERaccess_global(x, r, l);
 		return g.add(rv);
 	}
 
@@ -220,6 +291,7 @@ class Type {
 /* instruction */
 abstract class Stmt {
 	abstract Label toRTL(Label l, Label ret, Register r, RTLgraph g);
+	abstract Label toERTL(Label l, ERTLgraph g);
 
 	Label toRTLc(Expr ex, Label truel, Label falsel, Register r, RTLgraph g) {
 		if (ex instanceof Ebinop) {
@@ -249,7 +321,6 @@ abstract class Stmt {
 		}
 		return evaluate( new Mjz(), truel, falsel, r, g, ex);
 	}
-
 	private Label evaluate(Mbbranch m, Label truel, Label falsel, Register r, RTLgraph g, Ebinop e /* Only used for binoms */) {
 		Register r1 = r; // I know is redundant but I see it more clear... Hope the compiler is intelligent right?
 		Register r2 = new Register();
@@ -259,7 +330,6 @@ abstract class Stmt {
 		Label L1 = e.getE1().toRTL(L2, r1, g);
 		return L1;
 	}
-
 	private Label evaluate(Mubranch m, Label truel, Label falsel, Register r, RTLgraph g, Expr re) {
 		// TODO: Because of the structure of machines. This may not be effective. Maybe it's better to use jnz
 		Rmubranch rb = new Rmubranch(m, r, falsel, truel); // Turn around the true and false because it will be a jz (so in case it is zero I should do the false one)
@@ -300,6 +370,11 @@ class Sif extends Stmt {
 		if (s2 != null) { falsel = s2.toRTL(l, ret, new Register(), g); } // It will be null if I don't have the "else" statement.
 		return toRTLc(this.e, truel, falsel, r, g);
 	}
+
+	@Override
+	Label toERTL(Label l, ERTLgraph g) {
+		return null;
+	}
 }
 
 class Swhile extends Stmt {
@@ -321,6 +396,11 @@ class Swhile extends Stmt {
 		g.graph.put(L, rg);
 		return Le;
 	}
+
+	@Override
+	Label toERTL(Label l, ERTLgraph g) {
+		return null;
+	}
 }
 
 class Sreturn extends Stmt {
@@ -336,6 +416,12 @@ class Sreturn extends Stmt {
 		return this.e.toRTL(ret, r, g); // I give ret (f.exit) because the return exit the function
 	}
 
+	@Override
+	Label toERTL(Label l, ERTLgraph g) {
+		ERreturn eRreturn = new ERreturn();
+		Label L = g.add(eRreturn);
+		return this.e.toERTL(L, new Register(), g);
+	}
 }
 
 class Sblock extends Stmt {
@@ -361,6 +447,11 @@ class Sblock extends Stmt {
 		}
 		while(true);
 	}
+
+	@Override
+	Label toERTL(Label l, ERTLgraph g) {
+		return null;
+	}
 }
 
 class Seval extends Stmt {
@@ -374,6 +465,11 @@ class Seval extends Stmt {
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g) {	// I send l because it's not a return.
 		return this.e.toRTL(l, r, g);
+	}
+
+	@Override
+	Label toERTL(Label l, ERTLgraph g) {
+		return null;
 	}
 }
 
@@ -453,8 +549,27 @@ class Decl_function extends Declarations { // Declaration of a function
 			}
 			f.result = new Register(); // I create the next register to be used
 			current = s.toRTL(current, f.exit, f.result, f.body);
+		} while(true);
+	}
+
+	ERTLfun toERTL() {
+		ERTLfun f = new ERTLfun(this.f, l.size()); // The second argument is the total amount of arguments
+		LinkedList<Stmt> lstStmt = this.b.l; // List of statements
+		LinkedList<Decl_variable> lstVar = this.b.v; // List of declaration of variables
+		f.body = new ERTLgraph();
+		for (Decl_variable dv : lstVar) {
+			dv.initializeVar(f.locals);
 		}
-		while(true);
+		Label current = new Label();
+		Stmt s = null;
+		do{
+			try { s = lstStmt.removeLast(); }
+			catch (NoSuchElementException e) {
+				f.entry = current;
+				return f;
+			}
+			current = s.toERTL(current, f.body);
+		} while(true);
 	}
 }
 
@@ -471,6 +586,11 @@ class Sizeof extends Expr {
 		structSized.add(new Evar(this.s));
 		Ecall callSizeOf = new Ecall("sizeof", structSized);
 		return callSizeOf.toRTL(l, r, g);
+	}
+
+	@Override
+	Label toERTL(Label l, Register r, ERTLgraph g) {
+		return null;
 	}
 }
 
@@ -514,4 +634,15 @@ class File {
 		return file;
 	}
 
+	ERTLfile toERTL() {
+		ERTLfile file = new ERTLfile();
+		for (Declarations d : this.l) {
+			if (d instanceof Decl_function) {
+				ERTLfun f = ((Decl_function) d).toERTL();
+				f.print();
+				file.funs.add(f);
+			}
+		}
+		return file;
+	}
 }

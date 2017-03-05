@@ -1,4 +1,3 @@
 int main() {
-  int x;
-  return x = 4;
+  return g + 1;
 }
