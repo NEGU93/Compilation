@@ -5,6 +5,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.List;
 
+import static mini_c.Binop.Badd;
+import static mini_c.Binop.Beq;
 import static mini_c.Binop.Bmod;
 import static mini_c.Mbinop.*;
 import static mini_c.Register.callee_saved;
@@ -56,6 +58,8 @@ class Ecst extends Expr { // Integer
 		Rconst rc = new Rconst(this.c.getInt(), r, l);
 		return g.add(rc);		// Add item to the graph
 	}
+
+	int getInt() { return c.getInt(); }
 }
 
 class Ebinop extends Expr { // Operation between 2 Expr
@@ -71,7 +75,6 @@ class Ebinop extends Expr { // Operation between 2 Expr
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g) {
-		// TODO: check if I have constants to make it faster. (do add $1 #r instead of charging 1 to a register and add both registers)
 		switch (this.op) {
 			case Beq: // x = y
 				Label L2;
@@ -97,7 +100,70 @@ class Ebinop extends Expr { // Operation between 2 Expr
 				Label L3 = e1.toRTL(L4, r2, g);
 				return L3;
 		}
-		/* If I reached here then they are "normal" operations (+, /, *, -, <, >, etc )*/
+		if ( (e2 instanceof Ecst) && (e1 instanceof Ecst)) { // e1 op 4
+			switch (this.op) { // in this case, the compilator will transform things like 4 + 5 directly to 9 in compilation time to make it more effective!
+				case Badd:
+					return new Ecst(new Constant(((Ecst) e1).getInt() + ((Ecst) e2).getInt())).toRTL(l, r, g);
+				case Bsub:
+					return new Ecst(new Constant(((Ecst) e1).getInt() - ((Ecst) e2).getInt())).toRTL(l, r, g);
+				case Bmul:
+					return new Ecst(new Constant(((Ecst) e1).getInt() * ((Ecst) e2).getInt())).toRTL(l, r, g);
+				case Bdiv:
+					return new Ecst(new Constant(((Ecst) e1).getInt() / ((Ecst) e2).getInt())).toRTL(l, r, g);
+				case Bmod:
+					return new Ecst(new Constant(((Ecst) e1).getInt() % ((Ecst) e2).getInt())).toRTL(l, r, g);
+				case Beqeq:
+					if (((Ecst) e1).getInt() == ((Ecst) e2).getInt()) {
+						return new Ecst(new Constant(1)).toRTL(l, r, g);
+					} else {
+						return new Ecst(new Constant(0)).toRTL(l, r, g);
+					}
+				case Beq:
+					throw new Error("Constant = Constant not available");
+				case Bneq:
+					if (((Ecst) e1).getInt() != ((Ecst) e2).getInt()) {
+						return new Ecst(new Constant(1)).toRTL(l, r, g);
+					} else {
+						return new Ecst(new Constant(0)).toRTL(l, r, g);
+					}
+				case Blt:
+					if (((Ecst) e1).getInt() < ((Ecst) e2).getInt()) {
+						return new Ecst(new Constant(1)).toRTL(l, r, g);
+					} else {
+						return new Ecst(new Constant(0)).toRTL(l, r, g);
+					}
+				case Ble:
+					if (((Ecst) e1).getInt() <= ((Ecst) e2).getInt()) {
+						return new Ecst(new Constant(1)).toRTL(l, r, g);
+					} else {
+						return new Ecst(new Constant(0)).toRTL(l, r, g);
+					}
+				case Bgt:
+					if (((Ecst) e1).getInt() > ((Ecst) e2).getInt()) {
+						return new Ecst(new Constant(1)).toRTL(l, r, g);
+					} else {
+						return new Ecst(new Constant(0)).toRTL(l, r, g);
+					}
+				case Bge:
+					if (((Ecst) e1).getInt() >= ((Ecst) e2).getInt()) {
+						return new Ecst(new Constant(1)).toRTL(l, r, g);
+					} else {
+						return new Ecst(new Constant(0)).toRTL(l, r, g);
+					}
+				default:
+					throw new Error("Incompatible operation between integers");
+			}
+		}
+		else if ( (this.op == Badd) && ((e1 instanceof Ecst) || (e2 instanceof Ecst))) { //If i reach here then e1 && e2 are not both constants
+			// this is x + 4 or 4 + x
+			Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e2).getInt()), r, l);
+			Label L2 = g.add(rmunop);
+			Label L1;
+			if (e1 instanceof Ecst) { L1 = this.e2.toRTL(L2, r, g); }
+			else { L1 = this.e1.toRTL(L2, r, g); }
+			return L1;
+		}
+		/* If I reached here then they are "normal" operations (+, /, *, -, <, >, etc ) and no 2 constants */
 		Register r2 = new Register();
 		Rmbinop rb = new Rmbinop(Binop2Mbinop(), r2, r, l);
 		Label L3 = g.add(rb);
@@ -118,7 +184,6 @@ class Ebinop extends Expr { // Operation between 2 Expr
 			case Ble: return Msetle;
 			case Bgt: return Mbinop.Msetg;
 			case Bge: return Mbinop.Msetge;
-			//default: return Mbinop.Mmov;
 			// This cases are made differently. And checked before getting here (Normally once inside this function this cannot happen)
 			//case Bmod: return Mbinop.Mmov;
 			//case Band: return Mbinop.Mmov;

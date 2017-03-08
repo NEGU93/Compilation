@@ -194,9 +194,7 @@ class Rcall extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() {
-    return new ERcall(this.s, this.rl.size(), this.l);
-  }
+  ERTL toERTL() { return new ERcall(this.s, this.rl.size(), this.l); }
 
   ERTLgraph prevFun(ERTLgraph g, Label key) {
     Label L = this.l;
@@ -308,7 +306,7 @@ class RTLfun {
         current = efun.body.add(erb);
       }
       else { // The other arguments in the pile
-        ERget_param getPam = new ERget_param(i - parameters.size(),new Register(), current);
+        ERget_param getPam = new ERget_param((i - parameters.size())/*8*/,new Register(), current); //TODO: do I have to put the 8?
         current = efun.body.add(getPam);
       }
     }
