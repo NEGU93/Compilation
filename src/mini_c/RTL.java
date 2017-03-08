@@ -2,6 +2,8 @@ package mini_c;
 
 /** Register Transfer Language (RTL) */
 
+import sun.awt.image.ImageWatched;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -11,6 +13,7 @@ import java.util.Set;
 
 import static mini_c.Mbinop.Mmov;
 import static mini_c.Register.callee_saved;
+import static mini_c.Register.parameters;
 
 /** instruction RTL */
 
@@ -224,7 +227,9 @@ class RTLfun {
   Label exit;
   /** le graphe de flot de contrôle */
   RTLgraph body;
-  
+
+  private LinkedList<Register> backUpReg;
+
   RTLfun(String name) {
     this.name = name;
     this.formals = new LinkedList<>();
@@ -244,27 +249,61 @@ class RTLfun {
   }
 
   ERTLfun toERTL() {
+    backUpReg = new LinkedList<>();
     ERTLfun efun = new ERTLfun(this.name, formals.size());
     efun.locals = this.locals;
-    efun.entry = this.entry;
-    efun.body = this.body.toERTL();
+    efun.body = this.body.toERTL();         // RTL -> ERTL
+    efun = startERTLGraph(efun);            // Add the begining of the function call
+    efun.body = returnERTLGraph(efun.body); // Add the end of the function call
+    return efun;
+  }
 
-    /* Make the return part */
-    /*Label current = this.exit;
+  /* Make the start of the function */
+  private ERTLfun startERTLGraph(ERTLfun efun) {
+    Label current = this.entry;
+    for (int i = 0; i < efun.formals; i++) {
+      if (i < parameters.size()) { // Get the first arguments in registers
+        ERmbinop erb = new ERmbinop(Mmov, parameters.get(i), new Register(), current);
+        current = efun.body.add(erb);
+      }
+      else { // The other arguments in the pile
+        ERget_param getPam = new ERget_param(i - parameters.size(),new Register(), current);
+        current = efun.body.add(getPam);
+      }
+    }
+    for ( int i = 0 ; i < callee_saved.size(); i++ ) { // for every input
+      backUpReg.add(new Register());
+      ERmbinop er = new ERmbinop(Mmov, callee_saved.get(i), this.backUpReg.get(i), current);
+      current = efun.body.add(er);
+    }
+    ERalloc_frame alloc = new ERalloc_frame(current);
+    current = new Label();
+    efun.body.put(current, alloc);
+    efun.entry = current;
+    return efun;
+    /*
+    ERalloc_frame ealloc = new ERalloc_frame(this.entry);
+    Label current = new Label();
+    efun.body.put(current, ealloc);
+    efun.entry = current;
+    return efun;*/
+  }
+
+  /* Make the return part. This function will take an already done graph and add the part for the return */
+  private ERTLgraph returnERTLGraph(ERTLgraph eg) {
     ERreturn eRreturn = new ERreturn();
-    current = efun.body.add(eRreturn);
-    //ERdelete_frame del = new ERdelete_frame(current);
-    //efun.body.put(this.exit ,del);
-    //current = efun.body.add(del);
+    Label current = eg.add(eRreturn);
+    ERdelete_frame del = new ERdelete_frame(current);
+    current = eg.add(del);
     for (Register r : callee_saved) {
       //this.backUpReg.add(new Register());
-      ERmbinop er2 = new ERmbinop(Mmov, /*this.backUpReg.getLast() new Register(), r, current);
-      current = efun.body.add(er2);
+      ERmbinop er2 = new ERmbinop(Mmov, /*this.backUpReg.getLast()*/ new Register(), r, current);
+      current = eg.add(er2);
     }
     // this should be before actually
-    ERdelete_frame del = new ERdelete_frame(current);
-    efun.body.put(this.exit, del);*/
-    return efun;
+    ERmbinop ret = new ERmbinop(Mmov, Register.rax, Register.rax, current); // TODO: don't know how to know the register.
+    eg.put(this.exit, ret);
+    return eg;
   }
 }
 
