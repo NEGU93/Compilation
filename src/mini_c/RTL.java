@@ -14,6 +14,7 @@ import java.util.Set;
 import static mini_c.Mbinop.Mmov;
 import static mini_c.Register.callee_saved;
 import static mini_c.Register.parameters;
+import static mini_c.Register.result;
 
 /** instruction RTL */
 
@@ -193,7 +194,51 @@ class Rcall extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERcall(this.s, this.rl.size(), this.l); }
+  ERTL toERTL() {
+    return new ERcall(this.s, this.rl.size(), this.l);
+  }
+
+  ERTLgraph prevFun(ERTLgraph g, Label key) {
+    Label L = this.l;
+    // 4. pull if there was a push
+    if (this.rl.size() > parameters.size()) { // if I have more parameters than registers available
+      Maddi maddi = new Maddi(8 * (this.rl.size() - parameters.size()));
+      ERmunop ermunop = new ERmunop(maddi, Register.rsp, L);
+      L = g.add(ermunop);
+      for (int i = 0; i < this.rl.size() - parameters.size(); i++) {
+        ERload erload = new ERload(Register.rsp, i * 8, new Register(), L);
+        L = g.add(erload);
+      }
+    }
+    // 3. Get the result to %rax
+    r = result;
+    ERmbinop erb = new ERmbinop(Mmov, r, new Register(), L);
+    L = g.add(erb);
+    // 2. Call the function
+    ERcall eRcall = new ERcall(this.s, this.rl.size(), L);
+    if ( this.rl.size() > 0 ) { L = g.add(eRcall); }
+    else { g.put(key, eRcall); }
+    // 1. save the parameters to send
+    for (int i = 0; i < this.rl.size(); i++) {
+      if (i < parameters.size()) { 	// Using size instead of hardcoding a 6 to make it more general and prone to changes in code
+        r = parameters.get(i);		// The first arguments in registers (
+        ERmbinop eRmbinop = new ERmbinop(Mmov, this.rl.get(i), r, L);
+        if ( (i == rl.size() - 1)  && (rl.size() <= parameters.size())) {
+          g.put(key, eRmbinop);
+        }
+        else { L = g.add(eRmbinop); }
+      }
+      else { // The other arguments in the pile
+        r = new Register();
+        ERpush_param pushPam = new ERpush_param(r, L);
+        Label L1 = g.add(pushPam);
+        ERmbinop eRmbinop = new ERmbinop(Mmov, this.rl.get(i), r, L1);
+        if ( i == rl.size() - 1) { g.put(key, eRmbinop); }
+        else { L = g.add(eRmbinop); }
+      }
+    }
+    return g;
+  }
 }
 
 /** saut inconditionnel */
@@ -230,11 +275,7 @@ class RTLfun {
 
   private LinkedList<Register> backUpReg;
 
-  RTLfun(String name) {
-    this.name = name;
-    this.formals = new LinkedList<>();
-    this.locals = new HashSet<>();
-    }
+  RTLfun(String name) { this.name = name; this.formals = new LinkedList<>(); this.locals = new HashSet<>(); }
   
   void accept(RTLVisitor v) { v.visit(this); }
   
@@ -281,14 +322,7 @@ class RTLfun {
     efun.body.put(current, alloc);
     efun.entry = current;
     return efun;
-    /*
-    ERalloc_frame ealloc = new ERalloc_frame(this.entry);
-    Label current = new Label();
-    efun.body.put(current, ealloc);
-    efun.entry = current;
-    return efun;*/
   }
-
   /* Make the return part. This function will take an already done graph and add the part for the return */
   private ERTLgraph returnERTLGraph(ERTLgraph eg) {
     ERreturn eRreturn = new ERreturn();
@@ -368,7 +402,12 @@ class RTLgraph {
     ERTLgraph toERTL() {
       ERTLgraph eg = new ERTLgraph();
       for ( Map.Entry<Label, RTL> g : this.graph.entrySet() ) {
-        eg.put(g.getKey(), g.getValue().toERTL()); // Wow this is cool. So perfect... XD
+        if (g.getValue() instanceof Rcall) {
+          eg = ((Rcall) g.getValue()).prevFun(eg, g.getKey());
+        }
+        else {
+          eg.put(g.getKey(), g.getValue().toERTL()); // Wow this is cool. So perfect... XD
+        }
       }
       return eg;
     }

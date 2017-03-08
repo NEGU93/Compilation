@@ -188,41 +188,6 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 		}
 		return L;
 	}
-
-	/*Label toERTL(Label l, Register r, ERTLgraph g) {
-		//LinkedList<Register> rl = new LinkedList<>();
-		// 4. pull if there was a push
-		if (this.l.size() > parameters.size()) { // if I have more parameters than registers available
-			Maddi maddi = new Maddi(8 * (this.l.size() - parameters.size()));
-			ERmunop ermunop = new ERmunop(maddi, Register.rsp, l);
-			l = g.add(ermunop);
-			for (int i = 0; i < this.l.size() - parameters.size(); i++) {
-				ERload erload = new ERload(Register.rsp, i * 8, new Register(), l);
-				l = g.add(erload);
-			}
-		}
-		// 3. Get the result to %rax
-		r = result;
-		ERmbinop erb = new ERmbinop(Mmov, r, new Register(), l);
-		l = g.add(erb);
-		// 2. Call the function
-		ERcall eRcall = new ERcall(this.f, this.l.size(), l);
-		Label L = g.add(eRcall);
-		// 1. save the parameters to send
-		for (int i = 0; i < this.l.size(); i++) {
-			if (i < parameters.size()) { 	// Using size instead of hardcoding a 6 to make it more general and prone to changes in code
-				r = parameters.get(i);		// The first arguments in registers (
-				L = this.l.get(i).toERTL(L, r, g);
-			}
-			else { // The other arguments in the pile
-				r = new Register();
-				ERpush_param pushPam = new ERpush_param(r, L);
-				Label L1 = g.add(pushPam);
-				L = this.l.get(i).toERTL(L1, r, g);
-			}
-		}
-		return L;
-	}*/
 }
 
 class Evar extends Expr {

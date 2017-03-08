@@ -1,3 +1,4 @@
 int main() {
-  return 1;
+    foo(x);
+    return 1;
 }
