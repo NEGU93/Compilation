@@ -9,6 +9,7 @@
 \contentsline {section}{\numberline {IV}Semantic Analyzer}{3}
 \contentsline {section}{\numberline {V}Code Generation}{3}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-A}}Register Transfer Language (RTL)}{3}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-B}}Explicit Transfer Language (ERTL)}{3}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Location Transfer Language (LTL)}{3}
-\contentsline {section}{\numberline {VI}Conclusion}{3}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-A}1}Implementation}{4}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-B}}Explicit Transfer Language (ERTL)}{4}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Location Transfer Language (LTL)}{4}
+\contentsline {section}{\numberline {VI}Conclusion}{4}

@@ -234,21 +234,34 @@ Each stage will be explained in their corresponding sub section.
 
 \subsection{Register Transfer Language (RTL)}
 For this stage we will use the \textit{syntax tree} created on \ref{sub_syntax_analyzer} in order to create what will be called as \textit{RTL tree}. We suppose that the local and global variables are already differenced and that the type of each variable recognized as it has been done in the last section.
-The main objective of this part is to create a set of instructions x86-64 from the operations of C. 
+
+The main objective (more precisely the first part) of the RTL is to create a set of instructions x86-64 from the operations of C.
+
+The second phase is to create a a \textit{Register Transfer Language}. Here a \textit{Control Float Graph} (CFG) is created that will facilitate the ulterior phases and that will eliminate the distinction between statements and expressions. This RTL will create the so called pseudo registers, which are an infinite number of intermediate registers to realize operations. This registers will be converted into actual x86-64 registers in the future.
 
 \subsubsection{Implementation}
 Each file contains a list of declarations of functions (as can be seen on \ref{tab_grammar}) that contains a bloc statement. Each function, contains a list of parameters and the list of declarations of variables.
-A RTL graph is created for each function in a recursive way. As seen \ref{tab_grammar}, a function has a list of statements that will be converted into one or more assembler commands. For each command a label will be created and saved into the RTL graph. Each statement and expression class will have a "toRTL" method that will save it's label into the graph.
+A RTL graph is created for each function in a recursive way. As seen \ref{tab_grammar}, a function has a list of statements that will be converted into one or more assembler commands. For each command a label will be created and saved into the RTL graph. Each statement and expression class will have a "toRTL" method that will save it's label into the graph. The function will have as arguments the register and label to exit and it will return it's own label to be given to the next toRTL call in order to line up every statement and expression. 
+To make condition branches, another function will be created called "toRTLc" which will receive two label, one to be done if the expression is true, and another in order to be done in the other case. The structure will be represented as toRTLc(e, s1Label, s2Label) where 'e' will be the expression with a true or false value. s1Label will be the label to go if 'e' is true and s2Label in the other case.
+
+In order to realize the \&\& expression, for example:
+if e1 \&\& e2 do s1 else s2
+The following conversion will be done:
+toRTLc(e1 \&\& e2, s1Label, s2Label) -$>$ toRTLc(e1, toRTLc(e2, s1Label, s2Label), s2Label)
+Using a similar logic, the expression:
+if e1 $|$$|$ e2 do s1 else s2
+will be converted:
+toRTLc(e1 $|$$|$ e2, s1Label, s2Label) -$>$ toRTLc(e1, s1Label, toRTLc(e2, s1Label, s2Label))
 
 In order to make the negative sign, for example -2, the compiler actually does the operation 0 - 2.
 In order to make the not operation, for example !a. The compiler does an if statement such as:
 if a then 0 else 1. %TODO: put this in a fancy way, like centered in the middle
 In which case, making something like !!41 will return 1 as a result. Which is what actually happens in C code.
 
-
 % TODO: see the "posible simplifications for the addition" (RTL)
 % TODO: we can do 5 + 4 compilate as 9 directly. write about this "evaluation partielle"
 
+%TODO: put an example done by RTL it will be interesting
 \subsection{Explicit Transfer Language (ERTL)}
 \subsection{Location Transfer Language (LTL)}
 \section{Conclusion}
