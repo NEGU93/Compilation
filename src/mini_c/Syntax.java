@@ -5,9 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.List;
 
-import static mini_c.Binop.Badd;
-import static mini_c.Binop.Beq;
-import static mini_c.Binop.Bmod;
+import static mini_c.Binop.*;
 import static mini_c.Mbinop.*;
 import static mini_c.Register.callee_saved;
 import static mini_c.Register.parameters;
@@ -154,14 +152,21 @@ class Ebinop extends Expr { // Operation between 2 Expr
 					throw new Error("Incompatible operation between integers");
 			}
 		}
-		else if ( (this.op == Badd) && ((e1 instanceof Ecst) || (e2 instanceof Ecst))) { //If i reach here then e1 && e2 are not both constants
-			// this is x + 4 or 4 + x
-			Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e2).getInt()), r, l);
-			Label L2 = g.add(rmunop);
-			Label L1;
-			if (e1 instanceof Ecst) { L1 = this.e2.toRTL(L2, r, g); }
-			else { L1 = this.e1.toRTL(L2, r, g); }
-			return L1;
+		else if ( (e1 instanceof Ecst) || (e2 instanceof Ecst) ) { //If i reach here then e1 && e2 are not both constants
+			if ((this.op == Badd)) { // this is x + 4 or 4 + x
+				if (e1 instanceof Ecst) {
+					Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e1).getInt()), r, l);
+					Label L2 = g.add(rmunop);
+					Label L1 = this.e2.toRTL(L2, r, g);
+					return L1;
+				}
+				else {
+					Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e2).getInt()), r, l);
+					Label L2 = g.add(rmunop);
+					Label L1 = this.e1.toRTL(L2, r, g);
+					return L1;
+				}
+			}
 		}
 		/* If I reached here then they are "normal" operations (+, /, *, -, <, >, etc ) and no 2 constants */
 		Register r2 = new Register();
@@ -286,7 +291,7 @@ class Type {
 /* instruction */
 abstract class Stmt {
 	abstract Label toRTL(Label l, Label ret, Register r, RTLgraph g);
-
+	// TODO: see if I have a constant and do the simpler jumps
 	Label toRTLc(Expr ex, Label truel, Label falsel, Register r, RTLgraph g) {
 		if (ex instanceof Ebinop) {
 			switch(((Ebinop) ex).getOp()) { // If there is a binary in the equation
