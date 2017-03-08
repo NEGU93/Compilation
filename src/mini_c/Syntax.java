@@ -39,9 +39,26 @@ class Typing {
 	  varType.put("putchar", new Var("putchar","int"));
 	  funArgsType.put("putchar",new LinkedList<Var>());
 	  funArgsType.get("putchar").add(new Var("","int"));
-	  varType.put("sbrk", new Var("sbrk","void"));
+	  varType.put("sbrk", new Var("sbrk","void*"));
 	  funArgsType.put("sbrk",new LinkedList<Var>());
 	  funArgsType.get("sbrk").add(new Var("","int"));
+  }
+  
+  public static boolean equalsType(String x, String y) {
+	  if (x.equals(y)) return true;
+	  if (x.equals("typenull")) {
+		 if (!y.equals("void*")) return true;
+	  }
+	  if (x.equals("void*")) {
+			 if (!y.equals("int")) return true;
+		  }
+	  if (y.equals("typenull")) {
+		 if (!x.equals("void*")) return true;
+	  }
+	  if (y.equals("void*")) {
+			 if (!x.equals("int")) return true;
+		  }
+	  return false;
   }
 }
 
@@ -83,25 +100,28 @@ class Ebinop extends Expr { // Operation between 2 Expr
   }
   @Override
   String Typer() {
-    String t1 = this.e1.Typer();
-    String t2 = this.e2.Typer();
+   String t1 = this.e1.Typer();
+   String t2;
     switch (this.op) {
       case Bobj:
-      if (this.e1 instanceof Evar) {
-        String x1 = ((Evar)this.e1).x;
+      //if (this.e1 instanceof Evar) 
+      if (Typing.declStruct.get(t1)!=null){
+       // String x1 = ((Evar)this.e1).x;
         if (this.e2 instanceof Evar) {
           String x2 = ((Evar)this.e2).x;
-          if (Typing.declStruct.containsKey(this.e1)) {
+          //System.out.println("this x2 is "+ x2);
+          if (Typing.declStruct.containsKey(t1)) {
             //int n = Typing.declStruct.get(((Evar)this.e1).x).indexOf();
-            for (Param p :Typing.declStruct.get(x1)) {
-              if (p.v.equals(x2)) {
-                return t2;
+            for (Param p :Typing.declStruct.get(t1)) {
+            	//System.out.println("field "+p.v);
+              if (x2.equals(p.v)) {
+                return(p.t.t);
               }
             }
-            throw new Error("This field does not exist");
+            throw new Error("The field "+x2+" does not exist");
           }
           else {
-            throw new Error("This structure does no exist");
+            throw new Error("The structure" + t1 + "does no exist");
           }
         }
         else {
@@ -112,9 +132,10 @@ class Ebinop extends Expr { // Operation between 2 Expr
         else {
           throw new Error("Not a structure");
         }
-
+     
       case Beqeq:
-        if (t1.equals(t2)) {
+    	t2 = this.e2.Typer();
+        if (Typing.equalsType(t1,t2)) {
           return (t1);
         }
         else {throw new Error("Bad type expression");}
@@ -123,32 +144,38 @@ class Ebinop extends Expr { // Operation between 2 Expr
       case Bgt:
       case Ble:
       case Bge:
-        if (t1.equals(t2)) {
+    	t2 = this.e2.Typer();
+        if (Typing.equalsType(t1,t2)) {
           return ("int");
         }
         else {throw new Error("Bad type expression");}
       case Bor:
       case Band:
+    	t2 = this.e2.Typer();
         return("int");
       case Badd:
       case Bmul:
       case Bsub:
       case Bdiv:
+    	t2 = this.e2.Typer();
         if (t1.equals("int") && t2.equals("int")) {
           return ("int");
         }
         else {throw new Error("Bad type, operation impossible");}
       case Beq:
+    	  t2 = this.e2.Typer();
           if (this.e1 instanceof Evar) {
-            if (t1.equals(t2)) {
+        	  
+            if (Typing.equalsType(t1,t2)) {
               return t1;
             }
             else {throw new Error("invalid type");}
           }
           else if (this.e1 instanceof Ebinop) {
-            switch(this.op){
+            switch(((Ebinop) this.e1).op){
               case Bobj:
-                if (t1.equals(t2)) {
+            	  System.out.println("Le type 1 est "+t1+" et le type 2 est "+t2);
+                if (Typing.equalsType(t1,t2)) {
                   return t1;
                 }
                 else {throw new Error("invalid type");}
@@ -224,17 +251,23 @@ class Evar extends Expr {
     else if (Typing.varTypeLoc.get(this.x)!=null) {
       return (Typing.varTypeLoc.get(this.x).type);
     }
-    else {throw new Error("This variable does not exist");}
+    else {throw new Error("The variable "+this.x+" does not exist");}
   }
 }
 
+//class Type {
+//  final String t;
+//  Type(String t) throws Exception {
+//    if ((t == "int") || (t == "struct") ) { this.t = t; }
+//    else { throw new Exception("Type incorrect"); }
+//  }
+//}
 class Type {
-  final String t;
-  Type(String t) throws Exception {
-    if ((t == "int") || (t == "struct") ) { this.t = t; }
-    else { throw new Exception("Type incorrect"); }
-  }
-}
+	  final String t;
+	  Type(String t) {
+		  this.t = t;
+	  }
+	}
 
 /* instruction */
 abstract class Stmt {
@@ -301,12 +334,13 @@ abstract class Stmt {
     void Typer(){
 	  for (Decl_variable d:v) {
 	        d.TyperLoc();
+	  //      System.out.println("ici "+d.x);
 	  }
-	  
+	  // System.out.println(Typing.varTypeLoc);
       for (Stmt s:l) {
         s.Typer();
       }
-      
+	 //  System.out.println(Typing.varTypeLoc);
 	  for (Decl_variable d:v) {
 	        Typing.varTypeLoc.remove(d.x);
 	  }
@@ -373,7 +407,7 @@ abstract class Declarations {
       super();
       this.v=l;
       this.x = x;
-      this.t = new Type("struct");
+      this.t = new Type("x");
       this.l = new LinkedList<Var>();
 
    /*   if (!Typing.declStruct.containsKey(x)) {
@@ -472,12 +506,15 @@ abstract class Declarations {
 		
 	    @Override
 	    void Typer(){
+	    	System.out.println("Typing the function " +this.f);
 	      Typing.varType.put(f, new Var(f,r.t));	
 	      LinkedList<Var> typeArgs = new LinkedList<Var>();
 	      for (Param p:this.l) {
+	    	System.out.println("Parametre "+p.v+" ajoute avec le type "+p.t.t);
 	        typeArgs.addLast(new Var(p.v,p.t.t));
 	        Typing.varTypeLoc.put(p.v,new Var(p.v,p.t.t));
 	      }
+	      System.out.println(Typing.varTypeLoc);
 	      Typing.funArgsType.put(f,typeArgs);
 	      this.b.Typer();
 	      for (Param p:this.l) {
@@ -521,7 +558,7 @@ class Param {
     final Type t;
     public Param(String v, String s) throws Exception {
       this.v = v;
-      this.t = new Type("struct");
+      this.t = new Type(s);
     }
     public Param(Evar v) throws Exception {
       this.v = v.x;
@@ -529,15 +566,15 @@ class Param {
     }
     public Param(Evar v, String s) throws Exception {
         this.v = v.x;
-        this.t = new Type("struct");
+        this.t = new Type(s);
       }
     public Param(String x) throws Exception {
         this.v = x;
         this.t = new Type("int");
       }
     public Param(Decl_variable d) {
-    	this.v = d.x;
-    	this.t = d.t;
+    	this.v = d.v.element();
+    	this.t = new Type(d.x);
     }
     
   }
@@ -552,7 +589,9 @@ class File {
     	Typing T=new Typing();
       for (Declarations d:l) {
         d.Typer();
-        System.out.println(Typing.declStruct);
+       // System.out.println("declStruct : "+Typing.declStruct);
+       // System.out.println("varType : "+Typing.varType);
+        //System.out.println("varTypeLoc : "+Typing.varTypeLoc);
       }
     }
   }

@@ -71,8 +71,8 @@ decl_struct ::=
 decl_function ::=
   INT IDENT:f LPAR list_comma_param:l RPAR block:b 	// of the syntax: int f(x, y, z, ...) { v s }
   	{: RESULT = new Decl_function(f, l, b, "int"); :}
-| STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR block:b
-    {: RESULT = new Decl_function(f, l, b, "struct"); :}
+| STRUCT IDENT:s TIMES IDENT:f LPAR list_comma_param:l RPAR block:b
+    {: RESULT = new Decl_function(f, l, b, s); :}
 ;
 /* Param, expr & stmt */
 param ::=
