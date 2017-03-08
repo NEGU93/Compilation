@@ -259,9 +259,7 @@ class ERTLfun {
   /** le graphe de flot de contrôle */
   public ERTLgraph body;
   
-  ERTLfun(String name, int formals) {
-    this.name = name; this.formals = formals; this.locals = new HashSet<>();
-  }
+  ERTLfun(String name, int formals) { this.name = name; this.formals = formals; this.locals = new HashSet<>(); }
   void accept(ERTLVisitor v) { v.visit(this); }
 
   /** pour débugger */

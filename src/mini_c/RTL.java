@@ -9,13 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static mini_c.Mbinop.Mmov;
+import static mini_c.Register.callee_saved;
+
 /** instruction RTL */
 
 abstract class RTL {
   abstract void accept(RTLVisitor v);
   abstract Label[] succ();
   abstract ERTL toERTL();
-  }
+}
 
 /** charge une constante dans un registre */
 class Rconst extends RTL {
@@ -26,6 +29,9 @@ class Rconst extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov $" + i + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
+
+  @Override
+  ERTL toERTL() { return new ERconst(this.i, this.r, this.l); }
 }
 
 /** lit dans une variable globale */
@@ -39,6 +45,9 @@ class Raccess_global extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + s + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
+
+  @Override
+  ERTL toERTL() { return new ERaccess_global(this.s, this.r, this.l); }
 }
 
 /** écrit une variable globale */
@@ -52,6 +61,9 @@ class Rassign_global extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r + " " + s + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
+
+  @Override
+  ERTL toERTL() { return new ERassign_global(this.r, this.s, this.l); }
 }
 
 /** instruction mov i(r1), r2 */
@@ -63,12 +75,16 @@ class Rload extends RTL {
   
   Rload(Register r1, Register r2, int i, Label l) {
 	this.r1 = r1; this.i = i;
-    this.r2 = r2; this.l = l;  }
+    this.r2 = r2; this.l = l;
+  }
   
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + i + "(" + r1 + ") " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+
+  @Override
+  ERTL toERTL() { return new ERload(this.r1, this.i, this.r2, this.l); }
+}
 
 /** instruction mov r1, i(r2) */
 class Rstore extends RTL {
@@ -83,7 +99,10 @@ class Rstore extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r1 + " " + i + "(" + r2 + ") " + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+
+  @Override
+  ERTL toERTL() { return new ERstore(this.r1, this.r2, this.i, this.l); }
+}
 
 /** instruction x86-64 unaire */
 class Rmunop extends RTL {
@@ -96,6 +115,9 @@ class Rmunop extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
+
+  @Override
+  ERTL toERTL() { return new ERmunop(this.m, this.r, this.l); }
 }
 
 /** instruction x86-64 binaire */
@@ -105,12 +127,14 @@ class Rmbinop extends RTL {
   Register r2;
   Label l;
   
-  Rmbinop(Mbinop m, Register r1, Register r2, Label l) { this.m = m;
-    this.r1 = r1; this.r2 = r2; this.l = l;  }
+  Rmbinop(Mbinop m, Register r1, Register r2, Label l) { this.m = m; this.r1 = r1; this.r2 = r2; this.l = l;  }
   
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
+
+  @Override
+  ERTL toERTL() { return new ERmbinop(this.m, this.r1, this.r2, this.l); }
 }
 
 /** instruction x86-64 de branchement (unaire) */
@@ -126,7 +150,10 @@ class Rmubranch extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l1 + ", " + l2; }
   Label[] succ() { return new Label[] { l1, l2 }; }
-  }
+
+  @Override
+  ERTL toERTL() { return new ERmubranch(this.m, this.r, this.l1, this.l2); }
+}
 
 /** instruction x86-64 de branchement (binaire) */
 class Rmbbranch extends RTL {
@@ -143,7 +170,10 @@ class Rmbbranch extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l1 + ", " + l2; }
   Label[] succ() { return new Label[] { l1, l2 }; }
-  }
+
+  @Override
+  ERTL toERTL() { return new ERmbbranch(this.m, this.r1, this.r2, this.l1, this.l2); }
+}
 
 /** appel de fonction */
 class Rcall extends RTL {
@@ -158,7 +188,10 @@ class Rcall extends RTL {
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return r + " <- call " + s + rl + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+
+  @Override
+  ERTL toERTL() { return new ERcall(this.s, this.rl.size(), this.l); }
+}
 
 /** saut inconditionnel */
 class Rgoto extends RTL { //TODO: don't know how to do this. (or more precisely where to use it)
@@ -169,7 +202,10 @@ class Rgoto extends RTL { //TODO: don't know how to do this. (or more precisely 
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "goto " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+
+  @Override
+  ERTL toERTL() { return new ERgoto(this.l); }
+}
 
 /** une fonction RTL */
 
@@ -206,6 +242,30 @@ class RTLfun {
   System.out.println("  locals : " + locals);
 	body.print(entry);
   }
+
+  ERTLfun toERTL() {
+    ERTLfun efun = new ERTLfun(this.name, formals.size());
+    efun.locals = this.locals;
+    efun.entry = this.entry;
+    efun.body = this.body.toERTL();
+
+    /* Make the return part */
+    /*Label current = this.exit;
+    ERreturn eRreturn = new ERreturn();
+    current = efun.body.add(eRreturn);
+    //ERdelete_frame del = new ERdelete_frame(current);
+    //efun.body.put(this.exit ,del);
+    //current = efun.body.add(del);
+    for (Register r : callee_saved) {
+      //this.backUpReg.add(new Register());
+      ERmbinop er2 = new ERmbinop(Mmov, /*this.backUpReg.getLast() new Register(), r, current);
+      current = efun.body.add(er2);
+    }
+    // this should be before actually
+    ERdelete_frame del = new ERdelete_frame(current);
+    efun.body.put(this.exit, del);*/
+    return efun;
+  }
 }
 
 /** un programme RTL */
@@ -216,7 +276,8 @@ class RTLfile {
   
   RTLfile() {
     this.gvars = new LinkedList<String>();
-    this.funs = new LinkedList<RTLfun>();  }
+    this.funs = new LinkedList<RTLfun>();
+  }
   
   void accept(RTLVisitor v) { v.visit(this); }
 
@@ -224,6 +285,13 @@ class RTLfile {
   void print() {
 	for (RTLfun fun: this.funs)
 	  fun.print();
+  }
+
+  ERTLfile toERTL() {
+    ERTLfile efile = new ERTLfile();
+    for ( String gv : gvars) { efile.gvars.add(gv); } // Add global variables
+    for ( RTLfun f : this.funs ) { efile.funs.add(f.toERTL()); }  // add the functions
+    return efile;
   }
 }
 
@@ -257,6 +325,14 @@ class RTLgraph {
 	void print(Label entry) {
 		print(new HashSet<Label>(), entry);
 	}
+
+    ERTLgraph toERTL() {
+      ERTLgraph eg = new ERTLgraph();
+      for ( Map.Entry<Label, RTL> g : this.graph.entrySet() ) {
+        eg.put(g.getKey(), g.getValue().toERTL()); // Wow this is cool. So perfect... XD
+      }
+      return eg;
+    }
 }
 
 /** visiteur pour parcourir la forme RTL
@@ -294,4 +370,4 @@ class EmptyRTLVisitor implements RTLVisitor {
   public void visit(Rgoto o) {}
   public void visit(RTLfun o) {}
   public void visit(RTLfile o) {}
-  }
+}

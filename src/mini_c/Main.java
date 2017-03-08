@@ -17,8 +17,9 @@ public class Main {
 		Lexer lexer = new Lexer(reader);
 		Parser parser = new Parser(lexer);
 		File f = (File) parser.parse().value;
-		//RTLfile rfile= f.toRTL();
-		ERTLfile erFile = f.toERTL();
+		RTLfile rfile= f.toRTL();
+		ERTLfile erFile = rfile.toERTL();
+		erFile.print();
 		/*for (Def d: f.l)
 			//Interp.functions.put(d.f, d);
 		try {
