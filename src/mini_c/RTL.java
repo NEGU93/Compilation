@@ -14,6 +14,7 @@ import java.util.Set;
 abstract class RTL {
   abstract void accept(RTLVisitor v);
   abstract Label[] succ();
+  abstract ERTL toERTL();
   }
 
 /** charge une constante dans un registre */

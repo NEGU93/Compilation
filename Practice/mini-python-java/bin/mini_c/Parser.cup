@@ -27,6 +27,7 @@ non terminal LinkedList<String> nonempty_list_comma_ident;
 non terminal LinkedList<Param> list_comma_param;
 non terminal LinkedList<Decl_variable> list_decl_variable;
 non terminal LinkedList<Expr> list_comma_expr;
+non terminal LinkedList<String> nonempty_list_times_comma_list;
 
 precedence right EQUAL;
 precedence left OR;
@@ -58,7 +59,7 @@ declarations ::=
 decl_variable ::=
   INT nonempty_list_comma_ident:x SEMICOLON
     {: RESULT = new Decl_variable(x); :}
-| STRUCT nonempty_list_comma_ident:s TIMES nonempty_list_comma_ident:l SEMICOLON
+| STRUCT IDENT:s nonempty_list_times_comma_list:l SEMICOLON
     {: RESULT = new Decl_variable(s, l); :}
 ;
 
@@ -114,12 +115,12 @@ expr ::=
 | LPAR expr:e RPAR
     {: RESULT = e; :}
 | SIZEOF LPAR STRUCT IDENT:s RPAR
-    {: RESULT = null; :}
+    {: RESULT = new Sizeof(s); :}
 ;
 
 stmt ::=
   RETURN expr:e SEMICOLON
-	{: RESULT = null; :}
+	{: RESULT = new Sreturn(e); :}
 | expr:e SEMICOLON
 	{: RESULT = new Seval(e); :}
 | SEMICOLON
@@ -165,6 +166,14 @@ nonempty_list_comma_ident ::=
   IDENT:x COMMA nonempty_list_comma_ident:l
    {: l.addFirst(x); RESULT = l; :}
 | IDENT:x
+   {: LinkedList<String> l = new LinkedList<String>();
+      l.add(x); RESULT = l; :}
+;
+
+nonempty_list_times_comma_list ::=
+  TIMES IDENT:x COMMA nonempty_list_times_comma_list:l
+    {: l.addFirst(x); RESULT = l; :}
+| TIMES IDENT:x
    {: LinkedList<String> l = new LinkedList<String>();
       l.add(x); RESULT = l; :}
 ;

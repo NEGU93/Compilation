@@ -51,9 +51,9 @@ BlockComment= [/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]
 	"/"
 		{ return new Symbol(DIV, yyline, yycolumn); }
 	"&&"
-		{ return new Symbol(AND, yyline, yycolumn); }
+		{ return new Symbol(AND, yyline, yycolumn, Binop.Band); }
 	"||"
-		{ return new Symbol(OR, yyline, yycolumn); }
+		{ return new Symbol(OR, yyline, yycolumn, Binop.Band); }
 	"!"
 		{ return new Symbol(NOT, yyline, yycolumn); }
     "->"

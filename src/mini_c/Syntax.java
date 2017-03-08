@@ -254,12 +254,24 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 	@Override
 	Label toERTL(Label l, Register r, ERTLgraph g) {
 		//LinkedList<Register> rl = new LinkedList<>();
+		/* 4. pull if there was a push */
+		if (this.l.size() > parameters.size()) { // if I have more parameters than registers available
+			Maddi maddi = new Maddi(8 * (this.l.size() - parameters.size()));
+			ERmunop ermunop = new ERmunop(maddi, Register.rsp, l);
+			l = g.add(ermunop);
+			for (int i = 0; i < this.l.size() - parameters.size(); i++) {
+				ERload erload = new ERload(Register.rsp, i * 8, new Register(), l);
+				l = g.add(erload);
+			}
+		}
+		/* 3. Get the result to %rax */
 		r = result;
-		ERmbinop erb = new ERmbinop(Mmov, r, new Register(), l);
+		ERmbinop erb = new ERmbinop(Mmov, r, new Register(), l); 
 		l = g.add(erb);
-		// TODO: ask for point 4 in here.
+		/* 2. Call the function */
 		ERcall eRcall = new ERcall(this.f, this.l.size(), l);
 		Label L = g.add(eRcall);
+		/* 1. save the parameters to send */
 		for (int i = 0; i < this.l.size(); i++) {
 			if (i < parameters.size()) { 	// Using size instead of hardcoding a 6 to make it more general and prone to changes in code
 				r = parameters.get(i);		// The first arguments in registers (
@@ -497,12 +509,12 @@ class Sreturn extends Stmt {
 
 	@Override
 	Label toERTL(Label l, ERTLgraph g) {
-		ERreturn eRreturn = new ERreturn();
+		/*ERreturn eRreturn = new ERreturn();
 		Label L = g.add(eRreturn);
 		// TODO: Recover the callee_saved
 		ERdelete_frame del = new ERdelete_frame(L);
-		L = g.add(del);
-		return this.e.toERTL(L, new Register(), g);
+		L = g.add(del);*/
+		return this.e.toERTL(l, Register.rax, g);
 	}
 }
 
@@ -599,6 +611,7 @@ class Decl_function extends Declarations { // Declaration of a function
 	final LinkedList<Param> l; // arguments formels
 	final Sblock b;
 	final Type r;
+	LinkedList<Register> backUpReg; 
 
 	Decl_function(String f, LinkedList<Param> l, Sblock b, String t) throws Exception {
 		super();
@@ -606,6 +619,7 @@ class Decl_function extends Declarations { // Declaration of a function
 		this.l = l; // arguments it has
 		this.b = b; // what the function do
 		this.r = new Type(t);
+		this.backUpReg = new LinkedList<>();
 	}
 
 	RTLfun toRTL() {
@@ -646,24 +660,33 @@ class Decl_function extends Declarations { // Declaration of a function
 			dv.initializeVar(f.locals);
 		}
 		Stmt s = null;
+		/* Make the return part */
+		ERreturn eRreturn = new ERreturn();
+		current = f.body.add(eRreturn);
+		ERdelete_frame del = new ERdelete_frame(current);
+		current = f.body.add(del);
+		for (Register r : callee_saved) {
+			this.backUpReg.add(new Register());
+			ERmbinop er2 = new ERmbinop(Mmov, this.backUpReg.getLast(), r, current);
+			current = f.body.add(er2);
+		}
+		final Label returnLabel = current;
+		
 		do{
 			try { s = lstStmt.removeLast(); }
 			catch (NoSuchElementException e) {
 				for (int i = 0; i < f.formals; i++) {
-					if (i < parameters.size()) { // Get the first 6 arguments in registers
+					if (i < parameters.size()) { // Get the first arguments in registers
 						ERmbinop erb = new ERmbinop(Mmov, parameters.get(i), new Register(), current);
 						current = f.body.add(erb);
 					}
 					else { // The other arguments in the pile
-						//TODO: is this the correct order? or it should be the other way?
 						ERget_param getPam = new ERget_param(i - parameters.size(),new Register(), current);
 						current = f.body.add(getPam);
 					}
 				}
-				for (Register r : callee_saved) { // for every input
-					// TODO: does it matter the order?
-					// TODO: How do I save them to recover before the return?
-					ERmbinop er = new ERmbinop(Mmov, r, new Register(), current);
+				for ( int i = 0 ; i < this.backUpReg.size(); i++ ) { // for every input
+					ERmbinop er = new ERmbinop(Mmov, callee_saved.get(i), this.backUpReg.get(i), current);
 					current = f.body.add(er);
 				}
 				ERalloc_frame alloc = new ERalloc_frame(current);
@@ -671,6 +694,7 @@ class Decl_function extends Declarations { // Declaration of a function
 				f.entry = current;
 				return f;
 			}
+			if (s instanceof Sreturn) { current = returnLabel; }
 			current = s.toERTL(current, f.body);
 		} while(true);
 	}
