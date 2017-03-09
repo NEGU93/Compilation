@@ -15,15 +15,13 @@ import java.util.Set;
 abstract class ERTL {
   abstract void accept(ERTLVisitor v);
   abstract Label[] succ();
-  
+
   abstract Set<Register> def();
   abstract Set<Register> use();
 
   protected static Set<Register> emptySet = new HashSet<>();
-  protected static Set<Register> singleton(Register r) {
-    Set<Register> s = new HashSet<>(); s.add(r); return s; }
-  protected static Set<Register> pair(Register r1, Register r2) {
-    Set<Register> s = singleton(r1); s.add(r2); return s; }
+  protected static Set<Register> singleton(Register r) { Set<Register> s = new HashSet<>(); s.add(r); return s; }
+  protected static Set<Register> pair(Register r1, Register r2) { Set<Register> s = singleton(r1); s.add(r2); return s; }
 }
 
 class ERconst extends ERTL {
@@ -258,6 +256,8 @@ class ERTLfun {
   public Label entry;
   /** le graphe de flot de contrôle */
   public ERTLgraph body;
+  /* Duration of life variable */
+  public Liveness info;
   
   ERTLfun(String name, int formals) { this.name = name; this.formals = formals; this.locals = new HashSet<>(); }
   void accept(ERTLVisitor v) { v.visit(this); }
@@ -270,6 +270,10 @@ class ERTLfun {
     System.out.println("  locals : " + locals);
     body.print(entry);
   }
+
+  void createLiveness() {
+    info = new Liveness(this.body);
+  }
 }
 
 class ERTLfile {
@@ -277,7 +281,8 @@ class ERTLfile {
   public LinkedList<ERTLfun> funs;
   ERTLfile() {
     this.gvars = new LinkedList<>();
-    this.funs = new LinkedList<>();  }
+    this.funs = new LinkedList<>();
+  }
   void accept(ERTLVisitor v) { v.visit(this); }
 
   /** pour débugger */
@@ -294,7 +299,7 @@ class ERTLfile {
  */
 class ERTLgraph {
   Map<Label, ERTL> graph = new HashMap<Label, ERTL>();
-  
+
   /** ajoute une nouvelle instruction dans le graphe
     * et renvoie son étiquette */
   Label add(ERTL instr) {
@@ -313,7 +318,7 @@ class ERTLgraph {
     visited.add(l);
     ERTL r = this.graph.get(l);
     if (r == null) return; // c'est le cas pour exit
-    System.out.println("  " + String.format("%3s", l) + ": " + r);
+    System.out.print("  " + String.format("%3s", l) + ": " + r );
     for (Label s: r.succ()) print(visited, s);
   }
   
@@ -364,3 +369,4 @@ class EmptyERTLERTLVisitor implements ERTLVisitor {
   public void visit(ERTLfun o) {}
   public void visit(ERTLfile o) {}
   }
+
