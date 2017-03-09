@@ -10,9 +10,11 @@ class Liveness {
 
     Liveness(ERTLgraph g) {
         info = new HashMap<>();
-        Map<Label, LiveInfo> lastInfo = new HashMap<>();
+        //Map<Label, LiveInfo> lastInfo;
+        boolean finish = false;
         int count = 0;
         do {
+            //lastInfo = info;
             for (Map.Entry<Label, ERTL> ertlg : g.graph.entrySet()) { // For every label
                 LiveInfo liveInfo = new LiveInfo();
 
@@ -35,8 +37,17 @@ class Liveness {
 
                 this.info.put(ertlg.getKey(), liveInfo);
             }
-            count ++; //TODO: how many times? I don't get the Kildall algo
-        } while( count < 33);
+            count++;
+            if (count > 30) { finish = true; } //TODO: I still don't have how to compare
+
+            /*boolean equal = true;
+            for ( Map.Entry<Label, LiveInfo> liveInfo : this.info.entrySet() ) {
+                if (! liveInfo.getValue().equals( lastInfo.get( liveInfo.getKey() )) ) {
+                    equal = false;
+                }
+            }
+            System.out.println("Stationary state: " + equal);*/
+        } while(!finish);
     }
 
     private void print(Set<Label> visited, Label l) {
@@ -49,6 +60,16 @@ class Liveness {
 
     void print(Label entry) { print(new HashSet<>(), entry); }
 
+    @Override
+    public boolean equals(Object o) {
+        Liveness that = (Liveness)o;
+        for ( Map.Entry<Label, LiveInfo> liveInfo : this.info.entrySet() ) {
+            if (! liveInfo.getValue().equals(that.info.get(liveInfo.getKey())) ) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
 
 class LiveInfo {
@@ -60,7 +81,19 @@ class LiveInfo {
     Set<Register> ins;      // variables vivantes en entrée
     Set<Register> outs;     // variables vivantes en sortie
 
+    @Override
     public String toString() {
         return " def = " + this.defs + " use = " + this.uses + " in = " + ins + " out = " + outs;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        LiveInfo that = (LiveInfo) o;
+        //TODO: I yet not check instr or pred
+        if (! this.defs.equals(that.defs)) { return false; }
+        if (! this.uses.equals(that.uses)) { return false; }
+        if (! this.ins.equals(that.ins))   { return false; }
+        if (! this.outs.equals(that.outs)) { return false; }
+        return true;
     }
 }

@@ -2,6 +2,7 @@ package mini_c;
 
 /** Register Transfer Language (RTL) */
 
+// TODO: local and global variables
 import sun.awt.image.ImageWatched;
 
 import java.util.HashMap;
