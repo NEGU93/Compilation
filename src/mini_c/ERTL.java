@@ -92,8 +92,7 @@ class ERmunop extends ERTL {
   public Munop m;
   public Register r;
   public Label l;
-  ERmunop(Munop m, Register r, Label l) { this.m = m; this.r = r; this.l = l;
-     }
+  ERmunop(Munop m, Register r, Label l) { this.m = m; this.r = r; this.l = l; }
   void accept(ERTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -106,8 +105,7 @@ class ERmbinop extends ERTL {
   public Register r1;
   public Register r2;
   public Label l;
-  ERmbinop(Mbinop m, Register r1, Register r2, Label l) { this.m = m;
-    this.r1 = r1; this.r2 = r2; this.l = l;  }
+  ERmbinop(Mbinop m, Register r1, Register r2, Label l) { this.m = m; this.r1 = r1; this.r2 = r2; this.l = l;  }
   void accept(ERTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -115,12 +113,14 @@ class ERmbinop extends ERTL {
     if (m == Mbinop.Mdiv) {
       assert (r2.equals(Register.rax));
       return pair(Register.rax, Register.rdx);
-    } else
-      return singleton(r2); }
+    }
+    else { return singleton(r2); }
+  }
   @Override Set<Register> use() {
-    if (m == Mbinop.Mdiv) return pair(Register.rax, r1);
-    else if (m == Mbinop.Mmov) return singleton(r1);
-    else return pair(r1, r2); }
+    if (m == Mbinop.Mdiv) { return pair(Register.rax, r1); }
+    else if (m == Mbinop.Mmov) { return singleton(r1); }
+    else { return pair(r1, r2); }
+  }
 }
 
 class ERmubranch extends ERTL {
@@ -128,8 +128,7 @@ class ERmubranch extends ERTL {
   public Register r;
   public Label l1;
   public Label l2;
-  ERmubranch(Mubranch m, Register r, Label l1, Label l2) { this.m = m;
-    this.r = r; this.l1 = l1; this.l2 = l2;  }
+  ERmubranch(Mubranch m, Register r, Label l1, Label l2) { this.m = m; this.r = r; this.l1 = l1; this.l2 = l2;  }
   void accept(ERTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l1 + ", " + l2; }
   Label[] succ() { return new Label[] { l1, l2 }; }
@@ -268,12 +267,10 @@ class ERTLfun {
     System.out.println(name + "(" + formals + ")");
     System.out.println("  entry  : " + entry);
     System.out.println("  locals : " + locals);
-    body.print(entry);
+    body.printWithLife(new HashSet<>(), this.entry, this.info);
   }
 
-  void createLiveness() {
-    info = new Liveness(this.body);
-  }
+  void createLiveness() { info = new Liveness(this.body); }
 }
 
 class ERTLfile {
@@ -318,8 +315,17 @@ class ERTLgraph {
     visited.add(l);
     ERTL r = this.graph.get(l);
     if (r == null) return; // c'est le cas pour exit
-    System.out.print("  " + String.format("%3s", l) + ": " + r );
+    System.out.println("  " + String.format("%3s", l) + ": " + r );
     for (Label s: r.succ()) print(visited, s);
+  }
+
+  void printWithLife(Set<Label> visited, Label l, Liveness info) {
+    if (visited.contains(l)) return;
+    visited.add(l);
+    ERTL r = this.graph.get(l);
+    if (r == null) return; // c'est le cas pour exit
+    System.out.println("  " + String.format("%3s", l) + ": " + r + info.info.get(l) );
+    for (Label s: r.succ()) printWithLife(visited, s, info);
   }
   
   /** imprime le graphe (pour debugger) */

@@ -97,8 +97,7 @@ class Rstore extends RTL {
   int i;
   Label l;
   
-  Rstore(Register r1, Register r2, int i, Label l) { this.r1 = r1;
-    this.r2 = r2; this.i = i; this.l = l;  }
+  Rstore(Register r1, Register r2, int i, Label l) { this.r1 = r1; this.r2 = r2; this.i = i; this.l = l;  }
   
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r1 + " " + i + "(" + r2 + ") " + " --> " + l; }
@@ -240,7 +239,7 @@ class Rcall extends RTL {
 }
 
 /** saut inconditionnel */
-class Rgoto extends RTL { //TODO: don't know how to do this. (or more precisely where to use it)
+class Rgoto extends RTL {
   Label l;
   
   Rgoto(Label l) { this.l = l;  }
@@ -270,7 +269,7 @@ class RTLfun {
   Label exit;
   /** le graphe de flot de contrôle */
   RTLgraph body;
-
+  /* backup registers for callee_saved (and to know where they are) */
   private LinkedList<Register> backUpReg;
 
   RTLfun(String name) { this.name = name; this.formals = new LinkedList<>(); this.locals = new HashSet<>(); }
@@ -294,7 +293,7 @@ class RTLfun {
     efun.body = this.body.toERTL();         // RTL -> ERTL
     efun = startERTLGraph(efun);            // Add the begining of the function call
     efun.body = returnERTLGraph(efun.body); // Add the end of the function call
-    efun.createLiveness(); // Before going back I create the life
+    efun.createLiveness();                  // Before going back I create the life
     return efun;
   }
 
@@ -328,12 +327,10 @@ class RTLfun {
     Label current = eg.add(eRreturn);
     ERdelete_frame del = new ERdelete_frame(current);
     current = eg.add(del);
-    for (Register r : callee_saved) {
-      //this.backUpReg.add(new Register());
-      ERmbinop er2 = new ERmbinop(Mmov, /*this.backUpReg.getLast()*/ new Register(), r, current);
+    for ( int i = 0 ; i < callee_saved.size(); i++ ) {
+      ERmbinop er2 = new ERmbinop(Mmov, this.backUpReg.get(i), callee_saved.get(i), current);
       current = eg.add(er2);
     }
-    // this should be before actually
     ERmbinop ret = new ERmbinop(Mmov, Register.rax, Register.rax, current); // TODO: don't know how to know the register.
     eg.put(this.exit, ret);
     return eg;
