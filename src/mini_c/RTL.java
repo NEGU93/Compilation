@@ -35,7 +35,9 @@ class Rconst extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERconst(this.i, this.r, this.l); }
+  ERTL toERTL() {
+    return new ERconst(this.i, this.r, this.l);
+  }
 }
 
 /** lit dans une variable globale */
@@ -43,9 +45,9 @@ class Raccess_global extends RTL {
   String s;
   Register r;
   Label l;
-  
+
   Raccess_global(String s, Register r, Label l) { this.s = s; this.r = r; this.l = l;  }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + s + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -59,9 +61,9 @@ class Rassign_global extends RTL {
   Register r;
   String s;
   Label l;
-  
+
   Rassign_global(Register r, String s, Label l) { this.r = r; this.s = s; this.l = l;  }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r + " " + s + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -71,17 +73,17 @@ class Rassign_global extends RTL {
 }
 
 /** instruction mov i(r1), r2 */
-class Rload extends RTL { 
+class Rload extends RTL {
   Register r1;
   int i;
   Register r2;
   Label l;
-  
+
   Rload(Register r1, Register r2, int i, Label l) {
 	this.r1 = r1; this.i = i;
     this.r2 = r2; this.l = l;
   }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + i + "(" + r1 + ") " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -96,9 +98,9 @@ class Rstore extends RTL {
   Register r2;
   int i;
   Label l;
-  
+
   Rstore(Register r1, Register r2, int i, Label l) { this.r1 = r1; this.r2 = r2; this.i = i; this.l = l;  }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r1 + " " + i + "(" + r2 + ") " + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -112,9 +114,9 @@ class Rmunop extends RTL {
   Munop m;
   Register r;
   Label l;
-  
+
   Rmunop(Munop m, Register r, Label l) { this.m = m; this.r = r; this.l = l; }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -129,9 +131,9 @@ class Rmbinop extends RTL {
   Register r1;
   Register r2;
   Label l;
-  
+
   Rmbinop(Mbinop m, Register r1, Register r2, Label l) { this.m = m; this.r1 = r1; this.r2 = r2; this.l = l;  }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -146,10 +148,10 @@ class Rmubranch extends RTL {
   Register r;
   Label l1;
   Label l2;
-  
+
   Rmubranch(Mubranch m, Register r, Label l1, Label l2) { this.m = m;
     this.r = r; this.l1 = l1; this.l2 = l2;  }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l1 + ", " + l2; }
   Label[] succ() { return new Label[] { l1, l2 }; }
@@ -165,11 +167,11 @@ class Rmbbranch extends RTL {
   Register r2;
   Label l1;
   Label l2;
-  
+
   Rmbbranch(Mbbranch m, Register r1, Register r2, Label l1, Label l2) {
     this.m = m; this.r1 = r1; this.r2 = r2; this.l1 = l1; this.l2 = l2;
   }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l1 + ", " + l2; }
   Label[] succ() { return new Label[] { l1, l2 }; }
@@ -184,10 +186,10 @@ class Rcall extends RTL {
   String s;
   List<Register> rl;
   Label l;
-  
+
   Rcall(Register r, String s, List<Register> rl, Label l) { this.r = r;
     this.s = s; this.rl = rl; this.l = l;  }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return r + " <- call " + s + rl + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -241,9 +243,9 @@ class Rcall extends RTL {
 /** saut inconditionnel */
 class Rgoto extends RTL {
   Label l;
-  
+
   Rgoto(Label l) { this.l = l;  }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return "goto " + l; }
   Label[] succ() { return new Label[] { l }; }
@@ -273,9 +275,9 @@ class RTLfun {
   private LinkedList<Register> backUpReg;
 
   RTLfun(String name) { this.name = name; this.formals = new LinkedList<>(); this.locals = new HashSet<>(); }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
-  
+
   /** pour débugger */
   void print() {
 	System.out.println("== RTL ==========================");
@@ -342,12 +344,12 @@ class RTLfun {
 class RTLfile {
   List<String> gvars;
   List<RTLfun> funs;
-  
+
   RTLfile() {
     this.gvars = new LinkedList<String>();
     this.funs = new LinkedList<RTLfun>();
   }
-  
+
   void accept(RTLVisitor v) { v.visit(this); }
 
   /** pour débugger */
@@ -365,13 +367,13 @@ class RTLfile {
 }
 
 /** graphe de flot de contrôle (d'une fonction)
- * 
+ *
  * c'est un dictionnaire qui associe une instruction de type RTL
  * à une étiquette de type Label
  */
 class RTLgraph {
 	Map<Label, RTL> graph = new HashMap<Label, RTL>();
-	
+
 	/** ajoute une nouvelle instruction dans le graphe
 	  * et renvoie son étiquette */
 	Label add(RTL instr) {
@@ -379,7 +381,7 @@ class RTLgraph {
 		graph.put(l, instr);
 		return l;
 	}
-	
+
 	// imprime le graphe par un parcours en profondeur
 	private void print(Set<Label> visited, Label l) {
 		if (visited.contains(l)) return;
@@ -389,7 +391,7 @@ class RTLgraph {
 		System.out.println("  " + String.format("%3s", l) + ": " + r);
 		for (Label s: r.succ()) print(visited, s);
 	}
-	
+
 	/** imprime le graphe (pour debugger) */
 	void print(Label entry) {
 		print(new HashSet<Label>(), entry);
