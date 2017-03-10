@@ -136,9 +136,10 @@ class Ebinop extends Expr { // Operation between 2 Expr
       case Beqeq:
     	t2 = this.e2.Typer();
         if (Typing.equalsType(t1,t2)) {
+
           return (t1);
         }
-        else {throw new Error("Bad type expression");}
+        else {throw new Error("Bad type expression, left term is "+ t1+" and and right term is "+t2);}
       case Bneq :
       case Blt:
       case Bgt:
@@ -148,7 +149,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
         if (Typing.equalsType(t1,t2)) {
           return ("int");
         }
-        else {throw new Error("Bad type expression");}
+        else {throw new Error("Bad type expression, t1 is "+t1+" and t2 is "+t2);}
       case Bor:
       case Band:
     	t2 = this.e2.Typer();
@@ -169,7 +170,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
             if (Typing.equalsType(t1,t2)) {
               return t1;
             }
-            else {throw new Error("invalid type");}
+            else {throw new Error("invalid type type left is "+t1+" and type right is "+t2);}
           }
           else if (this.e1 instanceof Ebinop) {
             switch(((Ebinop) this.e1).op){
@@ -225,7 +226,11 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
   @Override
   String Typer() {
     if (Typing.varType.containsKey(this.f)) {
-      Iterator<Var> it= Typing.funArgsType.get(this.f).iterator();
+      LinkedList<Var> typeArgs= Typing.funArgsType.get(this.f);
+      Iterator<Var> it= typeArgs.iterator();
+      if (typeArgs.size()!=this.l.size()) {
+    	  throw new Error("invalid number of arguments");
+      }
       for (Expr e:this.l) {
         if (!e.Typer().equals(it.next().type)) {
           throw new Error("invalid argument type");
@@ -396,7 +401,7 @@ abstract class Declarations {
       this.t = new Type("int");
       this.l = new LinkedList<Var>();
       for (String s : x) {
-        if (Typing.varType.containsKey(s)) {
+        if (Typing.varType.containsKey(s) || Typing.varTypeLoc.containsKey(s)) {
           throw new Error("This variable name already exists");
         }
         this.l.addFirst(new Var(s,"int"));
@@ -407,7 +412,7 @@ abstract class Declarations {
       super();
       this.v=l;
       this.x = x;
-      this.t = new Type("x");
+      this.t = new Type(x);
       this.l = new LinkedList<Var>();
 
    /*   if (!Typing.declStruct.containsKey(x)) {
@@ -466,12 +471,14 @@ abstract class Declarations {
       //Typing.declStruct.put(s,l);
     }*/
     
-    Decl_struct(String s, LinkedList<Decl_variable> ld) {
+    Decl_struct(String s, LinkedList<Decl_variable> ld) throws Exception {
         super();
         this.s = s;
         this.l = new LinkedList<Param>();
         for (Decl_variable d:ld) {
-        	l.add(new Param(d));
+        	for (String st:d.v) {
+        	l.add(new Param(st, d.t.t));
+        	}
         }
         
         HashSet<Param> unique = new HashSet<Param>(l);
@@ -510,11 +517,11 @@ abstract class Declarations {
 	      Typing.varType.put(f, new Var(f,r.t));	
 	      LinkedList<Var> typeArgs = new LinkedList<Var>();
 	      for (Param p:this.l) {
-	    	System.out.println("Parametre "+p.v+" ajoute avec le type "+p.t.t);
 	        typeArgs.addLast(new Var(p.v,p.t.t));
 	        Typing.varTypeLoc.put(p.v,new Var(p.v,p.t.t));
 	      }
-	      System.out.println(Typing.varTypeLoc);
+	      System.out.println("varTypeLoc : "+Typing.varTypeLoc);
+	      System.out.println("varType : "+Typing.varType);
 	      Typing.funArgsType.put(f,typeArgs);
 	      this.b.Typer();
 	      for (Param p:this.l) {
@@ -572,10 +579,11 @@ class Param {
         this.v = x;
         this.t = new Type("int");
       }
-    public Param(Decl_variable d) {
-    	this.v = d.v.element();
-    	this.t = new Type(d.x);
-    }
+   /* public Param(Decl_variable d) {
+    	for (String s:d.v) {
+    	Param
+    	}
+    }*/
     
   }
   /* File */
