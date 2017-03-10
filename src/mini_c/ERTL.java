@@ -22,6 +22,9 @@ abstract class ERTL {
   protected static Set<Register> emptySet = new HashSet<>();
   protected static Set<Register> singleton(Register r) { Set<Register> s = new HashSet<>(); s.add(r); return s; }
   protected static Set<Register> pair(Register r1, Register r2) { Set<Register> s = singleton(r1); s.add(r2); return s; }
+
+  abstract Register getR();
+  Register getConflict() { return null; }
 }
 
 class ERconst extends ERTL {
@@ -34,6 +37,7 @@ class ERconst extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return emptySet; }
+  @Override Register getR() { return r; }
 }
 
 class ERaccess_global extends ERTL {
@@ -46,6 +50,7 @@ class ERaccess_global extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return emptySet; }
+  @Override Register getR() { return r; }
 }
 
 class ERassign_global extends ERTL {
@@ -58,6 +63,7 @@ class ERassign_global extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return singleton(r); }
+  @Override Register getR() { return null; }
 }
 
 class ERload extends ERTL {
@@ -72,6 +78,8 @@ class ERload extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return singleton(r2); }
   @Override Set<Register> use() { return singleton(r1); }
+  @Override Register getR() { return r2; }
+  @Override Register getConflict() { return r1; }
 }
 
 class ERstore extends ERTL {
@@ -86,6 +94,8 @@ class ERstore extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return pair(r1, r2); }
+  @Override Register getR() { return r2; }
+  @Override Register getConflict() { return r1; }
 }
 
 class ERmunop extends ERTL {
@@ -98,6 +108,7 @@ class ERmunop extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return singleton(r); }
+  @Override Register getR() { return r; }
 }
 
 class ERmbinop extends ERTL {
@@ -121,6 +132,8 @@ class ERmbinop extends ERTL {
     else if (m == Mbinop.Mmov) { return singleton(r1); }
     else { return pair(r1, r2); }
   }
+  @Override Register getR() { return r2; }
+  @Override Register getConflict() { return r1; }
 }
 
 class ERmubranch extends ERTL {
@@ -134,6 +147,7 @@ class ERmubranch extends ERTL {
   Label[] succ() { return new Label[] { l1, l2 }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return singleton(r); }
+  @Override Register getR() { return r; }
 }
 
 class ERmbbranch extends ERTL {
@@ -149,6 +163,8 @@ class ERmbbranch extends ERTL {
   Label[] succ() { return new Label[] { l1, l2 }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return pair(r1, r2); }
+  @Override Register getR() { return r2; }
+  @Override Register getConflict() { return r1; }
 }
 
 class ERgoto extends ERTL {
@@ -159,6 +175,7 @@ class ERgoto extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return emptySet; }
+  @Override Register getR() { return null; }
 }
 
 /** modifiée */
@@ -182,6 +199,7 @@ class ERcall extends ERTL {
     }
     return s;
   }
+  @Override Register getR() { return null; }
 }
 
 /** nouvelles instructions */
@@ -194,6 +212,7 @@ class ERalloc_frame extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return emptySet; }
+  @Override Register getR() { return null; }
 }
 
 class ERdelete_frame extends ERTL {
@@ -204,6 +223,7 @@ class ERdelete_frame extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return emptySet; }
+  @Override Register getR() { return null; }
 }
 
 class ERget_param extends ERTL {
@@ -216,6 +236,7 @@ class ERget_param extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return emptySet; }
+  @Override Register getR() { return r; }
 }
 
 class ERpush_param extends ERTL {
@@ -227,6 +248,7 @@ class ERpush_param extends ERTL {
   Label[] succ() { return new Label[] { l }; }
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return singleton(r); }
+  @Override Register getR() { return r; }
 }
 
 class ERreturn extends ERTL {
@@ -240,6 +262,7 @@ class ERreturn extends ERTL {
     s.add(Register.rax);
     return s;
   }
+  @Override Register getR() { return null; }
 }
 
 /** une fonction ERTL */
@@ -257,6 +280,8 @@ class ERTLfun {
   public ERTLgraph body;
   /* Duration of life variable */
   public Liveness info;
+  /* Interference */
+  Interference interference;
   
   ERTLfun(String name, int formals) { this.name = name; this.formals = formals; this.locals = new HashSet<>(); }
   void accept(ERTLVisitor v) { v.visit(this); }
@@ -268,9 +293,14 @@ class ERTLfun {
     System.out.println("  entry  : " + entry);
     System.out.println("  locals : " + locals);
     body.printWithLife(new HashSet<>(), this.entry, this.info);
+    interference.print();
   }
 
   void createLiveness() { info = new Liveness(this.body); }
+  void createInterference() {
+    if (info == null) { throw new Error("to create interference, info must be created"); }
+    interference = new Interference(info);
+  }
 }
 
 class ERTLfile {

@@ -50,7 +50,8 @@ class Reg extends Operand {
 abstract class LTL {
   abstract void accept(LTLVisitor v);
   abstract Label[] succ();
-  }
+
+}
 
 /** les mêmes que dans ERTL */
 
@@ -81,8 +82,7 @@ class Lload extends LTL {
   public int i;
   public Register r2;
   public Label l;
-  Lload(Register r1, int i, Register r2, Label l) { this.r1 = r1; this.i = i;
-    this.r2 = r2; this.l = l;  }
+  Lload(Register r1, int i, Register r2, Label l) { this.r1 = r1; this.i = i; this.r2 = r2; this.l = l;  }
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + i + "(" + r1 + ") " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }

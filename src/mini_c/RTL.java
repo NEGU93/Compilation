@@ -297,6 +297,7 @@ class RTLfun {
     efun = startERTLGraph(efun);            // Add the begining of the function call
     efun.body = returnERTLGraph(efun.body); // Add the end of the function call
     efun.createLiveness();                  // Before going back I create the life
+    efun.createInterference();
     return efun;
   }
 
