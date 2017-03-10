@@ -1,9 +1,9 @@
 package mini_c;
 
-/** Register Transfer Language (RTL) */
+/* Register Transfer Language (RTL) */
 
 // TODO: local and global variables
-import sun.awt.image.ImageWatched;
+// TODO: I'm afraid, should I put a goto for the return part?
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,7 +75,7 @@ class Rassign_global extends RTL {
 
   @Override
   ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERassign_global(this.r, this.s, this.l);  } // TODO: fuck, the instruction was before. I'll have a problem here
+    if (exit == l) { return new ERassign_global(this.r, this.s, this.l); } //TODO: Case return x = expr with x global. I whould return r. This is bad
     else { return new ERassign_global(this.r, this.s, this.l); }
   }
 }
@@ -118,7 +118,7 @@ class Rstore extends RTL {
 
   @Override
   ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERstore(this.r1, this.r2, this.i, this.l);   } // TODO: fuck, the instruction that saved into rax was before, I will have a problem here
+    if (exit == l) { return new ERstore(this.r1, this.r2, this.i, this.l);   } //TODO: case return r->i = expr; in which case I return expr == r1. So move r1 to rax.
     else { return new ERstore(this.r1, this.r2, this.i, this.l); }
   }
 }
@@ -280,12 +280,8 @@ class Rgoto extends RTL {
 
   @Override
   ERTL toERTL(Label exit) {
-    if (exit == l) {
-      return new ERgoto(this.l);
-    } //TODO: problem here! check if this can happen in a return!
-    else {
-      return new ERgoto(this.l);
-    }
+    if (exit == l) { return new ERgoto(this.l); } //TODO: can't find an example of when this can happen but I'm not sure it can't happen either.
+    else { return new ERgoto(this.l); }
   }
 }
 
@@ -371,7 +367,7 @@ class RTLfun {
     else { current = eg.add(del); } // Normally this case should happen
     for ( int i = 0 ; i < callee_saved.size(); i++ ) {
       ERmbinop er2 = new ERmbinop(Mmov, this.backUpReg.get(i), callee_saved.get(i), current);
-      if ( i == (callee_saved.size() - 1) ) {
+      if ( i == (callee_saved.size() - 1) ) { // The last one should go to exit kind of.
         eg.put(this.exit, er2);
       }
       else { current = eg.add(er2); }
