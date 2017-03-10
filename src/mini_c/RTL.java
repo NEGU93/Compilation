@@ -22,7 +22,7 @@ import static mini_c.Register.result;
 abstract class RTL {
   abstract void accept(RTLVisitor v);
   abstract Label[] succ();
-  abstract ERTL toERTL();
+  abstract ERTL toERTL(Label exit);
 }
 
 /** charge une constante dans un registre */
@@ -36,8 +36,9 @@ class Rconst extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() {
-    return new ERconst(this.i, this.r, this.l);
+  ERTL toERTL(Label exit) {
+    if (exit == l) { return new ERconst(this.i, result, exit); } // This will make it ERTL have rax if it's a return instruction!
+    else { return new ERconst(this.i, this.r, this.l); }
   }
 }
 
@@ -54,7 +55,10 @@ class Raccess_global extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERaccess_global(this.s, this.r, this.l); }
+  ERTL toERTL(Label exit) {
+    if (exit == l) { return new ERaccess_global(this.s, result, this.l);  }
+    else { return new ERaccess_global(this.s, this.r, this.l); }
+  }
 }
 
 /** écrit une variable globale */
@@ -70,7 +74,10 @@ class Rassign_global extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERassign_global(this.r, this.s, this.l); }
+  ERTL toERTL(Label exit) {
+    if (exit == l) { return new ERassign_global(this.r, this.s, this.l);  } // TODO: fuck, the instruction was before. I'll have a problem here
+    else { return new ERassign_global(this.r, this.s, this.l); }
+  }
 }
 
 /** instruction mov i(r1), r2 */
@@ -90,7 +97,10 @@ class Rload extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERload(this.r1, this.i, this.r2, this.l); }
+  ERTL toERTL(Label exit) {
+    if (exit == l) { return new ERload(this.r1, this.i, result, this.l);  }
+    else { return new ERload(this.r1, this.i, this.r2, this.l); }
+  }
 }
 
 /** instruction mov r1, i(r2) */
@@ -107,7 +117,10 @@ class Rstore extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERstore(this.r1, this.r2, this.i, this.l); }
+  ERTL toERTL(Label exit) {
+    if (exit == l) { return new ERstore(this.r1, this.r2, this.i, this.l);   } // TODO: fuck, the instruction that saved into rax was before, I will have a problem here
+    else { return new ERstore(this.r1, this.r2, this.i, this.l); }
+  }
 }
 
 /** instruction x86-64 unaire */
@@ -123,7 +136,10 @@ class Rmunop extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERmunop(this.m, this.r, this.l); }
+  ERTL toERTL(Label exit) {
+    if (exit == l) { return new ERmunop(this.m, result, this.l);   }
+    else { return new ERmunop(this.m, this.r, this.l); }
+  }
 }
 
 /** instruction x86-64 binaire */
@@ -140,7 +156,10 @@ class Rmbinop extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERmbinop(this.m, this.r1, this.r2, this.l); }
+  ERTL toERTL(Label exit) {
+    if (exit == l) { return new ERmbinop(this.m, this.r1, result, this.l);   }
+    else { return new ERmbinop(this.m, this.r1, this.r2, this.l); }
+  }
 }
 
 /** instruction x86-64 de branchement (unaire) */
@@ -158,7 +177,10 @@ class Rmubranch extends RTL {
   Label[] succ() { return new Label[] { l1, l2 }; }
 
   @Override
-  ERTL toERTL() { return new ERmubranch(this.m, this.r, this.l1, this.l2); }
+  ERTL toERTL(Label exit) {
+    if ( (exit == l1) || (exit == l2) ) { throw new Error("I have no idea how I got here"); } // The fastest way to exit from a brunch is to put a return after, and that will give me another ERTL.
+    else { return new ERmubranch(this.m, this.r, this.l1, this.l2); }
+  }
 }
 
 /** instruction x86-64 de branchement (binaire) */
@@ -178,7 +200,10 @@ class Rmbbranch extends RTL {
   Label[] succ() { return new Label[] { l1, l2 }; }
 
   @Override
-  ERTL toERTL() { return new ERmbbranch(this.m, this.r1, this.r2, this.l1, this.l2); }
+  ERTL toERTL(Label exit) {
+    if ( (exit == l1) || (exit == l2) ) { throw new Error("I have no idea how I got here"); } // The fastest way to exit from a brunch is to put a return after, and that will give me another ERTL.
+    else { return new ERmbbranch(this.m, this.r1, this.r2, this.l1, this.l2); }
+  }
 }
 
 /** appel de fonction */
@@ -196,7 +221,9 @@ class Rcall extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERcall(this.s, this.rl.size(), this.l); }
+  ERTL toERTL(Label exit) {
+    return new ERcall(this.s, this.rl.size(), this.l); // There is no problem here because the return is in rax so I don't even check
+  }
 
   ERTLgraph prevFun(ERTLgraph g, Label key) {
     Label L = this.l;
@@ -252,7 +279,14 @@ class Rgoto extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL() { return new ERgoto(this.l); }
+  ERTL toERTL(Label exit) {
+    if (exit == l) {
+      return new ERgoto(this.l);
+    } //TODO: problem here! check if this can happen in a return!
+    else {
+      return new ERgoto(this.l);
+    }
+  }
 }
 
 /** une fonction RTL */
@@ -293,7 +327,7 @@ class RTLfun {
     backUpReg = new LinkedList<>();
     ERTLfun efun = new ERTLfun(this.name, formals.size());
     efun.locals = this.locals;
-    efun.body = this.body.toERTL();         // RTL -> ERTL
+    efun.body = this.body.toERTL(this.exit);         // RTL -> ERTL
     efun = startERTLGraph(efun);            // Add the begining of the function call
     efun.body = returnERTLGraph(efun.body); // Add the end of the function call
     efun.createLiveness();                  // Before going back I create the life
@@ -330,13 +364,18 @@ class RTLfun {
     ERreturn eRreturn = new ERreturn();
     Label current = eg.add(eRreturn);
     ERdelete_frame del = new ERdelete_frame(current);
-    current = eg.add(del);
+    if (  callee_saved.size() == 0 ) {
+      System.out.println("Warning: Check the Registers class, there are no callee saved");
+      eg.put(this.exit, del);
+    }
+    else { current = eg.add(del); } // Normally this case should happen
     for ( int i = 0 ; i < callee_saved.size(); i++ ) {
       ERmbinop er2 = new ERmbinop(Mmov, this.backUpReg.get(i), callee_saved.get(i), current);
-      current = eg.add(er2);
+      if ( i == (callee_saved.size() - 1) ) {
+        eg.put(this.exit, er2);
+      }
+      else { current = eg.add(er2); }
     }
-    ERmbinop ret = new ERmbinop(Mmov, Register.rax, Register.rax, current); // TODO: don't know how to know the register.
-    eg.put(this.exit, ret);
     return eg;
   }
 }
@@ -399,14 +438,14 @@ class RTLgraph {
 		print(new HashSet<Label>(), entry);
 	}
 
-    ERTLgraph toERTL() {
+    ERTLgraph toERTL(Label exit) {
       ERTLgraph eg = new ERTLgraph();
       for ( Map.Entry<Label, RTL> g : this.graph.entrySet() ) {
         if (g.getValue() instanceof Rcall) {
           eg = ((Rcall) g.getValue()).prevFun(eg, g.getKey());
         }
         else {
-          eg.put(g.getKey(), g.getValue().toERTL()); // Wow this is cool. So perfect... XD
+          eg.put(g.getKey(), g.getValue().toERTL(exit)); // Wow this is cool. So perfect... XD
         }
       }
       return eg;

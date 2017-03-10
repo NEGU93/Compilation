@@ -525,6 +525,7 @@ class Decl_function extends Declarations { // Declaration of a function
 }
 
 class Sizeof extends Expr {
+	// TODO: sizeof yet not implemented
 	final private String s;
 
 	Sizeof(String s) {
