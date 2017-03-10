@@ -428,11 +428,17 @@ abstract class Declarations {
     void Typer() {
       if (this.t.t.equals("struct")) {
         for (Var v:this.l) {
+        /* 	if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+    		throw new Error(v.name+" already exists");
+    		}*/
           Typing.varType.put(v.name,v);
         }
       }
       else {
         for (Var v:this.l) {
+       /* 	if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+        		throw new Error(v.name+" already exists");
+        	}*/
           Typing.varType.put(v.name,v);
         }
       }
@@ -441,11 +447,17 @@ abstract class Declarations {
     void TyperLoc() {
         if (this.t.t.equals("struct")) {
           for (Var v:this.l) {
+        /* 	if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+      		throw new Error(v.name+" already exists");
+      		}*/
             Typing.varTypeLoc.put(v.name,v);
           }
         }
         else {
           for (Var v:this.l) {
+        /* 	if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+      		throw new Error(v.name+" already exists");
+      		}*/
             Typing.varTypeLoc.put(v.name,v);
           }
         }
@@ -493,6 +505,9 @@ abstract class Declarations {
     
     @Override
     void Typer() {
+        if (Typing.declStruct.containsKey(s)) {
+            throw new Error("This structure name already exists");
+          }
       Typing.declStruct.put(this.s,this.l);
     }
   }
@@ -513,7 +528,10 @@ abstract class Declarations {
 		
 	    @Override
 	    void Typer(){
-	    	System.out.println("Typing the function " +this.f);
+	      if (Typing.varType.containsKey(this.f)) {
+            throw new Error("This structure name already exists");
+          }
+	      System.out.println("Typing the function " +this.f);
 	      Typing.varType.put(f, new Var(f,r.t));	
 	      LinkedList<Var> typeArgs = new LinkedList<Var>();
 	      for (Param p:this.l) {
