@@ -48,7 +48,7 @@ class Interference {
                 if (v != null) {
                     Arcs arcsv = graph.get(v);
                     if (arcsv == null) {        // Make sure I have an arcs (Mov $45 #r1 will make no entry for #r1)
-                        arcsv = new Arcs();     // TODO: in the future I think this can be removed. If the entry is not created then we can delete the operation
+                        arcsv = new Arcs();     // TODO: in the future I think this can be removed. If the entry is not created then we can delete the operation (but take care to delete the operation or bad things will happen)
                         graph.put(v, arcsv);
                     }
                     Register w = li.instr.getConflict();    // Does the ERTL has a conflict of registers?

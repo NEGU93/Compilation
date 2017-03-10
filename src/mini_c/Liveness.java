@@ -15,7 +15,7 @@ class Liveness {
         int count = 0;
         do {
             //lastInfo = info;
-            // TODO: this is not yet the K... algorithm but the less effective one. I don't use pred
+            // TODO: this is not yet the Kildall algorithm but the less effective one. I don't use pred. (calcul de point fixe dans pdf)
             for (Map.Entry<Label, ERTL> ertlg : g.graph.entrySet()) { // For every label
                 LiveInfo liveInfo = new LiveInfo();
 
@@ -38,10 +38,12 @@ class Liveness {
 
                 this.info.put(ertlg.getKey(), liveInfo);
             }
-            //TODO: I still don't have how to compare to know when I reach the stationary state so I hardcode the 30
+            /*TODO: I still don't have how to compare to know when I reach the stationary state so I hardcode the 30 (I guess in 30 iterations it will be done)
+                I implemented the function equals that uses the funciton equals of Register and Label but still it doesn't work.
+                the problem is that (I think) when I copy lastInfo is a reference copy and then a change in info chances lastInfo as well but I'm not sure
+            */
             count++;
             if (count > 30) { finish = true; }
-
             /*boolean equal = true;
             for ( Map.Entry<Label, LiveInfo> liveInfo : this.info.entrySet() ) {
                 if (! liveInfo.getValue().equals( lastInfo.get( liveInfo.getKey() )) ) {
