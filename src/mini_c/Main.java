@@ -18,12 +18,12 @@ public class Main {
 		Parser parser = new Parser(lexer);
 		File f = (File) parser.parse().value;
 		RTLfile rfile= f.toRTL();
-		ERTLfile erFile = rfile.toERTL();
+		ERTLfile erFile = new ERTLfile();
+		erFile.convertRTLfile(rfile);
 		erFile.print();
 		LTLfile ltlfile = new LTLfile();
 		ltlfile.convertERTLfile(erFile);
 		ltlfile.print();
-		//LTL LTLfile = erFIle.toLTL();
 		/*for (Def d: f.l)
 			//Interp.functions.put(d.f, d);
 		try {

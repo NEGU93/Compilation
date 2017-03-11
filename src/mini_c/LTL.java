@@ -215,8 +215,8 @@ class LTLfun {
 }
 
 class LTLfile {
-  public LinkedList<String> gvars;
-  public LinkedList<LTLfun> funs;
+  LinkedList<String> gvars;
+  LinkedList<LTLfun> funs;
   LTLfile() {
     this.gvars = new LinkedList<String>();
     this.funs = new LinkedList<LTLfun>();

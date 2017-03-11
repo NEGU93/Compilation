@@ -1,10 +1,7 @@
 package mini_c;
 
 /* Register Transfer Language (RTL) */
-
 // TODO: local and global variables
-// TODO: I'm afraid, should I put a goto for the return part?
-// TODO Priority: do a better toERTL function my God!
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static mini_c.Mbinop.Mmov;
-import static mini_c.Register.callee_saved;
 import static mini_c.Register.parameters;
 import static mini_c.Register.result;
 
@@ -23,7 +19,7 @@ import static mini_c.Register.result;
 abstract class RTL {
   abstract void accept(RTLVisitor v);
   abstract Label[] succ();
-  abstract ERTL toERTL(Label exit);
+  abstract ERTL toERTL(Label exit, ERTLgraph body);
 }
 
 /** charge une constante dans un registre */
@@ -37,8 +33,12 @@ class Rconst extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERconst(this.i, result, exit); } // This will make it ERTL have rax if it's a return instruction!
+  ERTL toERTL(Label exit, ERTLgraph body) {
+    if (exit == l) {
+      ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);
+      return new ERconst(this.i, result, L2);
+    } // This will make it ERTL have rax if it's a return instruction!
     else { return new ERconst(this.i, this.r, this.l); }
   }
 }
@@ -56,8 +56,12 @@ class Raccess_global extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERaccess_global(this.s, result, this.l);  }
+  ERTL toERTL(Label exit, ERTLgraph body) {
+    if (exit == l) {
+      ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);
+      return new ERaccess_global(this.s, result, L2);
+    }
     else { return new ERaccess_global(this.s, this.r, this.l); }
   }
 }
@@ -75,8 +79,12 @@ class Rassign_global extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERassign_global(this.r, this.s, this.l); } //TODO: Case return x = expr with x global. I whould return r. This is bad
+  ERTL toERTL(Label exit, ERTLgraph body) {
+    if (exit == l) {
+      ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);
+      return new ERassign_global(this.r, this.s, L2);
+    } //TODO: Case return x = expr with x global. I whould return r. This is bad
     else { return new ERassign_global(this.r, this.s, this.l); }
   }
 }
@@ -98,8 +106,12 @@ class Rload extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERload(this.r1, this.i, result, this.l);  }
+  ERTL toERTL(Label exit, ERTLgraph body) {
+    if (exit == l) {
+      ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);
+      return new ERload(this.r1, this.i, result, L2);
+    }
     else { return new ERload(this.r1, this.i, this.r2, this.l); }
   }
 }
@@ -118,8 +130,12 @@ class Rstore extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERstore(this.r1, this.r2, this.i, this.l);   } //TODO: case return r->i = expr; in which case I return expr == r1. So move r1 to rax.
+  ERTL toERTL(Label exit, ERTLgraph body) {
+    if (exit == l) {
+      ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);
+      return new ERstore(this.r1, this.r2, this.i, L2);
+    } //TODO: case return r->i = expr; in which case I return expr == r1. So move r1 to rax.
     else { return new ERstore(this.r1, this.r2, this.i, this.l); }
   }
 }
@@ -137,8 +153,12 @@ class Rmunop extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERmunop(this.m, result, this.l);   }
+  ERTL toERTL(Label exit, ERTLgraph body) {
+    if (exit == l) {
+      ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);
+      return new ERmunop(this.m, result, L2);
+    }
     else { return new ERmunop(this.m, this.r, this.l); }
   }
 }
@@ -157,8 +177,12 @@ class Rmbinop extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
-    if (exit == l) { return new ERmbinop(this.m, this.r1, result, this.l);   }
+  ERTL toERTL(Label exit, ERTLgraph body) {
+    if (exit == l) {
+      ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);
+      return new ERmbinop(this.m, this.r1, result, L2);
+    }
     else { return new ERmbinop(this.m, this.r1, this.r2, this.l); }
   }
 }
@@ -178,7 +202,7 @@ class Rmubranch extends RTL {
   Label[] succ() { return new Label[] { l1, l2 }; }
 
   @Override
-  ERTL toERTL(Label exit) {
+  ERTL toERTL(Label exit, ERTLgraph body) {
     if ( (exit == l1) || (exit == l2) ) { throw new Error("I have no idea how I got here"); } // The fastest way to exit from a brunch is to put a return after, and that will give me another ERTL.
     else { return new ERmubranch(this.m, this.r, this.l1, this.l2); }
   }
@@ -201,7 +225,7 @@ class Rmbbranch extends RTL {
   Label[] succ() { return new Label[] { l1, l2 }; }
 
   @Override
-  ERTL toERTL(Label exit) {
+  ERTL toERTL(Label exit, ERTLgraph body) {
     if ( (exit == l1) || (exit == l2) ) { throw new Error("I have no idea how I got here"); } // The fastest way to exit from a brunch is to put a return after, and that will give me another ERTL.
     else { return new ERmbbranch(this.m, this.r1, this.r2, this.l1, this.l2); }
   }
@@ -222,8 +246,9 @@ class Rcall extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
+  ERTL toERTL(Label exit, ERTLgraph body) {
     return new ERcall(this.s, this.rl.size(), this.l); // There is no problem here because the return is in rax so I don't even check
+    // TODO: I may have a problem with the goto part if the return is not directly after the function call
   }
 
   ERTLgraph prevFun(ERTLgraph g, Label key) {
@@ -280,7 +305,7 @@ class Rgoto extends RTL {
   Label[] succ() { return new Label[] { l }; }
 
   @Override
-  ERTL toERTL(Label exit) {
+  ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) { return new ERgoto(this.l); } //TODO: can't find an example of when this can happen but I'm not sure it can't happen either.
     else { return new ERgoto(this.l); }
   }
@@ -303,8 +328,6 @@ class RTLfun {
   Label exit;
   /** le graphe de flot de contrôle */
   RTLgraph body;
-  /* backup registers for callee_saved (and to know where they are) */
-  private LinkedList<Register> backUpReg;
 
   RTLfun(String name) { this.name = name; this.formals = new LinkedList<>(); this.locals = new HashSet<>(); }
 
@@ -319,69 +342,13 @@ class RTLfun {
   System.out.println("  locals : " + locals);
 	body.print(entry);
   }
-
-  ERTLfun toERTL() {
-    backUpReg = new LinkedList<>();
-    ERTLfun efun = new ERTLfun(this.name, formals.size());
-    efun.locals = this.locals;
-    efun.body = this.body.toERTL(this.exit);         // RTL -> ERTL
-    efun = startERTLGraph(efun);            // Add the begining of the function call
-    efun.body = returnERTLGraph(efun.body); // Add the end of the function call
-    efun.createLiveness();                  // Before going back I create the life
-    efun.createInterference();
-    efun.createColormap();
-    return efun;
-  }
-  /* Make the start of the function */
-  private ERTLfun startERTLGraph(ERTLfun efun) {
-    Label current = this.entry;
-    for (int i = 0; i < efun.formals; i++) {
-      if (i < parameters.size()) { // Get the first arguments in registers
-        ERmbinop erb = new ERmbinop(Mmov, parameters.get(i), new Register(), current);
-        current = efun.body.add(erb);
-      }
-      else { // The other arguments in the pile
-        ERget_param getPam = new ERget_param((i - parameters.size())/*8*/,new Register(), current); //TODO: do I have to put the 8?
-        current = efun.body.add(getPam);
-      }
-    }
-    for ( int i = 0 ; i < callee_saved.size(); i++ ) { // for every input
-      backUpReg.add(new Register());
-      ERmbinop er = new ERmbinop(Mmov, callee_saved.get(i), this.backUpReg.get(i), current);
-      current = efun.body.add(er);
-    }
-    ERalloc_frame alloc = new ERalloc_frame(current);
-    current = new Label();
-    efun.body.put(current, alloc);
-    efun.entry = current;
-    return efun;
-  }
-  /* Make the return part. This function will take an already done graph and add the part for the return */
-  private ERTLgraph returnERTLGraph(ERTLgraph eg) {
-    ERreturn eRreturn = new ERreturn();
-    Label current = eg.add(eRreturn);
-    ERdelete_frame del = new ERdelete_frame(current);
-    if (  callee_saved.size() == 0 ) {
-      System.out.println("Warning: Check the Registers class, there are no callee saved");
-      eg.put(this.exit, del);
-    }
-    else { current = eg.add(del); } // Normally this case should happen
-    for ( int i = 0 ; i < callee_saved.size(); i++ ) {
-      ERmbinop er2 = new ERmbinop(Mmov, this.backUpReg.get(i), callee_saved.get(i), current);
-      if ( i == (callee_saved.size() - 1) ) { // The last one should go to exit kind of.
-        eg.put(this.exit, er2);
-      }
-      else { current = eg.add(er2); }
-    }
-    return eg;
-  }
 }
 
 /** un programme RTL */
 
 class RTLfile {
-  List<String> gvars;
-  List<RTLfun> funs;
+  LinkedList<String> gvars;
+  LinkedList<RTLfun> funs;
 
   RTLfile() {
     this.gvars = new LinkedList<String>();
@@ -394,13 +361,6 @@ class RTLfile {
   void print() {
 	for (RTLfun fun: this.funs)
 	  fun.print();
-  }
-
-  ERTLfile toERTL() {
-    ERTLfile efile = new ERTLfile();
-    for ( String gv : gvars) { efile.gvars.add(gv); } // Add global variables
-    for ( RTLfun f : this.funs ) { efile.funs.add(f.toERTL()); }  // add the functions
-    return efile;
   }
 }
 
@@ -435,18 +395,18 @@ class RTLgraph {
 		print(new HashSet<Label>(), entry);
 	}
 
-    ERTLgraph toERTL(Label exit) {
+    /*ERTLgraph toERTL(Label exit) {
       ERTLgraph eg = new ERTLgraph();
       for ( Map.Entry<Label, RTL> g : this.graph.entrySet() ) {
         if (g.getValue() instanceof Rcall) {
           eg = ((Rcall) g.getValue()).prevFun(eg, g.getKey());
         }
         else {
-          eg.put(g.getKey(), g.getValue().toERTL(exit)); // Wow this is cool. So perfect... XD
+          eg.put(g.getKey(), g.getValue().toERTL(exit, this.body)); // Wow this is cool. So perfect... XD
         }
       }
       return eg;
-    }
+    }*/
 }
 
 /** visiteur pour parcourir la forme RTL

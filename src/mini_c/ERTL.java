@@ -219,8 +219,14 @@ class ERmunop extends ERTL {
   @Override Set<Register> use() { return singleton(r); }
   @Override Register getR() { return r; }
   @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
-    Lmunop lmunop = new Lmunop(this.m, coloring.get(this.r), this.l);
-    lg.put(key, lmunop);
+    if ( (this.m instanceof Maddi) && ((Maddi)this.m).n == 0 ) {  // I'm adding 0... so just skip this step
+      Lgoto lgoto = new Lgoto(this.l);
+      lg.put(key, lgoto);
+    }
+    else {
+      Lmunop lmunop = new Lmunop(this.m, coloring.get(this.r), this.l);
+      lg.put(key, lmunop);
+    }
   }
 }
 
@@ -378,9 +384,14 @@ class ERalloc_frame extends ERTL {
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return null; }
   @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int n, int m) {
-    // TODO: check if m is 0 and make a goto (maybe this can be general to many functions so to do it on Maddi and not in here)
-    Lmunop lmunop = new Lmunop(new Maddi(-8*m), new Reg(rsp), this.l);
-    lg.put(key, lmunop);
+    if ( m == 0 ) {  // I'm adding 0... so just skip this step
+      Lgoto lgoto = new Lgoto(this.l);
+      lg.put(key, lgoto);
+    }
+    else {
+      Lmunop lmunop = new Lmunop(new Maddi(-8 * m), new Reg(rsp), this.l);
+      lg.put(key, lmunop);
+    }
   }
 }
 
@@ -396,9 +407,14 @@ class ERdelete_frame extends ERTL {
 
   @Override
   void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
-    // TODO: check if m is 0 and make a goto (maybe this can be general to many functions so to do it on Maddi and not in here)
-    Lmunop lmunop = new Lmunop(new Maddi(8*m), new Reg(rsp), this.l);
-    lg.put(key, lmunop);
+    if ( m == 0 ) {  // I'm adding 0... so just skip this step
+      Lgoto lgoto = new Lgoto(this.l);
+      lg.put(key, lgoto);
+    }
+    else {
+      Lmunop lmunop = new Lmunop(new Maddi(8 * m), new Reg(rsp), this.l);
+      lg.put(key, lmunop);
+    }
   }
 }
 
@@ -486,6 +502,8 @@ class ERTLfun {
   private Interference interference;
   /** Color map */
   public Coloring coloring;
+  /** backup registers for callee_saved (and to know where they are) */
+  private LinkedList<Register> backUpReg;
   
   ERTLfun(String name, int formals) { this.name = name; this.formals = formals; this.locals = new HashSet<>(); }
   void accept(ERTLVisitor v) { v.visit(this); }
@@ -501,26 +519,87 @@ class ERTLfun {
     if (coloring != null ) { coloring.print(); }
   }
 
-  void createLiveness() { info = new Liveness(this.body); }
-  void createInterference() {
+  void createFun(RTLfun rfun) {
+    backUpReg = new LinkedList<>();
+    this.locals = rfun.locals;
+    this.body = new ERTLgraph();
+    for (Map.Entry<Label, RTL> rtl : rfun.body.graph.entrySet()) {  // RTL -> ERTL
+      this.body.put(rtl.getKey(), rtl.getValue().toERTL(rfun.exit, this.body));
+    }
+    startERTLGraph(rfun.entry);   // Add the begining of the function call
+    returnERTLGraph(rfun.exit);   // Add the end of the function call
+    createLiveness();             // create Live
+    createInterference();         // Interference
+    createColormap();             // Colorate
+  }
+  /* Make the start of the function */
+  private void startERTLGraph(Label current) {
+    for (int i = 0; i < this.formals; i++) {
+      if (i < parameters.size()) { // Get the first arguments in registers
+        ERmbinop erb = new ERmbinop(Mmov, parameters.get(i), new Register(), current);
+        current = this.body.add(erb);
+      }
+      else { // The other arguments in the pile
+        ERget_param getPam = new ERget_param((i - parameters.size())/*8*/,new Register(), current); //TODO: do I have to put the 8?
+        current = this.body.add(getPam);
+      }
+    }
+    for ( int i = 0 ; i < callee_saved.size(); i++ ) { // for every input
+      backUpReg.add(new Register());
+      ERmbinop er = new ERmbinop(Mmov, callee_saved.get(i), this.backUpReg.get(i), current);
+      current = this.body.add(er);
+    }
+    ERalloc_frame alloc = new ERalloc_frame(current);
+    current = new Label();
+    this.body.put(current, alloc);
+    this.entry = current;
+  }
+  /* Make the return part. This function will take an already done graph and add the part for the return */
+  private void returnERTLGraph(Label exit) {
+    ERreturn eRreturn = new ERreturn();
+    Label current = this.body.add(eRreturn);
+    ERdelete_frame del = new ERdelete_frame(current);
+    if (  callee_saved.size() == 0 ) {
+      System.out.println("Warning: Check the Registers class, there are no callee saved");
+      this.body.put(exit, del);
+    }
+    else { current = this.body.add(del); } // Normally this case should happen
+    for ( int i = 0 ; i < callee_saved.size(); i++ ) {
+      ERmbinop er2 = new ERmbinop(Mmov, this.backUpReg.get(i), callee_saved.get(i), current);
+      if ( i == (callee_saved.size() - 1) ) { // The last one should go to exit kind of.
+        this.body.put(exit, er2);
+      }
+      else { current = this.body.add(er2); }
+    }
+  }
+  private void createLiveness() { info = new Liveness(this.body); }
+  private void createInterference() {
     if (info == null) { throw new Error("to create interference, info must be created"); }
     interference = new Interference(info);
   }
-  void createColormap() {
+  private void createColormap() {
     if ( interference == null) { throw new Error("To create colormap, the interference must first be done"); }
     coloring = new Coloring(interference);
   }
 }
 
 class ERTLfile {
-  public LinkedList<String> gvars;
-  public LinkedList<ERTLfun> funs;
+  LinkedList<String> gvars;
+  LinkedList<ERTLfun> funs;
   ERTLfile() {
     this.gvars = new LinkedList<>();
     this.funs = new LinkedList<>();
   }
   void accept(ERTLVisitor v) { v.visit(this); }
 
+  void convertRTLfile(RTLfile rtLfile) {
+    this.gvars = rtLfile.gvars;
+    for (RTLfun rtlfun : rtLfile.funs) { // for every function in ERTLfun
+      ERTLfun ertlfun = new ERTLfun(rtlfun.name, rtlfun.formals.size()); // Create a RTLfun
+      ertlfun.createFun(rtlfun);
+      this.funs.add(ertlfun);
+    }
+  }
   /** pour débugger */
   void print() {
     for (ERTLfun fun: this.funs)
