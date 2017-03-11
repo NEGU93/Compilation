@@ -10,9 +10,7 @@ import java.util.Set;
 
 /** une opérande = un registre ou un emplacement de pile
  *  (résultat de l'allocation de registres) */
-
 abstract class Operand {}
-
 /** une opérande qui est un emplacement de pile */
 class Spilled extends Operand {
   int n; /** position par rapport à %rsp */
@@ -28,7 +26,6 @@ class Spilled extends Operand {
     return ((Spilled)that).n == this.n;
   }
 }
-
 /** une opérande qui est un registre (physique) */
 class Reg extends Operand {
   Register r;
@@ -46,14 +43,12 @@ class Reg extends Operand {
 }
 
 /** instruction LTL */
-
 abstract class LTL {
   abstract void accept(LTLVisitor v);
   abstract Label[] succ();
 }
 
 /** les mêmes que dans ERTL */
-
 class Laccess_global extends LTL {
   public String s;
   public Register r;
@@ -62,7 +57,7 @@ class Laccess_global extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + s + " " + r + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 class Lassign_global extends LTL {
   public Register r;
@@ -98,7 +93,7 @@ class Lstore extends LTL {
   Label[] succ() { return new Label[] { l }; }
   }
 
-class Lmubranch extends LTL {
+class Lmubranch extends LTL { //TODO:
   public Mubranch m;
   public Register r;
   public Label l1;
@@ -110,7 +105,7 @@ class Lmubranch extends LTL {
   Label[] succ() { return new Label[] { l1, l2 }; }
   }
 
-class Lmbbranch extends LTL {
+class Lmbbranch extends LTL { // TODO:
   public Mbbranch m;
   public Register r1;
   public Register r2;
@@ -129,17 +124,16 @@ class Lgoto extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "goto " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 class Lreturn extends LTL {
   Lreturn() {  }
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "return"; }
   Label[] succ() { return new Label[] { }; }
-  }
+}
 
 /** les mêmes que dans ERTL, mais avec Operand à la place de Register */
-
 class Lconst extends LTL {
   public int i;
   public Operand o;
@@ -154,24 +148,22 @@ class Lmunop extends LTL {
   public Munop m;
   public Operand o;
   public Label l;
-  Lmunop(Munop m, Operand o, Label l) { this.m = m; this.o = o; this.l = l;
-     }
+  Lmunop(Munop m, Operand o, Label l) { this.m = m; this.o = o; this.l = l; }
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + o + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 class Lmbinop extends LTL {
   public Mbinop m;
   public Operand o1;
   public Operand o2;
   public Label l;
-  Lmbinop(Mbinop m, Operand o1, Operand o2, Label l) { this.m = m;
-    this.o1 = o1; this.o2 = o2; this.l = l;  }
+  Lmbinop(Mbinop m, Operand o1, Operand o2, Label l) { this.m = m; this.o1 = o1; this.o2 = o2; this.l = l;  }
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + o1 + " " + o2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 class Lpush_param extends LTL {
   public Operand o;
@@ -180,10 +172,9 @@ class Lpush_param extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "push " + o + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 /** légèrement modifiée */
-
 class Lcall extends LTL {
   public String s;
   public Label l;
@@ -194,7 +185,6 @@ class Lcall extends LTL {
   }
 
 /** une fonction LTL */
-
 class LTLfun {
   /** nom de la fonction */
   public String name;
@@ -208,6 +198,13 @@ class LTLfun {
   }
   void accept(LTLVisitor v) { v.visit(this); }
 
+  void createFun(ERTLfun efun) {
+    this.entry = efun.entry;
+    this.body = new LTLgraph();
+    for (Map.Entry<Label, ERTL> e : efun.body.graph.entrySet()) {
+      e.getValue().toLTL(this.body, efun.coloring, e.getKey(), efun.formals, efun.locals.size());
+    }
+  }
   /** pour débugger */
   void print() {
     System.out.println("== LTL ==========================");
@@ -230,6 +227,15 @@ class LTLfile {
   void print() {
     for (LTLfun fun: this.funs)
       fun.print();
+  }
+
+  void convertERTLfile(ERTLfile ertLfile) {
+    this.gvars = ertLfile.gvars;
+    for (ERTLfun ertlfun : ertLfile.funs) { // for every function in ERTLfun
+      LTLfun ltlfun = new LTLfun(ertlfun.name); // Create a RTLfun
+      ltlfun.createFun(ertlfun);
+      this.funs.add(ltlfun);
+    }
   }
 }
 

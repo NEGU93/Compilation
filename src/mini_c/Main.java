@@ -20,6 +20,9 @@ public class Main {
 		RTLfile rfile= f.toRTL();
 		ERTLfile erFile = rfile.toERTL();
 		erFile.print();
+		LTLfile ltlfile = new LTLfile();
+		ltlfile.convertERTLfile(erFile);
+		ltlfile.print();
 		//LTL LTLfile = erFIle.toLTL();
 		/*for (Def d: f.l)
 			//Interp.functions.put(d.f, d);

@@ -4,6 +4,7 @@ package mini_c;
 
 // TODO: local and global variables
 // TODO: I'm afraid, should I put a goto for the return part?
+// TODO Priority: do a better toERTL function my God!
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -331,7 +332,6 @@ class RTLfun {
     efun.createColormap();
     return efun;
   }
-
   /* Make the start of the function */
   private ERTLfun startERTLGraph(ERTLfun efun) {
     Label current = this.entry;

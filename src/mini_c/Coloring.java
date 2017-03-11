@@ -83,13 +83,13 @@ class Coloring {
     }
     /* Spill the others */
     private void spillRegisters() {
-        int n = 0;
+        // TODO: nlocals can actually be only used here right? instead of global? check is it's the case
         for (Map.Entry<Register, Set<Register>> tl : todo.entrySet()) { // For every register still in here
             if ( !tl.getValue().isEmpty() ) { throw new Error("Wanted to spill one that still has possibilities"); }
-            Operand operand = new Spilled(n);
+            Operand operand = new Spilled(nlocals);
             colors.put(tl.getKey(), operand);
             todo.remove(tl.getKey());
-            n++;
+            nlocals++;
         }
     }
 
@@ -105,10 +105,14 @@ class Coloring {
         if (fromHere.isEmpty()) { return; }
         for ( Register r : fromHere) { // for all the registers interferences
             if (todo.containsKey(r)) {
-                //System.out.println("Remove " + toBeRemoved + " from pseudoRegister " + r);
                 todo.get(r).remove(toBeRemoved);
             }
         }
+    }
+
+    public Operand get(Register register) {
+        if (allocatable.contains(register)) { return new Reg(register); }
+        else { return colors.get(register); }
     }
 
     void print() {

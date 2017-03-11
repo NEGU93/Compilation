@@ -8,6 +8,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.Integer.max;
+import static mini_c.Mbinop.Mmov;
+import static mini_c.Register.*;
+
 /** instruction ERTL */
 
 /** les mêmes que dans RTL */
@@ -25,6 +29,8 @@ abstract class ERTL {
 
   abstract Register getR();
   Register getConflict() { return null; }
+
+  abstract void toLTL(LTLgraph lg, Coloring coloring, Label key, int n, int m);
 }
 
 class ERconst extends ERTL {
@@ -38,6 +44,11 @@ class ERconst extends ERTL {
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return r; }
+  @Override
+  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Lconst lconst = new Lconst(this.i, coloring.get(r), l);
+    lg.put(key, lconst);
+  }
 }
 
 class ERaccess_global extends ERTL {
@@ -51,6 +62,21 @@ class ERaccess_global extends ERTL {
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return r; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Operand o = coloring.get(this.r);
+    if ( o instanceof Reg) {  // color(r) is a physic register
+      Laccess_global laccess_global = new Laccess_global(this.s, ((Reg) o).r, this.l);
+      lg.put(key, laccess_global);
+    }
+    else { // color(r) is in the pile
+      /* L2 : mov %rbp n(%rsp) */
+      Lmbinop lmbinop = new Lmbinop(Mmov, new Reg(tmp1), o, this.l);
+      Label L2 = lg.add(lmbinop);
+      /* L1 : mov x %rsp */
+      Laccess_global laccess_global = new Laccess_global(this.s, tmp1, L2);
+      lg.put(key, laccess_global);
+    }
+  }
 }
 
 class ERassign_global extends ERTL {
@@ -64,6 +90,21 @@ class ERassign_global extends ERTL {
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return singleton(r); }
   @Override Register getR() { return null; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Operand o = coloring.get(this.r);
+    if ( o instanceof Reg) {  // color(r) is a physic register
+      Lassign_global lassign_global = new Lassign_global(((Reg) o).r, this.s, this.l);
+      lg.put(key, lassign_global);
+    }
+    else { // color(r) is in the pile
+      /* L2 : mov %rbp n */
+      Lassign_global lassign_global = new Lassign_global(tmp1, this.s, this.l);
+      Label L2 = lg.add(lassign_global);
+      /* L1 : mov n(%rsp) %rbp */
+      Lmbinop lmbinop = new Lmbinop( Mmov, o, new Reg(tmp1), L2);
+      lg.put(key, lmbinop);
+    }
+  }
 }
 
 class ERload extends ERTL {
@@ -80,6 +121,40 @@ class ERload extends ERTL {
   @Override Set<Register> use() { return singleton(r1); }
   @Override Register getR() { return r2; }
   @Override Register getConflict() { return r1; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Operand o1 = coloring.get(this.r1);
+    Operand o2 = coloring.get(this.r2);
+    if ( (o1 instanceof Reg) && (o2 instanceof Reg) ) { // Ideal case <3 two registers
+      Lstore lstore = new Lstore(((Reg) o1).r, ((Reg) o2).r, this.i, this.l);
+      lg.put(key, lstore);
+    }
+    else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled)) { // Worst case -.- two pill
+      Lstore lstore = new Lstore(tmp1, tmp2, this.i, this.l);
+      Label L3 = lg.add(lstore);
+      Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L3);
+      Label L2 = lg.add(lmbinop);
+      lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
+      lg.put(key, lmbinop);
+    }
+    else {  // only one is on the pile
+      if ( o1 instanceof Spilled ) {
+        /* L2 : store rbp n(r2) */
+        Lstore lstore = new Lstore(tmp1, ((Reg)o2).r, this.i, this.l);
+        Label L2 = lg.add(lstore);
+        /* L1 : mov n(rsp) rbp */
+        Lmbinop lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
+        lg.put(key, lmbinop);
+      }
+      else if ( o2 instanceof Spilled) { // not necessary the else if but I think it's more clear
+        /* L2 : store r1 n(r11) */
+        Lstore lstore = new Lstore( ((Reg)o1).r, tmp2, this.i, this.l);
+        Label L2 = lg.add(lstore);
+        /* L1 : mov n(rsp) r11 */
+        Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L2);
+        lg.put(key, lmbinop);
+      }
+    }
+  }
 }
 
 class ERstore extends ERTL {
@@ -96,6 +171,40 @@ class ERstore extends ERTL {
   @Override Set<Register> use() { return pair(r1, r2); }
   @Override Register getR() { return r2; }
   @Override Register getConflict() { return r1; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Operand o1 = coloring.get(this.r1);
+    Operand o2 = coloring.get(this.r2);
+    if ( (o1 instanceof Reg) && (o2 instanceof Reg) ) { // Ideal case <3 two registers
+      Lload lload = new Lload(((Reg) o1).r, this.i, ((Reg) o2).r, this.l);
+      lg.put(key, lload);
+    }
+    else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled) ) { // Worst case -.- two pill
+      Lload lload = new Lload(tmp1, this.i, tmp2, this.l);
+      Label L3 = lg.add(lload);
+      Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L3);
+      Label L2 = lg.add(lmbinop);
+      lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
+      lg.put(key, lmbinop);
+    }
+    else {  // only one is on the pile
+      if ( o1 instanceof Spilled ) {
+        /* L2 : store rbp n(r2) */
+        Lload lload = new Lload(tmp1, this.i, ((Reg)o2).r, this.l);
+        Label L2 = lg.add(lload);
+        /* L1 : mov n(rsp) rbp */
+        Lmbinop lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
+        lg.put(key, lmbinop);
+      }
+      else if ( o2 instanceof Spilled) { // not necessary the else if but I think it's more clear
+        /* L2 : store r1 n(r11) */
+        Lload lload = new Lload( ((Reg)o1).r, this.i, tmp2, this.l);
+        Label L2 = lg.add(lload);
+        /* L1 : mov n(rsp) r11 */
+        Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L2);
+        lg.put(key, lmbinop);
+      }
+    }
+  }
 }
 
 class ERmunop extends ERTL {
@@ -109,6 +218,10 @@ class ERmunop extends ERTL {
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return singleton(r); }
   @Override Register getR() { return r; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Lmunop lmunop = new Lmunop(this.m, coloring.get(this.r), this.l);
+    lg.put(key, lmunop);
+  }
 }
 
 class ERmbinop extends ERTL {
@@ -129,11 +242,45 @@ class ERmbinop extends ERTL {
   }
   @Override Set<Register> use() {
     if (m == Mbinop.Mdiv) { return pair(Register.rax, r1); }
-    else if (m == Mbinop.Mmov) { return singleton(r1); }
+    else if (m == Mmov) { return singleton(r1); }
     else { return pair(r1, r2); }
   }
   @Override Register getR() { return r2; }
   @Override Register getConflict() { return r1; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Operand o1 = coloring.get(r1);
+    Operand o2 = coloring.get(r2);
+    switch (this.m) {
+      case Mmov:
+        if (o1.equals(o2)) { // mov r r
+          Lgoto lgoto = new Lgoto(this.l);
+          lg.put(key, lgoto);
+          return;
+        }
+      case Mmul: // x86-64 imul need the second argument to be a physical register
+        if (o2 instanceof Spilled) {
+          /* L2 : imul r1 rbp -> L */
+          Lmbinop lmbinop = new Lmbinop(this.m, o1, new Reg(tmp1), this.l);
+          Label L2 = lg.add(lmbinop);
+          /* L1 : mov r2 rbp -> L2 */
+          lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp1), L2);
+          lg.put(key, lmbinop);
+          return;
+        }
+      default:
+        if (o1 instanceof Spilled && o2 instanceof Spilled) { // binary operations can't have both registers on memory!
+          /* L2 : imul r1 rbp -> L */
+          Lmbinop lmbinop = new Lmbinop(this.m, o1, new Reg(tmp1), this.l);
+          Label L2 = lg.add(lmbinop);
+          /* L1 : mov r2 rbp -> L2 */
+          lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp1), L2);
+          lg.put(key, lmbinop);
+        } else {  // Rest of the cases.
+          Lmbinop lmbinop = new Lmbinop(this.m, o1, o2, this.l);
+          lg.put(key, lmbinop);
+        }
+    }
+  }
 }
 
 class ERmubranch extends ERTL {
@@ -148,6 +295,11 @@ class ERmubranch extends ERTL {
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return singleton(r); }
   @Override Register getR() { return r; }
+
+  @Override
+  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    // TODO
+  }
 }
 
 class ERmbbranch extends ERTL {
@@ -165,6 +317,11 @@ class ERmbbranch extends ERTL {
   @Override Set<Register> use() { return pair(r1, r2); }
   @Override Register getR() { return r2; }
   @Override Register getConflict() { return r1; }
+
+  @Override
+  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    // TODO
+  }
 }
 
 class ERgoto extends ERTL {
@@ -176,10 +333,14 @@ class ERgoto extends ERTL {
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return null; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Lgoto lgoto = new Lgoto(this.l);
+    lg.put(key, lgoto);
+  }
 }
 
 /** modifiée */
-
+// TODO: LTLcall
 class ERcall extends ERTL {
   public String s;
   public int i;
@@ -200,6 +361,9 @@ class ERcall extends ERTL {
     return s;
   }
   @Override Register getR() { return null; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+
+  }
 }
 
 /** nouvelles instructions */
@@ -213,6 +377,11 @@ class ERalloc_frame extends ERTL {
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return null; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int n, int m) {
+    // TODO: check if m is 0 and make a goto (maybe this can be general to many functions so to do it on Maddi and not in here)
+    Lmunop lmunop = new Lmunop(new Maddi(-8*m), new Reg(rsp), this.l);
+    lg.put(key, lmunop);
+  }
 }
 
 class ERdelete_frame extends ERTL {
@@ -224,6 +393,13 @@ class ERdelete_frame extends ERTL {
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return null; }
+
+  @Override
+  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    // TODO: check if m is 0 and make a goto (maybe this can be general to many functions so to do it on Maddi and not in here)
+    Lmunop lmunop = new Lmunop(new Maddi(8*m), new Reg(rsp), this.l);
+    lg.put(key, lmunop);
+  }
 }
 
 class ERget_param extends ERTL {
@@ -237,6 +413,23 @@ class ERget_param extends ERTL {
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return r; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int n, int m) {
+    int s = 8 * (1 + max(0, n - parameters.size()) + m);
+    Spilled o1 = new Spilled(this.i + s);
+    Operand o2 = coloring.get(this.r);
+    if ( o2 instanceof Reg ) {
+      Lmbinop lmbinop = new Lmbinop(Mmov, o1, o2, this.l);
+      lg.put(key, lmbinop);
+    }
+    else if (o2 instanceof Spilled) {  // The if is unnecessary but I think is more clear
+      /* L2 : Mmov rbp n(rsp) -> L */
+      Lmbinop lmbinop = new Lmbinop(Mmov, new Reg(tmp1), o2, this.l);
+      Label L2 = lg.add(lmbinop);
+      /* L1 : Mmov k(rsp) rbp -> L2 */
+      lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
+      lg.put(key, lmbinop);
+    }
+  }
 }
 
 class ERpush_param extends ERTL {
@@ -249,6 +442,10 @@ class ERpush_param extends ERTL {
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return singleton(r); }
   @Override Register getR() { return r; }
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Lpush_param lpush_param = new Lpush_param(coloring.get(this.r), this.l);
+    lg.put(key, lpush_param);
+  }
 }
 
 class ERreturn extends ERTL {
@@ -263,6 +460,11 @@ class ERreturn extends ERTL {
     return s;
   }
   @Override Register getR() { return null; }
+  @Override
+  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Lreturn lreturn = new Lreturn();
+    lg.put(key, lreturn);
+  }
 }
 
 /** une fonction ERTL */
@@ -278,12 +480,12 @@ class ERTLfun {
   public Label entry;
   /** le graphe de flot de contrôle */
   public ERTLgraph body;
-  /* Duration of life variable */
+  /** Duration of life variable */
   public Liveness info;
-  /* Interference */
-  Interference interference;
-  /* Color map */
-  Coloring coloring;
+  /** Interference */
+  private Interference interference;
+  /** Color map */
+  public Coloring coloring;
   
   ERTLfun(String name, int formals) { this.name = name; this.formals = formals; this.locals = new HashSet<>(); }
   void accept(ERTLVisitor v) { v.visit(this); }
@@ -355,7 +557,6 @@ class ERTLgraph {
     System.out.println("  " + String.format("%3s", l) + ": " + r );
     for (Label s: r.succ()) print(visited, s);
   }
-
   void printWithLife(Set<Label> visited, Label l, Liveness info) {
     if (visited.contains(l)) return;
     visited.add(l);
@@ -364,8 +565,7 @@ class ERTLgraph {
     System.out.println("  " + String.format("%3s", l) + ": " + r + info.info.get(l) );
     for (Label s: r.succ()) printWithLife(visited, s, info);
   }
-  
-  /** imprime le graphe (pour debugger) */
+  /* imprime le graphe (pour debugger) */
   void print(Label entry) {
     print(new HashSet<Label>(), entry);
   }
