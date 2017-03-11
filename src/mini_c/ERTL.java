@@ -301,10 +301,18 @@ class ERmubranch extends ERTL {
   @Override Set<Register> def() { return emptySet; }
   @Override Set<Register> use() { return singleton(r); }
   @Override Register getR() { return r; }
-
-  @Override
-  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
-    // TODO
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Operand o = coloring.get(this.r);
+    if (o instanceof Reg) {
+      Lmubranch lmubranch = new Lmubranch(this.m, ((Reg) o).r, this.l1, this.l2);
+      lg.put(key, lmubranch);
+    }
+    else {
+      Lmubranch lmubranch = new Lmubranch(this.m, tmp1, this.l1, this.l2);
+      Label L2 = lg.add(lmubranch);
+      Lmbinop lmbinop = new Lmbinop(Mmov, o, new Reg(tmp1), L2);
+      lg.put(key, lmbinop);
+    }
   }
 }
 
@@ -323,10 +331,39 @@ class ERmbbranch extends ERTL {
   @Override Set<Register> use() { return pair(r1, r2); }
   @Override Register getR() { return r2; }
   @Override Register getConflict() { return r1; }
-
-  @Override
-  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
-    // TODO
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+    Operand o1 = coloring.get(this.r1);
+    Operand o2 = coloring.get(this.r2);
+    if ( (o1 instanceof Reg) && (o2 instanceof Reg) ) { // Ideal case <3 two registers
+      Lmbbranch lmbbranch = new Lmbbranch(this.m, this.r1, this.r2, this.l1, this.l2);
+      lg.put(key, lmbbranch);
+    }
+    else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled) ) { // Worst case -.- two pill
+      Lmbbranch lmbbranch = new Lmbbranch(this.m, tmp1, tmp2, this.l1, this.l2);
+      Label L3 = lg.add(lmbbranch);
+      Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L3);
+      Label L2 = lg.add(lmbinop);
+      lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
+      lg.put(key, lmbinop);
+    }
+    else {  // only one is on the pile
+      if ( o1 instanceof Spilled ) {
+        /* L2 : store rbp n(r2) */
+        Lmbbranch lmbbranch = new Lmbbranch(this.m , tmp1, ((Reg)o2).r, this.l1, this.l2);
+        Label L2 = lg.add(lmbbranch);
+        /* L1 : mov n(rsp) rbp */
+        Lmbinop lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
+        lg.put(key, lmbinop);
+      }
+      else if ( o2 instanceof Spilled) { // not necessary the else if but I think it's more clear
+        /* L2 : store r1 n(r11) */
+        Lmbbranch lmbbranch = new Lmbbranch( this.m, ((Reg)o1).r, tmp2, this.l1, this.l2);
+        Label L2 = lg.add(lmbbranch);
+        /* L1 : mov n(rsp) r11 */
+        Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L2);
+        lg.put(key, lmbinop);
+      }
+    }
   }
 }
 
@@ -346,7 +383,6 @@ class ERgoto extends ERTL {
 }
 
 /** modifiée */
-// TODO: LTLcall
 class ERcall extends ERTL {
   public String s;
   public int i;
@@ -368,7 +404,9 @@ class ERcall extends ERTL {
   }
   @Override Register getR() { return null; }
   @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
-
+    // Now I don't have anymore the number of parameters because I no longer need them
+    Lcall lcall = new Lcall(this.s, this.l);
+    lg.put(key, lcall);
   }
 }
 
@@ -540,7 +578,7 @@ class ERTLfun {
         current = this.body.add(erb);
       }
       else { // The other arguments in the pile
-        ERget_param getPam = new ERget_param((i - parameters.size())/*8*/,new Register(), current); //TODO: do I have to put the 8?
+        ERget_param getPam = new ERget_param((i - parameters.size()),new Register(), current);
         current = this.body.add(getPam);
       }
     }

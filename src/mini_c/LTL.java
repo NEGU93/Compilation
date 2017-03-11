@@ -93,7 +93,7 @@ class Lstore extends LTL {
   Label[] succ() { return new Label[] { l }; }
   }
 
-class Lmubranch extends LTL { //TODO:
+class Lmubranch extends LTL {
   public Mubranch m;
   public Register r;
   public Label l1;
@@ -103,9 +103,9 @@ class Lmubranch extends LTL { //TODO:
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l1 + ", " + l2; }
   Label[] succ() { return new Label[] { l1, l2 }; }
-  }
+}
 
-class Lmbbranch extends LTL { // TODO:
+class Lmbbranch extends LTL {
   public Mbbranch m;
   public Register r1;
   public Register r2;
@@ -116,7 +116,7 @@ class Lmbbranch extends LTL { // TODO:
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r1 + " " + r2 + " --> " + l1 + ", " + l2; }
   Label[] succ() { return new Label[] { l1, l2 }; }
-  }
+}
 
 class Lgoto extends LTL {
   public Label l;
@@ -182,7 +182,7 @@ class Lcall extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "call " + s + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 /** une fonction LTL */
 class LTLfun {
