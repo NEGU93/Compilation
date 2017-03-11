@@ -328,6 +328,7 @@ class RTLfun {
     efun.body = returnERTLGraph(efun.body); // Add the end of the function call
     efun.createLiveness();                  // Before going back I create the life
     efun.createInterference();
+    efun.createColormap();
     return efun;
   }
 

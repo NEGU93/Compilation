@@ -1,6 +1,6 @@
 package mini_c;
 
-
+// TODO: check if there are error's which could say the line and that
 public class Main {
 
 	public static void main(String[] args) throws Exception {

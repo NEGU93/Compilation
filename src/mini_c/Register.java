@@ -59,8 +59,8 @@ public class Register {
 	
 	static final Register r10 = new Register("%r10");
 	static final List<Register> caller_save = new LinkedList<Register>();
-	static {	caller_save.add(rax); caller_save.add(r10); 
-		for (Register r: parameters) caller_save.add(r);
+	static { caller_save.add(rax); caller_save.add(r10);
+		for (Register r: parameters) caller_save.add(r); // All parameters too
 	}
 
 	static final Register rbx = new Register("%rbx");
@@ -76,7 +76,7 @@ public class Register {
 	}
 
 	/** ensemble des registres participant à l'allocation de registres */
-	static final List<Register> allocatable = new LinkedList<Register>();
+	static final List<Register> allocatable = new LinkedList<Register>(); //Basically all the registers
 	static {
 		for (Register r: caller_save) allocatable.add(r);
 		for (Register r: callee_saved) allocatable.add(r);
@@ -85,7 +85,4 @@ public class Register {
 	static final Register rsp = new Register("%rsp");
 	static final Register tmp1 = new Register("%rbp");
 	static final Register tmp2 = new Register("%r11");
-	
-
-	
 }

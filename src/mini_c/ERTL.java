@@ -282,6 +282,8 @@ class ERTLfun {
   public Liveness info;
   /* Interference */
   Interference interference;
+  /* Color map */
+  Coloring coloring;
   
   ERTLfun(String name, int formals) { this.name = name; this.formals = formals; this.locals = new HashSet<>(); }
   void accept(ERTLVisitor v) { v.visit(this); }
@@ -293,13 +295,18 @@ class ERTLfun {
     System.out.println("  entry  : " + entry);
     System.out.println("  locals : " + locals);
     body.printWithLife(new HashSet<>(), this.entry, this.info);
-    interference.print();
+    if (interference != null) { interference.print(); }
+    if (coloring != null ) { coloring.print(); }
   }
 
   void createLiveness() { info = new Liveness(this.body); }
   void createInterference() {
     if (info == null) { throw new Error("to create interference, info must be created"); }
     interference = new Interference(info);
+  }
+  void createColormap() {
+    if ( interference == null) { throw new Error("To create colormap, the interference must first be done"); }
+    coloring = new Coloring(interference);
   }
 }
 
