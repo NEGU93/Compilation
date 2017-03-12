@@ -1,8 +1,11 @@
-int x;
 int main() {
     int y;
-    //x = 5;
-    x=x+y;
-    y;
-  return 42;
+    if (1 < x) {
+        y = 8 + x;
+        return 4;
+    }
+    else {
+        x = 56;
+    }
+    return 4;
 }

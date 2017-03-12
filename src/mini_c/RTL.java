@@ -34,9 +34,9 @@ class Rconst extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);
-      return new ERconst(this.i, result, L2);
+      /*ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);*/
+      return new ERconst(this.i, result, this.l);
     } // This will make it ERTL have rax if it's a return instruction!
     else { return new ERconst(this.i, this.r, this.l); }
   }
@@ -58,9 +58,9 @@ class Raccess_global extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);
-      return new ERaccess_global(this.s, result, L2);
+      /*ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);*/
+      return new ERaccess_global(this.s, result, this.l);
     }
     else { return new ERaccess_global(this.s, this.r, this.l); }
   }
@@ -81,9 +81,9 @@ class Rassign_global extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);
-      return new ERassign_global(this.r, this.s, L2);
+      /*ERgoto ergoto = new ERgoto(exit); // TODO: if this is still commented and works, that means I don't need to give the graph
+      Label L2 = body.add(ergoto);*/
+      return new ERassign_global(this.r, this.s, this.l);
     } //TODO: Case return x = expr with x global. I whould return r. This is bad
     else { return new ERassign_global(this.r, this.s, this.l); }
   }
@@ -108,9 +108,9 @@ class Rload extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);
-      return new ERload(this.r1, this.i, result, L2);
+      /*ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);*/
+      return new ERload(this.r1, this.i, result, this.l);
     }
     else { return new ERload(this.r1, this.i, this.r2, this.l); }
   }
@@ -132,9 +132,9 @@ class Rstore extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);
-      return new ERstore(this.r1, this.r2, this.i, L2);
+      /*ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);*/
+      return new ERstore(this.r1, this.r2, this.i, this.l);
     } //TODO: case return r->i = expr; in which case I return expr == r1. So move r1 to rax.
     else { return new ERstore(this.r1, this.r2, this.i, this.l); }
   }
@@ -155,9 +155,9 @@ class Rmunop extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);
-      return new ERmunop(this.m, result, L2);
+      /*ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);*/
+      return new ERmunop(this.m, result, this.l);
     }
     else { return new ERmunop(this.m, this.r, this.l); }
   }
@@ -179,9 +179,9 @@ class Rmbinop extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);
-      return new ERmbinop(this.m, this.r1, result, L2);
+      /*ERgoto ergoto = new ERgoto(exit);
+      Label L2 = body.add(ergoto);*/
+      return new ERmbinop(this.m, this.r1, result, this.l);
     }
     else { return new ERmbinop(this.m, this.r1, this.r2, this.l); }
   }

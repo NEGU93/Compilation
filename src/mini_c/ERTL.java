@@ -335,7 +335,7 @@ class ERmbbranch extends ERTL {
     Operand o1 = coloring.get(this.r1);
     Operand o2 = coloring.get(this.r2);
     if ( (o1 instanceof Reg) && (o2 instanceof Reg) ) { // Ideal case <3 two registers
-      Lmbbranch lmbbranch = new Lmbbranch(this.m, this.r1, this.r2, this.l1, this.l2);
+      Lmbbranch lmbbranch = new Lmbbranch(this.m, ((Reg) o1).r, ((Reg) o2).r, this.l1, this.l2);
       lg.put(key, lmbbranch);
     }
     else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled) ) { // Worst case -.- two pill

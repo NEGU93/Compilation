@@ -29,9 +29,9 @@ public class Main {
 		ltlfile.print();
 		/** asm */
 		X86_64 asm = ltlfile.linearize();
-		String asmCode = "asm.o";
 		asm.print();
-		//asm.printToFile(asmCode);
+		String asmCode = "asm.o";
+		asm.printToFile(asmCode);
 	}
 }
 
