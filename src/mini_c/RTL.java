@@ -1,7 +1,6 @@
 package mini_c;
 
 /* Register Transfer Language (RTL) */
-// TODO: local and global variables
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,6 +44,7 @@ class Rconst extends RTL {
 
 /** lit dans une variable globale */
 class Raccess_global extends RTL {
+  // TODO: when I do x = 54 it takes 2 instructions.
   String s;
   Register r;
   Label l;
@@ -328,8 +328,10 @@ class RTLfun {
   Label exit;
   /** le graphe de flot de contrôle */
   RTLgraph body;
+  /** Variables */
+  Map<String, Register> variables;
 
-  RTLfun(String name) { this.name = name; this.formals = new LinkedList<>(); this.locals = new HashSet<>(); }
+  RTLfun(String name) { this.name = name; this.formals = new LinkedList<>(); this.locals = new HashSet<>(); variables = new HashMap<>(); }
 
   void accept(RTLVisitor v) { v.visit(this); }
 
@@ -339,7 +341,7 @@ class RTLfun {
 	System.out.println(result + " " + name + formals);
 	System.out.println("  entry  : " + entry);
 	System.out.println("  exit   : " + exit);
-  System.out.println("  locals : " + locals);
+    System.out.println("  locals : " + locals);
 	body.print(entry);
   }
 }
@@ -359,6 +361,11 @@ class RTLfile {
 
   /** pour débugger */
   void print() {
+    System.out.print("Global Variables: ");
+    for (String s : gvars) {
+      System.out.print(" " + s + ",");
+    }
+    System.out.print("\n");
 	for (RTLfun fun: this.funs)
 	  fun.print();
   }

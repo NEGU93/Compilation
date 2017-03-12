@@ -35,19 +35,36 @@ class Lin implements LTLVisitor {
     }
 
     @Override public void visit(Laccess_global o) {
-
+        asm.movq(o.s, o.r.toString());
+        lin(o.l);
     }
     @Override public void visit(Lassign_global o) {
-
+        asm.movq(o.r.toString(), o.s);
+        lin(o.l);
     }
     @Override public void visit(Lload o) {
-
+        asm.movq(o.i + "(" + o.r1 + ") ", o.r2.toString());
+        lin(o.l);
     }
     @Override public void visit(Lstore o) {
-
+        asm.movq(o.r1.toString(), o.i + "(" + o.r2 + ") ");
+        lin(o.l);
     }
     @Override public void visit(Lmubranch o) {
+        if (o.m instanceof Mjz) {
+            asm.jz(o.l1.toString());
+            lin(o.l2);  // check order
+            lin(o.l1);
+        }
+        else if (o.m instanceof Mjnz) {
 
+        }
+        else if (o.m instanceof Mjlei) {
+
+        }
+        else if (o.m instanceof Mjgi) { // the if is unnecessary but I find it more clear
+
+        }
     }
     @Override public void visit(Lmbbranch o) {
 
