@@ -68,7 +68,7 @@ class Lassign_global extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r + " " + s + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 class Lload extends LTL {
   public Register r1;
@@ -79,7 +79,7 @@ class Lload extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + i + "(" + r1 + ") " + r2 + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
- }
+}
 
 class Lstore extends LTL {
   public Register r1;
@@ -91,7 +91,7 @@ class Lstore extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "mov " + r1 + " " + i + "(" + r2 + ") " + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 class Lmubranch extends LTL {
   public Mubranch m;
@@ -142,7 +142,7 @@ class Lconst extends LTL {
   void accept(LTLVisitor v) { v.visit(this); }
   public String toString() { return "mov $" + i + " " + o + " --> " + l; }
   Label[] succ() { return new Label[] { l }; }
-  }
+}
 
 class Lmunop extends LTL {
   public Munop m;
@@ -231,11 +231,19 @@ class LTLfile {
 
   void convertERTLfile(ERTLfile ertLfile) {
     this.gvars = ertLfile.gvars;
-    for (ERTLfun ertlfun : ertLfile.funs) { // for every function in ERTLfun
+    for (ERTLfun ertlfun : ertLfile.funs) {     // for every function in ERTLfun
       LTLfun ltlfun = new LTLfun(ertlfun.name); // Create a RTLfun
       ltlfun.createFun(ertlfun);
       this.funs.add(ltlfun);
     }
+  }
+
+  X86_64 linearize() {
+    Lin lin = new Lin();
+    for (LTLfun f : this.funs) {
+      lin.translateFunction(f);
+    }
+    return lin.getAsm();
   }
 }
 
@@ -291,7 +299,7 @@ interface LTLVisitor {
   public void visit(Lcall o);
   public void visit(LTLfun o);
   public void visit(LTLfile o);
-  }
+}
 
 class EmptyLTLVisitor implements LTLVisitor {
   public void visit(Laccess_global o) {}

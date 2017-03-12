@@ -13,49 +13,48 @@ class Asm extends LabelAsm { Asm(String s) { this.s = s; } }
 
 /** programme assembleur x86-64 */
 public class X86_64 {
-  /** segment de code */
+    /** segment de code */
 	private LinkedList<LabelAsm> text;
 	/** segment de données */
 	private StringBuffer data;
 	/** étiquettes à conserver dans le code */
-  private HashSet<String> needed;
+  	private HashSet<String> needed;
 
 	X86_64() {
 		this.text = new LinkedList<>();
 		this.data = new StringBuffer();
-    this.needed = new HashSet<>();
+    	this.needed = new HashSet<>();
 	}
-	
+
 	/** ajoute une nouvelle instruction à la fin du code */
-	X86_64 emit(String s) {
+    X86_64 emit(String s) {
 		this.text.add(new Asm("\t" + s + "\n"));
 		return this;
-	}
-	
-	/** ajoute une étiquette qui doit rester dans le code
+    }
+    /** ajoute une étiquette qui doit rester dans le code
 	 *   (par ex. l'étiquette d'une fonction) */
-  X86_64 label(String s) {
-    this.text.add(new Lab(s));
-    this.needed.add(s);
-    return this;
-  }
-  /** ajoute une étiquette ; elle ne restera dans le code qui si
-   *  on appelle needLabel sur cette étiquette */
-  X86_64 label(Label l) {
-    this.text.add(new Lab(l.name));
-    return this;
-  }
-  /** déclare que cette étiquette devra rester dans le code */
-  void needLabel(Label l) {
+    X86_64 label(String s) {
+        this.text.add(new Lab(s));
+        this.needed.add(s);
+        return this;
+    }
+  	/** ajoute une étiquette ; elle ne restera dans le code qui si
+   	*  on appelle needLabel sur cette étiquette */
+    X86_64 label(Label l) {
+        this.text.add(new Lab(l.name));
+        return this;
+    }
+  	/** déclare que cette étiquette devra rester dans le code */
+  	void needLabel(Label l) {
     needed.add(l.name);
   }
 
-  X86_64 movq(String op1, String op2) { return emit("movq " + op1 + ", " + op2); }
-	X86_64 movq(int n, String op) { return movq("$" + n, op); }
-  X86_64 movzbq(String op1, String op2) { return emit("movzbq " + op1 + ", " + op2); }
+  	X86_64 movq(String op1, String op2) { return emit("movq " + op1 + ", " + op2); }
+  	X86_64 movq(int n, String op) { return movq("$" + n, op); }
+  	X86_64 movzbq(String op1, String op2) { return emit("movzbq " + op1 + ", " + op2); }
 
-	X86_64 incq(String op) { return emit("incq " + op); }
-	X86_64 decq(String op) { return emit("decq " + op); }
+  	X86_64 incq(String op) { return emit("incq " + op); }
+  	X86_64 decq(String op) { return emit("decq " + op); }
 	X86_64 negq(String op) { return emit("negq " + op); }
 	X86_64 addq(String op1, String op2) { return emit("addq " + op1 + ", " + op2); }
 	X86_64 subq(String op1, String op2) { return emit("subq " + op1 + ", " + op2); }
@@ -76,14 +75,14 @@ public class X86_64 {
 
 	X86_64 pushq(String op) { return emit("pushq " + op); }
 	X86_64 popq(String op) { return emit("popq " + op); }
-	
+
 	X86_64 ret() { return emit("ret"); }
 	X86_64 leave() { return emit("leave"); }
-	X86_64 call(String s) { return emit("call " + s); }	
-	X86_64 callstar(String op) { return emit("call *" + op); }	
+	X86_64 call(String s) { return emit("call " + s); }
+	X86_64 callstar(String op) { return emit("call *" + op); }
 	X86_64 jmp(String s) { return emit("jmp " + s); }
 	X86_64 jmpstar(String op) { return emit("jmp *" + op); }
-	
+
 	X86_64 cmpb(String op1, String op2) { return emit("cmpb " + op1 + ", " + op2); }
 	X86_64 cmpb(int n, String op) { return cmpb("$" + n, op); }
 	X86_64 cmpw(String op1, String op2) { return emit("cmpw " + op1 + ", " + op2); }
@@ -127,7 +126,7 @@ public class X86_64 {
 	X86_64 setbe(String s) { return emit("setbe " + s); }
 
 	/** segment de données */
-	
+
 	private static String escaped(String s) {
 		StringBuffer b = new StringBuffer();
 		for (int i = 0; i < s.length(); i++) {
@@ -137,7 +136,7 @@ public class X86_64 {
 		}
 		return b.toString();
 	}
-	
+
 	/** ajoute une étiquette dans le segment de données */
 	X86_64 dlabel(String s) {
 	    this.data.append(s + ":\n");
@@ -148,9 +147,9 @@ public class X86_64 {
 	X86_64 string(String s) { return data(".string \"" + escaped(s) + "\""); }
 	X86_64 space(int n) { return data(".space " + n); }
 	X86_64 quad(long l) { return data(".quad " + l); }
-	
+
 	X86_64 globl(String l) { return emit(".globl " + l); }
-	
+
 	/** imprime le programme assembleur dans un fichier */
 	void printToFile(String file) {
 		try {
@@ -170,5 +169,20 @@ public class X86_64 {
 			throw new Error("cannot write to " + file);
 		}
 	}
-
+	void print() {
+	    System.out.println("== ASM ==========================");
+	    System.out.print("\t.text\n");
+	    for (LabelAsm lasm : this.text) {
+	        if (lasm instanceof Lab) {
+                if (this.needed.contains(lasm.s)) {
+                    System.out.print(lasm.s + ":\n");
+                }
+            }
+            else {
+	            System.out.print(lasm.s);
+            }
+        }
+        System.out.print("\t.data\n");
+	    System.out.print(this.data.toString());
+    }
 }
