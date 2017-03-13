@@ -9,7 +9,7 @@ class Arcs {
     Set<Register> prefs = new HashSet<>();
     Set<Register> intfs = new HashSet<>();
 }
-
+// TODO: there is a problem with p->a = 4 (I think). Not sure when it's wrong but I think is when making interferences.
 class Interference {
     Map<Register, Arcs> graph;
 
@@ -54,6 +54,8 @@ class Interference {
                     Register w = li.instr.getConflict();    // Does the ERTL has a conflict of registers?
                     if ( w != null) {
                         arcsv.intfs.add(w);         // Add as interference
+                        //System.out.println("w = " + w + " v = " + v);
+                        graph.putIfAbsent(w, new Arcs());   // Make sure w is in the graph
                         graph.get(w).intfs.add(v);  // For both
                     }
                     for ( Register r : li.outs) {       // for all the other registers in out

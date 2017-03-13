@@ -1,0 +1,20 @@
+	.text
+	.globl main
+main:
+	addq add $-8, %rsp
+	movq $1, %rdi
+	movq x, %rcx
+	cmpb %rdi, %rcx
+	jl L6
+	movq $56, %rdi
+	movq %rdi, x
+	movq $4, %rax
+L1:
+	addq add $8, %rsp
+	ret
+L6:
+	movq x, %rdi
+	addq add $8, %rdi
+	movq $4, %rax
+	jmp L1
+	.data

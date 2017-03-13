@@ -17,14 +17,26 @@ public class Main {
 		Lexer lexer = new Lexer(reader);
 		Parser parser = new Parser(lexer);
 		File f = (File) parser.parse().value;
+		/** RTL */
 		RTLfile rfile= f.toRTL();
+		/** ERTL */
 		ERTLfile erFile = new ERTLfile();
 		erFile.convertRTLfile(rfile);
 		erFile.print();
+		/** LTL */
 		LTLfile ltlfile = new LTLfile();
 		ltlfile.convertERTLfile(erFile);
 		ltlfile.print();
-		/*for (Def d: f.l)
+		/** asm */
+		X86_64 asm = ltlfile.linearize();
+		asm.print();
+		String asmCode = "asm.o";
+		asm.printToFile(asmCode);
+	}
+}
+
+/* Typical code you don't want to delete in case it is usefull later but you never use it
+		for (Def d: f.l)
 			//Interp.functions.put(d.f, d);
 		try {
 			f.s.accept(new Interp());
@@ -32,5 +44,3 @@ public class Main {
 			System.out.println("error: " + e.toString());
 			System.exit(1);
 		}*/
-	}
-}
