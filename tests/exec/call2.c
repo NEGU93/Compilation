@@ -10,4 +10,5 @@ int f(int x, int y, int z, int t) {
 int main() {
   f('A', 'B', 'C', 0);
   putchar(10);
+  return 0;
 }

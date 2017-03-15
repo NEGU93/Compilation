@@ -15,4 +15,5 @@ int main() {
   if (cpt == 100)
     putchar('!');
   putchar(10);
+  return 0;
 }

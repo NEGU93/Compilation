@@ -125,12 +125,12 @@ class ERload extends ERTL {
     Operand o1 = coloring.get(this.r1);
     Operand o2 = coloring.get(this.r2);
     if ( (o1 instanceof Reg) && (o2 instanceof Reg) ) { // Ideal case <3 two registers
-      Lstore lstore = new Lstore(((Reg) o1).r, ((Reg) o2).r, this.i, this.l);
-      lg.put(key, lstore);
+      Lload lload = new Lload(((Reg) o1).r, this.i, ((Reg) o2).r, this.l);
+      lg.put(key, lload);
     }
-    else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled)) { // Worst case -.- two pill
-      Lstore lstore = new Lstore(tmp1, tmp2, this.i, this.l);
-      Label L3 = lg.add(lstore);
+    else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled) ) { // Worst case -.- two pill
+      Lload lload = new Lload(tmp1, this.i, tmp2, this.l);
+      Label L3 = lg.add(lload);
       Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L3);
       Label L2 = lg.add(lmbinop);
       lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
@@ -139,16 +139,16 @@ class ERload extends ERTL {
     else {  // only one is on the pile
       if ( o1 instanceof Spilled ) {
         /* L2 : store rbp n(r2) */
-        Lstore lstore = new Lstore(tmp1, ((Reg)o2).r, this.i, this.l);
-        Label L2 = lg.add(lstore);
+        Lload lload = new Lload(tmp1, this.i, ((Reg)o2).r, this.l);
+        Label L2 = lg.add(lload);
         /* L1 : mov n(rsp) rbp */
         Lmbinop lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
         lg.put(key, lmbinop);
       }
       else if ( o2 instanceof Spilled) { // not necessary the else if but I think it's more clear
         /* L2 : store r1 n(r11) */
-        Lstore lstore = new Lstore( ((Reg)o1).r, tmp2, this.i, this.l);
-        Label L2 = lg.add(lstore);
+        Lload lload = new Lload( ((Reg)o1).r, this.i, tmp2, this.l);
+        Label L2 = lg.add(lload);
         /* L1 : mov n(rsp) r11 */
         Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L2);
         lg.put(key, lmbinop);
@@ -175,12 +175,12 @@ class ERstore extends ERTL {
     Operand o1 = coloring.get(this.r1);
     Operand o2 = coloring.get(this.r2);
     if ( (o1 instanceof Reg) && (o2 instanceof Reg) ) { // Ideal case <3 two registers
-      Lload lload = new Lload(((Reg) o1).r, this.i, ((Reg) o2).r, this.l);
-      lg.put(key, lload);
+      Lstore lstore = new Lstore(((Reg) o1).r, ((Reg) o2).r, this.i, this.l);
+      lg.put(key, lstore);
     }
-    else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled) ) { // Worst case -.- two pill
-      Lload lload = new Lload(tmp1, this.i, tmp2, this.l);
-      Label L3 = lg.add(lload);
+    else if ( (o1 instanceof Spilled) && (o2 instanceof Spilled)) { // Worst case -.- two pill
+      Lstore lstore = new Lstore(tmp1, tmp2, this.i, this.l);
+      Label L3 = lg.add(lstore);
       Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L3);
       Label L2 = lg.add(lmbinop);
       lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
@@ -189,16 +189,16 @@ class ERstore extends ERTL {
     else {  // only one is on the pile
       if ( o1 instanceof Spilled ) {
         /* L2 : store rbp n(r2) */
-        Lload lload = new Lload(tmp1, this.i, ((Reg)o2).r, this.l);
-        Label L2 = lg.add(lload);
+        Lstore lstore = new Lstore(tmp1, ((Reg)o2).r, this.i, this.l);
+        Label L2 = lg.add(lstore);
         /* L1 : mov n(rsp) rbp */
         Lmbinop lmbinop = new Lmbinop(Mmov, o1, new Reg(tmp1), L2);
         lg.put(key, lmbinop);
       }
       else if ( o2 instanceof Spilled) { // not necessary the else if but I think it's more clear
         /* L2 : store r1 n(r11) */
-        Lload lload = new Lload( ((Reg)o1).r, this.i, tmp2, this.l);
-        Label L2 = lg.add(lload);
+        Lstore lstore = new Lstore( ((Reg)o1).r, tmp2, this.i, this.l);
+        Label L2 = lg.add(lstore);
         /* L1 : mov n(rsp) r11 */
         Lmbinop lmbinop = new Lmbinop(Mmov, o2, new Reg(tmp2), L2);
         lg.put(key, lmbinop);
@@ -256,6 +256,8 @@ class ERmbinop extends ERTL {
   @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
     Operand o1 = coloring.get(r1);
     Operand o2 = coloring.get(r2);
+    if (o2 == null) { throw new Error("register " + r2.toString() + " returned null. Means it is not on coloring class. Maybe a problem with Coloring or Liveness"); }
+    if (o1 == null) { throw new Error("register " + r1.toString() + " returned null. Means it is not on coloring class. Maybe a problem with Coloring or Liveness"); }
     switch (this.m) {
       case Mmov:
         if (o1.equals(o2)) { // mov r r

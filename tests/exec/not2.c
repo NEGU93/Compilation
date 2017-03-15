@@ -6,4 +6,5 @@ int main() {
   x = 1;
   putchar(65 + !x);
   putchar(10);
+  return 0;
 }

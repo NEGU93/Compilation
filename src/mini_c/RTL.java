@@ -11,6 +11,7 @@ import java.util.Set;
 
 import static mini_c.Mbinop.Mmov;
 import static mini_c.Register.parameters;
+import static mini_c.Register.rax;
 import static mini_c.Register.result;
 
 /** instruction RTL */
@@ -81,10 +82,10 @@ class Rassign_global extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      /*ERgoto ergoto = new ERgoto(exit); // TODO: if this is still commented and works, that means I don't need to give the graph
-      Label L2 = body.add(ergoto);*/
-      return new ERassign_global(this.r, this.s, this.l);
-    } //TODO: Case return x = expr with x global. I whould return r. This is bad
+      ERaccess_global eRaccess_global = new ERaccess_global(this.s, rax, this.l); // Case return x = 6 will return nothing in rax if I don't do this.
+      Label L2 = body.add(eRaccess_global);
+      return new ERassign_global(this.r, this.s, L2);
+    }
     else { return new ERassign_global(this.r, this.s, this.l); }
   }
 }
@@ -179,9 +180,9 @@ class Rmbinop extends RTL {
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
     if (exit == l) {
-      /*ERgoto ergoto = new ERgoto(exit);
-      Label L2 = body.add(ergoto);*/
-      return new ERmbinop(this.m, this.r1, result, this.l);
+      ERmbinop eRmbinop = new ERmbinop(Mmov, this.r2, result, this.l);
+      Label L2 = body.add(eRmbinop);
+      return new ERmbinop(this.m, this.r1, this.r2, L2);
     }
     else { return new ERmbinop(this.m, this.r1, this.r2, this.l); }
   }
@@ -194,8 +195,7 @@ class Rmubranch extends RTL {
   Label l1;
   Label l2;
 
-  Rmubranch(Mubranch m, Register r, Label l1, Label l2) { this.m = m;
-    this.r = r; this.l1 = l1; this.l2 = l2;  }
+  Rmubranch(Mubranch m, Register r, Label l1, Label l2) { this.m = m; this.r = r; this.l1 = l1; this.l2 = l2;  }
 
   void accept(RTLVisitor v) { v.visit(this); }
   public String toString() { return m + " " + r + " --> " + l1 + ", " + l2; }
@@ -330,8 +330,16 @@ class RTLfun {
   RTLgraph body;
   /** Variables */
   Map<String, Register> variables;
+  /** Definition of structs */
+  Map<String, String> struct_declarations;
 
-  RTLfun(String name) { this.name = name; this.formals = new LinkedList<>(); this.locals = new HashSet<>(); variables = new HashMap<>(); }
+  RTLfun(String name) {
+    this.name = name;
+    this.formals = new LinkedList<>();
+    this.locals = new HashSet<>();
+    variables = new HashMap<>();
+    struct_declarations = new HashMap<>();
+  }
 
   void accept(RTLVisitor v) { v.visit(this); }
 
@@ -351,21 +359,18 @@ class RTLfun {
 class RTLfile {
   LinkedList<String> gvars;
   LinkedList<RTLfun> funs;
+  Map<String, LinkedList<String>> struct_definition;
 
   RTLfile() {
     this.gvars = new LinkedList<String>();
     this.funs = new LinkedList<RTLfun>();
+    this.struct_definition = new HashMap<>();
   }
 
   void accept(RTLVisitor v) { v.visit(this); }
 
   /** pour débugger */
   void print() {
-    System.out.print("Global Variables: ");
-    for (String s : gvars) {
-      System.out.print(" " + s + ",");
-    }
-    System.out.print("\n");
 	for (RTLfun fun: this.funs)
 	  fun.print();
   }

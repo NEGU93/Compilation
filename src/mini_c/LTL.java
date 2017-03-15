@@ -8,6 +8,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.Integer.max;
+import static mini_c.Register.parameters;
+
 /** une opérande = un registre ou un emplacement de pile
  *  (résultat de l'allocation de registres) */
 abstract class Operand {}
@@ -202,7 +205,7 @@ class LTLfun {
     this.entry = efun.entry;
     this.body = new LTLgraph();
     for (Map.Entry<Label, ERTL> e : efun.body.graph.entrySet()) {
-      e.getValue().toLTL(this.body, efun.coloring, e.getKey(), efun.formals, efun.locals.size());
+      e.getValue().toLTL(this.body, efun.coloring, e.getKey(), efun.formals, max(efun.locals.size() - parameters.size(), 0));
     }
   }
   /** pour débugger */
@@ -240,6 +243,9 @@ class LTLfile {
 
   X86_64 linearize() {
     Lin lin = new Lin();
+    for (String x : gvars) {
+      lin.addGlobal(x);
+    }
     for (LTLfun f : this.funs) {
       lin.translateFunction(f);
     }

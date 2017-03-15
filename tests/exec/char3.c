@@ -6,4 +6,5 @@ int main() {
   c = c+1;
   putchar(c);
   putchar(10);
+  return 0;
 }

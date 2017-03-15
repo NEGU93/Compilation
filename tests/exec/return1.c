@@ -7,4 +7,5 @@ int f(int x, int y, int z, int t) {
 
 int main() {
   putchar(f('A', 'B', 'C', 0));
+  return 0;
 }

@@ -4,14 +4,15 @@ int main() {
   x = 65;
   putchar(x);
   if (1) {
-    int x;
-    x = 66;
-    putchar(x);
+    int y;
+    y = 66;
+    putchar(y);
   } else {
-    int x;
-    x = 67;
-    putchar(x);
+    int z;
+    z = 67;
+    putchar(z);
   }
   putchar(x);
   putchar(10);
+  return 0;
 }

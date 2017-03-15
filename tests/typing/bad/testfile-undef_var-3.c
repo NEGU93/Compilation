@@ -1,4 +1,4 @@
 
-int main(int x) { }
-int n() { x; }
+int f(int x) { }
+int main() { x; }
 

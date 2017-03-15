@@ -8,4 +8,5 @@ int main() {
   if (fact_rec(1) == 1) putchar('2');
   if (fact_rec(5) == 120) putchar('3');
   putchar(10);
+  return 0;
 }

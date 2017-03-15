@@ -184,11 +184,18 @@ class Lin implements LTLVisitor {
                 asm.imulq(o.o1.toString(), o.o2.toString());
                 break;
             case Mdiv:
-                // TODO: I don't know what to do here
+                // TODO: I don't know what to do here. div has only one register input. How does it work?
+                break;
+            case Mand:
+                asm.andq(o.o1.toString(), o.o2.toString());
+                break;
+            case Mor:
+                asm.orq(o.o1.toString(), o.o2.toString());
                 break;
             default:
-                throw new Error("Still todo because I don't know what to do with the rest");
+                throw new Error("Still todo because I don't know what to do with the rest. operation " + o.m.toString());
         }
+        lin(o.l);
     }
     @Override public void visit(Lpush_param o) {
         asm.pushq(o.o.toString());
@@ -205,4 +212,7 @@ class Lin implements LTLVisitor {
     }
 
     X86_64 getAsm(){ return asm; }
+    void addGlobal(String x) {
+        asm.dlabel(x);
+    }
 }

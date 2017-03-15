@@ -8,4 +8,5 @@ int main() {
   x = 67;
   putchar(x);
   putchar(10);
+  return 0;
 }

@@ -1,18 +1,18 @@
 
-Les tests sont organisés en différentes catégories :
+Les tests sont organisÃ©s en diffÃ©rentes catÃ©gories :
 
-  syntax/bad/    refusés à l'analyse lexicale ou syntaxique
-  typing/bad/    refusés à l'analyse sémantique
-  typing/good/   acceptés à l'analyse sémantique
-  exec-fail/     compilés avec succès mais l'exécution du code MIPS doit échouer
-  exec/          compilés et exécutés avec succès, le résultat attendu étant
+  syntax/bad/    refusÃ©s Ã  l'analyse lexicale ou syntaxique
+  typing/bad/    refusÃ©s Ã  l'analyse sÃ©mantique
+  typing/good/   acceptÃ©s Ã  l'analyse sÃ©mantique
+  exec-fail/     compilÃ©s avec succÃ¨s mais l'exÃ©cution doit Ã©chouer
+  exec/          compilÃ©s et exÃ©cutÃ©s avec succÃ¨s, le rÃ©sultat attendu Ã©tant
                  conforme au fichier .out
 
 Les tests sont cumulatifs i.e.
 
-- les fichiers de typing/bad/, exec-fail/ et exec/ peuvent être
-  utilisés pour la catégorie syntax/good/
+- les fichiers de typing/bad/, exec-fail/ et exec/ peuvent Ãªtre
+  utilisÃ©s pour la catÃ©gorie syntax/good/
 
-- les fichiers de exec-fail/ et exec/ peuvent être
-  utilisés pour la catégorie typing/good/
+- les fichiers de exec-fail/ et exec/ peuvent Ãªtre
+  utilisÃ©s pour la catÃ©gorie typing/good/
 

@@ -12,4 +12,5 @@ int main() {
   putchar('l');
   putchar('d');
   putchar(10);
+  return 0;
 }

@@ -14,4 +14,5 @@ int main() {
   if (x || 1) x = 70;
   putchar(x);
   putchar(10);
+  return 0;
 }

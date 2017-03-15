@@ -72,5 +72,6 @@ int main() {
   insere(dico, 0);
   print(dico);
   putchar(10);
+  return 0;
 }
 

@@ -66,4 +66,5 @@ int run(int steps) {
 
 int main() {
   run(30);
+  return 0;
 }

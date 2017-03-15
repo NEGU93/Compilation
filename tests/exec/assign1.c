@@ -1,8 +1,8 @@
 
 int main() {
   int x;
-  x = 10;
-  while (x) putchar('A' + (x = x-1));
+  x = 65;
+  putchar(x);
   putchar(10);
   return 0;
 }

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 class Arcs {
     Set<Register> prefs = new HashSet<>();
@@ -46,21 +47,20 @@ class Interference {
             else {
                 Register v = li.instr.getR();
                 if (v != null) {
+                    graph.putIfAbsent(v, new Arcs());       // Make sure I have it
                     Arcs arcsv = graph.get(v);
-                    if (arcsv == null) {        // Make sure I have an arcs (Mov $45 #r1 will make no entry for #r1)
-                        arcsv = new Arcs();     // TODO: in the future I think this can be removed. If the entry is not created then we can delete the operation (but take care to delete the operation or bad things will happen)
-                        graph.put(v, arcsv);
-                    }
                     Register w = li.instr.getConflict();    // Does the ERTL has a conflict of registers?
                     if ( w != null) {
                         arcsv.intfs.add(w);         // Add as interference
-                        //System.out.println("w = " + w + " v = " + v);
                         graph.putIfAbsent(w, new Arcs());   // Make sure w is in the graph
                         graph.get(w).intfs.add(v);  // For both
                     }
                     for ( Register r : li.outs) {       // for all the other registers in out
                         if ( (r != v) ) {               // that is not v obviously
+                            graph.putIfAbsent(r, new Arcs());
                             arcsv.intfs.add(r);         // Add as interference
+                            //System.out.println(" r = " + r.toString());
+                            //System.out.println("graph[r] = " + graph.get(r).toString());
                             graph.get(r).intfs.add(v);  // For both
                         }
                     }

@@ -9,4 +9,5 @@ int print_int(int n) {
 int main() {
   print_int(42);
   putchar(10);
+  return 0;
 }

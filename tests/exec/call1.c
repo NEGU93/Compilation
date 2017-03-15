@@ -8,4 +8,5 @@ int main() {
   f('A', 'B');
   f('B', 'A');
   putchar(10);
+  return 0;
 }

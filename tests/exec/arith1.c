@@ -12,4 +12,5 @@ int main() {
   putchar(108 + (2<1));
   putchar(99 + (2==1+1));
   putchar(10 + (1==2));
+  return 0;
 }

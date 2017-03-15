@@ -33,6 +33,8 @@ enum Mbinop {
 , Msetle
 , Msetg
 , Msetge
+	, Mand
+	, Mor
 }
 
 /** opération x86-64 de branchement (unaire) */

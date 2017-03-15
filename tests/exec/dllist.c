@@ -56,4 +56,5 @@ int main() {
   afficher(l);
   supprimer(l->suivant);
   afficher(l);
+  return 0;
 }

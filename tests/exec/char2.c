@@ -4,4 +4,5 @@ int main() {
   c = 'A';
   putchar(c);
   putchar(10);
+  return 0;
 }
