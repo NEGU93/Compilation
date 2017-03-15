@@ -125,7 +125,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
 	            //int n = Typing.declStruct.get(((Evar)this.e1).x).indexOf();
 	            for (Param p :Typing.declStruct.get(t1)) {
 	            	//System.out.println("field "+p.v);
-	              if (x2.equals(p.v)) {
+	              if (x2.equals(p.v.x)) {
 	                return(p.t.t);
 	              }
 	            }
@@ -460,16 +460,11 @@ class Evar extends Expr {
 }
 
 class Type {
-	final  String t;
-
-	Type(String t) throws Exception {
-		if ((t == "int") || (t == "struct")) {
-			this.t = t;
-		} else {
-			throw new Exception("Type incorrect");
-		}
+	  final String t;
+	  Type(String t) {
+		  this.t = t;
+	  }
 	}
-}
 
 /* instruction */
 abstract class Stmt {
@@ -814,7 +809,7 @@ class Decl_function extends Declarations { // Declaration of a function
       Typing.funArgsType.put(f,typeArgs);
       this.b.Typer();
       for (Param p:this.l) {
-        Typing.varTypeLoc.remove(p.v);
+        Typing.varTypeLoc.remove(p.v.x);
       }
 
     }
