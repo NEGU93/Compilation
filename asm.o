@@ -1,7 +1,8 @@
 	.text
 	.globl main
 main:
-	addq add $-8, %rsp
 	movq $9, %rdi
-	movq %rsi, %rcx
+	movq %rdi, 0(%rcx) 
+	movq $0, %rax
+	ret
 	.data

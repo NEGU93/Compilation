@@ -72,7 +72,7 @@ decl_function ::=
   INT IDENT:f LPAR list_comma_param:l RPAR block:b 	// of the syntax: int f(x, y, z, ...) { v s }
   	{: RESULT = new Decl_function(f, l, b, "int"); :}
 | STRUCT IDENT TIMES IDENT:f LPAR list_comma_param:l RPAR block:b
-    {: RESULT = new Decl_function(f, l, b, "w<w<struct"); :}
+    {: RESULT = new Decl_function(f, l, b, "struct"); :}
 ;
 /* Param, expr & stmt */
 param ::=
@@ -97,7 +97,7 @@ expr ::=
 | expr:e ARROW IDENT:x
     {: RESULT = new Ebinop(Binop.Bobj, e, new Evar(x)); :}
 | expr:e1 EQUAL expr:e2
-    {: RESULT =  new Ebinop(Binop.Beq, e1, e2); :}
+    {: RESULT =  new Ebinop(Binop.Beq, e1, e2); :} 
 | expr:e1 CMP:c expr:e2
 	{: RESULT = new Ebinop(c, e1, e2); :}
 | expr:e1 PLUS expr:e2
