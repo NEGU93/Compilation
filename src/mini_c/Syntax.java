@@ -18,6 +18,40 @@ enum Binop {
 																	// structurelle
 	Band, Bor, Beq, Bobj /* Arrow stuff*/ // paresseux
 }
+class Typing {
+	  public static HashMap<String,LinkedList<Param>> declStruct = new HashMap<String,LinkedList<Param>>(); // there we store the list of pointers a structure contains
+	  public static HashMap<String,Var> varType = new HashMap<String, Var>(); //there we store the variable declared as int, the value doesn't serve anything
+	  //HashMap<String,String> varsPoints = new HashMap<String, String>(); //there we store the struct id * vars, the key is the name of the pointer, the value is the id
+	  public static HashMap<String,LinkedList<Var>> funArgsType=new HashMap<String,LinkedList<Var>>(); //we store, for each function the list of the type of its arguments
+	  //HashMap<String,String> funType=new HashMap<String,String>();
+	  public static HashMap<String,Var> varTypeLoc = new HashMap<String, Var>();
+
+	  Typing() {
+		  varType.put("putchar", new Var("putchar","int"));
+		  funArgsType.put("putchar",new LinkedList<Var>());
+		  funArgsType.get("putchar").add(new Var("","int"));
+		  varType.put("sbrk", new Var("sbrk","void*"));
+		  funArgsType.put("sbrk",new LinkedList<Var>());
+		  funArgsType.get("sbrk").add(new Var("","int"));
+	  }
+
+	  public static boolean equalsType(String x, String y) {
+		  if (x.equals(y)) return true;
+		  if (x.equals("typenull")) {
+			 if (!y.equals("void*")) return true;
+		  }
+		  if (x.equals("void*")) {
+				 if (!y.equals("int")) return true;
+			  }
+		  if (y.equals("typenull")) {
+			 if (!x.equals("void*")) return true;
+		  }
+		  if (y.equals("void*")) {
+				 if (!x.equals("int")) return true;
+			  }
+		  return false;
+	  }
+	}
 
 /* constantes litérales */
 
@@ -30,12 +64,19 @@ class Constant {
 	}
 
 	int getInt() { return c; }
+	  String Typer() {
+			if (this.c==0){
+				return("typenull");
+			}
+		    return("int");
+		  }
 }
 
 /* expressions */
 
 abstract class Expr {
 	abstract Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables);
+	abstract String Typer();
 }
 
 class Ecst extends Expr { // Integer
@@ -44,6 +85,10 @@ class Ecst extends Expr { // Integer
 	Ecst(Constant c) {
 		this.c = c;
 	}
+	  @Override
+	  String Typer() {
+	    return this.c.Typer();
+	  }
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables) {
@@ -64,7 +109,98 @@ class Ebinop extends Expr { // Operation between 2 Expr
 		this.e1 = e1;
 		this.e2 = e2;
 	}
+	  @Override
+	  String Typer() {
+	   String t1 = this.e1.Typer();
+	   String t2;
+	    switch (this.op) {
+	      case Bobj:
+	      //if (this.e1 instanceof Evar)
+	      if (Typing.declStruct.get(t1)!=null){
+	       // String x1 = ((Evar)this.e1).x;
+	        if (this.e2 instanceof Evar) {
+	          String x2 = ((Evar)this.e2).x;
+	          //System.out.println("this x2 is "+ x2);
+	          if (Typing.declStruct.containsKey(t1)) {
+	            //int n = Typing.declStruct.get(((Evar)this.e1).x).indexOf();
+	            for (Param p :Typing.declStruct.get(t1)) {
+	            	//System.out.println("field "+p.v);
+	              if (x2.equals(p.v)) {
+	                return(p.t.t);
+	              }
+	            }
+	            throw new Error("The field "+x2+" does not exist");
+	          }
+	          else {
+	            throw new Error("The structure" + t1 + "does no exist");
+	          }
+	        }
+	        else {
+	          throw new Error("This is not a field");
+	        }
 
+	        }
+	        else {
+	          throw new Error("Not a structure");
+	        }
+
+	      case Beqeq:
+	    	t2 = this.e2.Typer();
+	        if (Typing.equalsType(t1,t2)) {
+
+	          return (t1);
+	        }
+	        else {throw new Error("Bad type expression, left term is "+ t1+" and and right term is "+t2);}
+	      case Bneq :
+	      case Blt:
+	      case Bgt:
+	      case Ble:
+	      case Bge:
+	    	t2 = this.e2.Typer();
+	        if (Typing.equalsType(t1,t2)) {
+	          return ("int");
+	        }
+	        else {throw new Error("Bad type expression, t1 is "+t1+" and t2 is "+t2);}
+	      case Bor:
+	      case Band:
+	    	t2 = this.e2.Typer();
+	        return("int");
+	      case Badd:
+	      case Bmul:
+	      case Bsub:
+	      case Bdiv:
+	    	t2 = this.e2.Typer();
+	        if (Typing.equalsType("int",t1) && Typing.equalsType(t2,"int")) {
+	          return ("int");
+	        }
+	        else {throw new Error("Bad type, operation impossible");}
+	      case Beq:
+	    	  t2 = this.e2.Typer();
+	          if (this.e1 instanceof Evar) {
+	        	//if (this.e2 instanceof )
+	            if (Typing.equalsType(t1,t2)) {
+	              return t1;
+	            }
+	            else {throw new Error("invalid type type left is "+t1+" and type right is "+t2);}
+	          }
+	          else if (this.e1 instanceof Ebinop) {
+	            switch(((Ebinop) this.e1).op){
+	              case Bobj:
+	            	 // System.out.println("Le type 1 est "+t1+" et le type 2 est "+t2);
+	                if (Typing.equalsType(t1,t2)) {
+	                  return t1;
+	                }
+	                else {throw new Error("invalid type");}
+	              default:
+	              throw new Error("invalid type");
+	            }
+	          }
+	          else {
+	            throw new Error("invalid type");
+	          }
+	    }
+	    return("");
+	  }
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables) {
 		switch (this.op) {
@@ -212,7 +348,20 @@ class Eunop extends Expr { // Operation with only one Expr
 		this.op = op;
 		this.e = e;
 	}
-
+	  @Override
+	  String Typer() {
+	    switch (this.op) {
+	      case Uneg:
+	        if (this.e.Typer()=="int") {
+	          return("int");
+	        }
+	        else {throw new Error("Invalid expression for negation");}
+	      case Unot:
+	        String s=this.e.Typer();
+	        return("int");
+	    }
+	    return ("");
+	  }
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables) {
 		switch(this.op) {
@@ -245,7 +394,25 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 		this.f = f;
 		this.l = l;
 	}
-
+	  @Override
+	  String Typer() {
+	    if (Typing.varType.containsKey(this.f)) {
+	      LinkedList<Var> typeArgs= Typing.funArgsType.get(this.f);
+	      Iterator<Var> it= typeArgs.iterator();
+	      if (typeArgs.size()!=this.l.size()) {
+	    	  throw new Error("invalid number of arguments");
+	      }
+	      for (Expr e:this.l) {
+	        if (!Typing.equalsType(e.Typer(),it.next().type)) {
+	          throw new Error("invalid argument type");
+	        }
+	      }
+	      return (Typing.varType.get(this.f).type);
+	    }
+	    else {
+	      throw new Error("This function does not exist");
+	    }
+	  }
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables) {
 		LinkedList<Register> rl = new LinkedList<>();
@@ -261,11 +428,21 @@ class Ecall extends Expr { // <Identifier>(<Expr>*) ex. f(x);
 }
 
 class Evar extends Expr {
-	final private String x;
+	final  String x;
 
 	public Evar(String x) {
 		this.x = x;
 	}
+	  @Override
+	  String Typer() {
+	    if (Typing.varTypeLoc.get(this.x)!= null) {
+	      return (Typing.varTypeLoc.get(this.x).type);
+	    }
+	    else if (Typing.varType.get(this.x)!=null) {
+	      return (Typing.varType.get(this.x).type);
+	    }
+	    else {throw new Error("The variable "+this.x+" does not exist");}
+	  }
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables) {// Here the variable is already created
@@ -283,7 +460,7 @@ class Evar extends Expr {
 }
 
 class Type {
-	final private String t;
+	final  String t;
 
 	Type(String t) throws Exception {
 		if ((t == "int") || (t == "struct")) {
@@ -348,6 +525,7 @@ abstract class Stmt {
 		Label L1 = re.toRTL(L2, r, g, variables); // This should not be called in the !re case.
 		return L1;
 	}
+	  abstract void Typer();
 }
 
 class Sif extends Stmt {
@@ -375,6 +553,14 @@ class Sif extends Stmt {
 		if (s2 != null) { falsel = s2.toRTL(l, ret, new Register(), g, variables); } // It will be null if I don't have the "else" statement.
 		return toRTLc(this.e, truel, falsel, r, g, variables);
 	}
+    @Override
+    void Typer(){
+      String t= this.e.Typer();
+      this.s1.Typer();
+      if (s2 != null) {
+      this.s2.Typer();
+      }
+    }
 }
 
 class Swhile extends Stmt {
@@ -386,6 +572,11 @@ class Swhile extends Stmt {
 		this.e = e;
 		this.s = s;
 	}
+    @Override
+    void Typer(){
+      String t=this.e.Typer();
+      this.s.Typer();
+    }
 
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g, Map<String, Register> variables) {
@@ -405,7 +596,10 @@ class Sreturn extends Stmt {
 		super();
 		this.e = e;
 	}
-
+    @Override
+    void Typer() {
+      String t=this.e.Typer();
+    }
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g, Map<String, Register> variables) {
 		return this.e.toRTL(ret, r, g, variables); // I give ret (f.exit) because the return exit the function
@@ -421,7 +615,23 @@ class Sblock extends Stmt {
 		this.l = l;
 		this.v = v;
 	}
+	@Override
+    void Typer(){
+	  for (Decl_variable d:v) {
+	        d.TyperLoc();
+	  //      System.out.println("ici "+d.x);
+	  }
+	  // System.out.println(Typing.varTypeLoc);
+      for (Stmt s:l) {
+        s.Typer();
+      }
+	 //  System.out.println(Typing.varTypeLoc);
+	  for (Decl_variable d:v) {
+	        Typing.varTypeLoc.remove(d.x);
+	  }
 
+
+    }
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g, Map<String, Register> variables) {
 		Stmt s = null;
@@ -441,32 +651,96 @@ class Seval extends Stmt {
 		super();
 		this.e = e;
 	}
-
+	@Override
+	  void Typer() {
+		    String t=this.e.Typer();
+		  }
 	@Override
 	Label toRTL(Label l, Label ret, Register r, RTLgraph g, Map<String, Register> variables) {	// I send l because it's not a return.
 		return this.e.toRTL(l, r, g, variables);
 	}
 }
 
-/* Declarations */
-class Declarations { }
+abstract /* Declarations */
+class Declarations { 
+	abstract void Typer();
+}
 
 class Decl_variable extends Declarations {
-	final LinkedList<String> v;
-	final Type t;
+    final String x;
+    final LinkedList<String> v;
+    final Type t;
+    final LinkedList<Var> l;
 
 	Decl_variable(LinkedList<String> x) throws Exception {
-		super();
-		this.v = x;
-		this.t = new Type("int");
+	      super();
+	      this.x="int";
+	      this.v = x;
+	      this.t = new Type("int");
+	      this.l = new LinkedList<Var>();
+	      for (String s : x) {
+	        if (Typing.varType.containsKey(s) || Typing.varTypeLoc.containsKey(s)) {
+	          throw new Error("This variable name already exists");
+	        }
+	        this.l.addFirst(new Var(s,"int"));
+	      }
 	}
 
 	Decl_variable(String x, LinkedList<String> l) throws Exception {
-		super();
-		this.v = l;
-		this.t = new Type("struct");
-	}
+	      super();
+	      this.v=l;
+	      this.x = x;
+	      this.t = new Type(x);
+	      this.l = new LinkedList<Var>();
 
+	   /*   if (!Typing.declStruct.containsKey(x)) {
+	        throw new Error("This structure does not exist");
+
+	      }*/
+	      for (String s:l){
+	        //Typing.varType.put(s, new Var(s,"x"));
+	        this.l.addFirst(new Var(s,x));
+	      }
+	}
+    @Override
+    void Typer() {
+      if (this.t.t.equals("struct")) {
+        for (Var v:this.l) {
+         	/*if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+    		throw new Error(v.name+" already exists");
+    		}*/
+          Typing.varType.put(v.name,v);
+        }
+      }
+      else {
+        for (Var v:this.l) {
+        /*if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+        		throw new Error(v.name+" already exists");
+        	}*/
+          Typing.varType.put(v.name,v);
+        }
+      }
+
+      }
+    void TyperLoc() {
+        if (this.t.t.equals("struct")) {
+          for (Var v:this.l) {
+         /*	if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+      		throw new Error(v.name+" already exists");
+      		}*/
+            Typing.varTypeLoc.put(v.name,v);
+          }
+        }
+        else {
+          for (Var v:this.l) {
+         	/*if (Typing.varType.containsKey(v.name)||Typing.varTypeLoc.containsKey(v.name)) {
+      		throw new Error(v.name+" already exists");
+      		}*/
+            Typing.varTypeLoc.put(v.name,v);
+          }
+        }
+
+        }
 	void initializeVar(Set<Register> locals, Map<String, Register> variables) { // Initialize variables
 		for ( String s : v ) {	// TODO: Still don't know where I save the string but well...
 			Register r = new Register();
@@ -478,13 +752,34 @@ class Decl_variable extends Declarations {
 
 class Decl_struct extends Declarations {
 	final String s;
-	final LinkedList<Decl_variable> l;
+	final LinkedList<Param> l;
 
-	Decl_struct(String s, LinkedList<Decl_variable> l) {
-		super();
-		this.s = s;
-		this.l = l;
+	Decl_struct(String s, LinkedList<Decl_variable> ld) throws Exception {
+        super();
+        this.s = s;
+        this.l = new LinkedList<Param>();
+        for (Decl_variable d:ld) {
+        	for (String st:d.v) {
+        	l.add(new Param(st, d.t.t));
+        	}
+        }
+
+        HashSet<Param> unique = new HashSet<Param>(l);
+        if (unique.size()!=l.size())
+        {
+          throw new Error("Two fields of the structure have the same name");
+        }
+        if (Typing.declStruct.containsKey(s)) {
+          throw new Error("This structure name already exists");
+        }
 	}
+    @Override
+    void Typer() {
+        if (Typing.declStruct.containsKey(s)) {
+            throw new Error("This structure name already exists");
+          }
+      Typing.declStruct.put(this.s,this.l);
+    }
 }
 
 class Decl_function extends Declarations { // Declaration of a function
@@ -502,7 +797,27 @@ class Decl_function extends Declarations { // Declaration of a function
 		this.r = new Type(t);
 		this.backUpReg = new LinkedList<>();
 	}
+    @Override
+    void Typer(){
+      if (Typing.varType.containsKey(this.f)) {
+        throw new Error("This structure name already exists");
+      }
+      //System.out.println("Typing the function " +this.f);
+      Typing.varType.put(f, new Var(f,r.t));
+      LinkedList<Var> typeArgs = new LinkedList<Var>();
+      for (Param p:this.l) {
+        typeArgs.addLast(new Var(p.v.x,p.t.t));
+        Typing.varTypeLoc.put(p.v.x,new Var(p.v.x,p.t.t));
+      }
+     // System.out.println("varTypeLoc : "+Typing.varTypeLoc);
+      //System.out.println("varType : "+Typing.varType);
+      Typing.funArgsType.put(f,typeArgs);
+      this.b.Typer();
+      for (Param p:this.l) {
+        Typing.varTypeLoc.remove(p.v);
+      }
 
+    }
 	RTLfun toRTL() {
 		RTLfun f = new RTLfun(this.f);
 		LinkedList<Stmt> lstStmt = this.b.l; // List of statements
@@ -539,6 +854,13 @@ class Sizeof extends Expr {
 	Sizeof(String s) {
 		this.s = s;
 	}
+	@Override
+    String Typer(){ //TODO, the sizeof is not complete is the parser.cup
+	      if (Typing.declStruct.containsKey(s)) {
+	      return("int");
+	      }
+	      else {throw new Error("This structure does not exist");}
+	    }
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables) {
@@ -550,25 +872,36 @@ class Sizeof extends Expr {
 }
 
 class Param {
-	final Evar v;
-	final Type t;
-
-	public Param(Evar v, String s) throws Exception {
-		this.v = v;
-		this.t = new Type("struct");
-	}
-
-	public Param(Evar v) throws Exception {
-		this.v = v;
-		this.t = new Type("int");
-	}
-
+    final Evar v;
+    final Type t;
+    public Param(String v, String s) throws Exception {
+      this.v = new Evar(v);
+      this.t = new Type(s);
+    }
+    public Param(Evar v) throws Exception {
+      this.v = v;
+      this.t = new Type("int");
+    }
+    public Param(Evar v, String s) throws Exception {
+        this.v = v;
+        this.t = new Type(s);
+      }
+    public Param(String x) throws Exception {
+        this.v = new Evar(x);
+        this.t = new Type("int");
+      }
 	void initializeVar(List<Register> formals, Map<String, Register> variables) { // Initialize variables
 		Register r = new Register();
 		variables.put(v.getX(), r);
 		formals.add(r);
 	}
-}
+   /* public Param(Decl_variable d) {
+    	for (String s:d.v) {
+    	Param
+    	}
+    }*/
+
+  }
 
 /* File */
 class File {
@@ -578,6 +911,15 @@ class File {
 		super();
 		this.l = l;
 	}
+    void Typer() {
+    	Typing T=new Typing();
+      for (Declarations d:l) {
+        d.Typer();
+       // System.out.println("declStruct : "+Typing.declStruct);
+       // System.out.println("varType : "+Typing.varType);
+        //System.out.println("varTypeLoc : "+Typing.varTypeLoc);
+      }
+    }
 
 	RTLfile toRTL() {
 		RTLfile file = new RTLfile();
@@ -603,3 +945,13 @@ class File {
 		return file;
 	}
 }
+
+class Var {
+    String name;
+    String type;
+    Var(String n, String t) {
+      this.name=n;
+      this.type=t;
+    }
+  }
+

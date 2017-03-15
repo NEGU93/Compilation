@@ -17,6 +17,8 @@ public class Main {
 		Lexer lexer = new Lexer(reader);
 		Parser parser = new Parser(lexer);
 		File f = (File) parser.parse().value;
+		/** Typer */
+		f.Typer();
 		/** RTL */
 		RTLfile rfile= f.toRTL();
 		/** ERTL */

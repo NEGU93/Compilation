@@ -1,6 +1,12 @@
 	.text
 	.globl main
+print_int:
+	addq add $-8, %rsp
+	movq $10, %rdi
 main:
-	movq $42, %rax
+	movq $42, %rdi
+	call print_int
+	movq $10, %rdi
+	call putchar
 	ret
 	.data
