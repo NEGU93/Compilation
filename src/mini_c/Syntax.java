@@ -82,6 +82,13 @@ class Constant {
 
 abstract class Expr {
 	// TODO: toRTL can use Typer to make it less parameters! how didn't I see that before! I hate me.
+	/*
+	* 	struct_definition : map String - list of strings.
+	* 		Contains the name of the struct (first string) and the list of all the names inside the struct.
+	* 		Ex: struct S { int a; int b; } the a and b will be the list
+	*	struct_declaration: contains the name of the pointer of a structure, and which sturcture it is.
+	*		Ex: struct S *p; maps p with S.
+	* */
 	abstract Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration);
 	abstract String Typer();
 }
@@ -958,11 +965,10 @@ class Sizeof extends Expr {
 		this.s = s;
 	}
 	@Override
-    String Typer(){ //TODO, the sizeof is not complete is the parser.cup
-	      if (Typing.declStruct.containsKey(s)) {
-	      return("int");
-	      }
-	      else {throw new Error("This structure does not exist");}
+    String Typer() {
+		//TODO, the sizeof is not complete is the parser.cup
+		if (Typing.declStruct.containsKey(s)) { return("int"); }
+		else {throw new Error("This structure does not exist");}
 	    }
 
 	@Override

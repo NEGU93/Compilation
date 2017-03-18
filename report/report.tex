@@ -35,11 +35,32 @@ The reader is suppose to have some basic knowledge of C and for that reason almo
 
 Simply stated, a Compiler is a program that can read a code written in a specific programming language and translate it into an equivalent code of another language. A fairly good analogy can be made by a translator between two different languages like Spanish and French for example.
 
-The objective of this project is to create a compiler for a fragment of C denominated \textit{Mini C}. Produce a reasonably effective code x86-64.
+The objective of this project is to create a compiler for a fragment of C denominated \textit{Mini C}. Produce a reasonably effective code x86-64. In this project, a ".s" file will be created containing the translation between the C file to assembly. After the file is generated, the use of another compiler will be needed to produce the final output file that can be run by the computer. 
+
+General knowledge of x86-64 assembly and the functioning of processors will also be required. The concept of the stack and registers like the callee saved and the caller saved must be clear for the reader.
 
 \subsection{Mini C}
-\subsubsection{What it has}
+\subsubsection{What it does}
 \textit{Mini C} is a fragment of the language C which contains integers and pointers to structures. \textit{Mini C} is 100\% compatible with C in the sense that every \textit{Mini C} program is also a C program. This will enable to use a C compiler such us \textbf{gcc} to use as reference. 
+
+\textit{Mini C} can deal both with integers and structures. It can even support pointers inside structures to other structures or to the same structure in order to create lists for example. 
+
+\subsubsection{What it doesn't}
+%TODO: ADD STUFF NOT YET IMPLEMENTED. sizeof
+\textit{Mini C} can deal both with integers and structures. But it doesn't work with any other types of variables such as floating point numbers or characters directly.
+
+The function \textit{sizeof} is not yet implemented. The compiler will read it correctly and will know the program is correctly written but it will not know how to translate \textit{sizeof} resulting in an incomplete and broken assembly code.  
+
+textit{Mini C} doesn't implement a for loop. Even though is almost the same as implementing a while loop. It was not believed to be relevant the implementation of it as an academic objective as the implementation of it will only require time but will not help in the better understanding of a compiler.
+
+The "++" and "--" commands to increase or decrease a variables value were not implemented as well.
+
+\subsubsection{Known bugs and work to be done} 
+%TODO: add bugs
+
+There was no real communication between the typer and the RTL (section \ref{sec:RTL}) generation code. For which reason, the toRLT function had to create in some cases some information already treated. This was not only working twice but also made the syntax class longer and more difficult to read. It is work for the future to create a better communication between both parts.
+
+In the program, global structures were not yet implemented, although the code is prepared for it. In the section of code which it should be done, a throw error is prompt saying that the global structures are not yet implemented.
 
 \subsection{Structure of a Compiler}\label{sub_structure_of_a_compiler}
 
@@ -58,7 +79,7 @@ A more detailed diagram of the structure can be seen in figure \ref{fig_struct_o
 \label{fig_struct_of_compilator}
 \end{figure}
 
-\section{Lexical Analyzer}
+\section{Lexical Analyzer} \label{sec:lexical-Analizer}
 A lexical analyzer (\textit{Lexer}) is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating a token stream for parsers called \textit{lexemes} consisting of a \textit{token name} and the \textit{attribute value}. 
 The \textit{token name} is an abstract symbol that will be used during syntax analysis, while the \textit{attribute value} is an entry in the \textit{symbol table} (discussed on \ref{sub_structure_of_a_compiler}) which will be used during the semantic analysis and the code generation.
 
@@ -94,11 +115,12 @@ The first class (NFA) have no restrictions on the labels of their edges. A symbo
 %translate to english...
 
 \subsection{Implementation}
-%The corresponding action will be just to generate an abstract symbol (normally called "token name") that can be read by the next phase (Syntax Analyzer).
 
 For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was created and then, by means of jflex, converted to the final java class.
 
 Jflex lexers are based on a DFA automata. For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
+
+The work of the lexer was only to read input from the file and create new symbols (\textit{lexemes}) containing the information as explained in \ref{sec:lexical-Analizer}.
 
 \section{Syntax Analyzer} \label{sub_syntax_analyzer}
 
@@ -209,10 +231,10 @@ After the precedence, the following grammar was implemented (table \ref{tab_gram
 
 Where '$|$' is either one or the other is found. The '*' is as many as necessary (including none at all), while on the other hand, '+' means as many as necessary but at least one. If under any of those symbols there is a comma (',') it means there are comma indented.
 
-Within a file, one will find a list of declarations. These declarations can be either a variable or structure (global variables) of functions. The declarations of functions have it's own parameters (or none) and a bloc in which it will be the code.
+As an example on how to read the table, wwe can see that within a file, one will find a list of declarations. These declarations can be either a variable  (global variables) or a structure declaration or functions. The declarations of functions have it's own parameters (or none) and a bloc in which it will be the code.
 The bloc is composed by the declarations of the variables followed by instructions. The instructions are loops such as if or while or simply expressions. Expressions can be all type of C \& C ++ expressions such as integers, pointers, negation, call to functions, etc.   
 
-\section{Semantic Analyzer}
+\section{Semantic Analyzer} \label{sec:semantic-analyzer}
 \textit{"Well typed programs do not go wrong"}
 
 The semantics of a programming language defines what each program does when executing.
@@ -226,6 +248,11 @@ In a equation like \(8.0 + 4\), the type checking will make sure to convert the 
 The \textit{type checking} will make sure that the variables of a equation like \(e1 + e2\) are from the same type and reject the incoherent programs. 
 There are some languages that use \textbf{dynamic types}, which means they check they check the type of the variables dynamically. Such languages are for example PHP, Python or Lisp. On the other hand, there are also \textbf{static types} languages which is the compiler the one in charge on checking the types. For example OCaml, Java and C (which will be our case).
 
+\subsection{Implementation}
+The bigger and more critic class of the entire program was created in \textit{Syntax.java} class. An object of the class \textit{File}, created by the parser (which uses the lexer) implements a method called \textit{Typer} which takes care of what was explained in this section (\ref{sec:semantic-analyzer}).
+
+%TODO: something to add?
+
 \section{Code Generation}
 In this section we will actually generate the assembly code itself. It takes as input an intermediate representation of the source program and maps it into the target language. 
 It is too difficult to be able to do this part in only one step. So it will actually be divided into 3 stages:
@@ -236,7 +263,7 @@ It is too difficult to be able to do this part in only one step. So it will actu
 \end{enumerate}
 Each stage will be explained in their corresponding sub section.
 
-\subsection{Register Transfer Language (RTL)}
+\subsection{Register Transfer Language (RTL)} \label{sec:RTL}
 For this stage we will use the \textit{syntax tree} created on \ref{sub_syntax_analyzer} in order to create what will be called as \textit{RTL tree}. We suppose that the local and global variables are already differenced and that the type of each variable recognized as it has been done in the last section.
 
 The main objective (more precisely the first part) of the RTL is to create a set of instructions x86-64 from the operations of C.
