@@ -3,7 +3,7 @@ package mini_c;
 import java.util.HashSet;
 import java.util.Map;
 
-/**
+/*
  * Created by NEGU on 3/12/2017.
  */
 class Lin implements LTLVisitor {
@@ -88,7 +88,7 @@ class Lin implements LTLVisitor {
         Label L2 = o.l1;
         Label L3 = o.l2;
         if (!visited.contains(L3) || visited.contains(L2) ) {
-            asm.cmpb(o.r1.toString(), o.r2.toString());
+            asm.cmpq(o.r1.toString(), o.r2.toString());
             switch (o.m) {
                 case Mjl:
                     asm.jl(L2.toString());
@@ -159,7 +159,7 @@ class Lin implements LTLVisitor {
     }
     @Override public void visit(Lmunop o) {
         if (o.m instanceof Maddi) {
-            asm.addq(o.m.toString(), o.o.toString());
+            asm.addq( "$" + Integer.toString(((Maddi) o.m).n), o.o.toString());
         }
         else if (o.m instanceof Msetei) {
             asm.sete(o.m.toString() + " " + o.o.toString());
@@ -175,6 +175,7 @@ class Lin implements LTLVisitor {
                 asm.movq(o.o1.toString(), o.o2.toString());
                 break;
             case Madd:
+                System.out.println("Here I am with: " + o.o1.toString() + o.o2.toString());
                 asm.addq(o.o1.toString(), o.o2.toString());
                 break;
             case Msub:
@@ -184,7 +185,8 @@ class Lin implements LTLVisitor {
                 asm.imulq(o.o1.toString(), o.o2.toString());
                 break;
             case Mdiv:
-                // TODO: I don't know what to do here. div has only one register input. How does it work?
+                // I don't know what to do here. div has only one register input. How does it work? I changed to 2 reg. Hope is ok
+                asm.idivq(o.o1.toString(), o.o2.toString());
                 break;
             case Mand:
                 asm.andq(o.o1.toString(), o.o2.toString());

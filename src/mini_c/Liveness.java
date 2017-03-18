@@ -117,7 +117,7 @@ class Liveness {
 			Label current = stack.pop();
 			labelsInStack.put(current, false);
 			
-			System.out.println("here " + stack.size());
+			//System.out.println("here " + stack.size());
 			LiveInfo liveInfo = this.info.get(current);
 			ERTL ertl= liveInfo.instr;
 
@@ -142,7 +142,7 @@ class Liveness {
 				liveInfo.ins.removeAll(liveInfo.defs);
 				// on teste si old_in et in sont égaux
 				finish = old_in < liveInfo.ins.size();
-				System.out.println("here finish is "+finish);
+				//System.out.println("here finish is "+finish);
 				/*if (old_in != null && old_in.size() == liveInfo.ins.size()) {
 					for (Register r : old_in) {
 						if (!liveInfo.ins.contains(r)) {

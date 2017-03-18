@@ -32,8 +32,9 @@ public class Main {
 		/** asm */
 		X86_64 asm = ltlfile.linearize();
 		asm.print();
-		String asmCode = "asm.o";
-		asm.printToFile(asmCode);
+		String[] parts = file.split("\\.");
+		String asmCode = parts[0];
+		asm.printToFile(asmCode + ".s");
 	}
 }
 

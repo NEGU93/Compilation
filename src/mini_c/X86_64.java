@@ -61,7 +61,7 @@ public class X86_64 {
 	X86_64 addq(String op1, String op2) { return emit("addq " + op1 + ", " + op2); }
 	X86_64 subq(String op1, String op2) { return emit("subq " + op1 + ", " + op2); }
 	X86_64 imulq(String op1, String op2) { return emit("imulq " + op1 + ", " + op2); }
-	X86_64 idivq(String op) { return emit("idivq " + op); }
+	X86_64 idivq(String op1, String op2) { return emit("idivq " + op1 + "," + op2); }
 	X86_64 cqto() { return emit("cqto"); }
     /* Load Effective Address */
 	X86_64 leaq(String op1, String op2) { return emit("leaq " + op1 + ", " + op2); }

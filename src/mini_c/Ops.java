@@ -1,6 +1,6 @@
 package mini_c;
 
-/** Opérations x86-64 utilisées pendant la sélection d'instructions */
+/* Opérations x86-64 utilisées pendant la sélection d'instructions */
 
 /** opération x86-64 unaire */
 abstract class Munop {}
