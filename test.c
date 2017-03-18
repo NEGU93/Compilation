@@ -1,8 +1,9 @@
-
+int fact(int n) {
+  if (n <= 1) return 1;
+  return n * fact(n-1);
+}
 int main() {
-  putchar(65 + (1 && 1)); // 66, pas 67 !
-  putchar(65 + (1 && 2)); // 66, pas 67 !
-  putchar(65 + (1 && 0));
-  putchar(10);
-  return 0;
+    int x;
+  x = fact(42);
+  return x;
 }

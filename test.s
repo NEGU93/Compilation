@@ -1,17 +1,24 @@
 	.text
 	.globl main
+fact:
+	movq %rsi, %rdi
+	movq $1, %rcx
+	cmpq %rdi, %rcx
+	jle L7
+	movq %rsi, %rdi
+	addq $-1, %rdi
+	call fact
+	movq %rsi, %rdi
+	imulq %rdi, %rax
+L1:
+	ret
+L7:
+	movq $1, %rax
+	jmp L1
 main:
-	movq $1, %rdi
-	addq $65, %rdi
-	call putchar
-	movq $1, %rdi
-	addq $65, %rdi
-	call putchar
-	movq $0, %rdi
-	addq $65, %rdi
-	call putchar
-	movq $10, %rdi
-	call putchar
-	movq $0, %rax
+	movq $42, %rdi
+	call fact
+	movq %rax, %rdi
+	movq %rdi, %rax
 	ret
 	.data

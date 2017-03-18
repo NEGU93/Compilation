@@ -2,6 +2,7 @@
 \usepackage{cite}
 \usepackage{array}
 \usepackage{graphicx}
+\usepackage{listings}	% Used to add code
 \usepackage{float} %used to force figures in a position
 \hyphenation{op-tical net-works semi-conduc-tor}
 
@@ -61,6 +62,14 @@ The "++" and "--" commands to increase or decrease a variables value were not im
 There was no real communication between the typer and the RTL (section \ref{sec:RTL}) generation code. For which reason, the toRLT function had to create in some cases some information already treated. This was not only working twice but also made the syntax class longer and more difficult to read. It is work for the future to create a better communication between both parts.
 
 In the program, global structures were not yet implemented, although the code is prepared for it. In the section of code which it should be done, a throw error is prompt saying that the global structures are not yet implemented.
+
+Although the compiler computes "$5 + 4$" directly as $9$, it will fail to do so when more complex integer operations are done like "$4 * 9 + (4 \&\& 0)$". It is to be done more optimization on this side. Jumps are also always done by the program itself and the compiler will not compute a "if(1)" as a direct jump to the section of code inside the if loop.
+
+The division is not well implemented as it is done with whatever two registers desired, which will end up in an error compilation. Normally a division must be done between any register and \%rax, and to make the operation \(div r1 r2\) it is necessary to do:
+\[ mov r2 \%rax\]
+\[div r1 \%rax\]
+\[mov \%rax r2\]
+%TODO: format this thing.
 
 \subsection{Structure of a Compiler}\label{sub_structure_of_a_compiler}
 
@@ -271,29 +280,97 @@ The main objective (more precisely the first part) of the RTL is to create a set
 The second phase is to create a a \textit{Register Transfer Language}. Here a \textit{Control Float Graph} (CFG) is created that will facilitate the ulterior phases and that will eliminate the distinction between statements and expressions. This RTL will create the so called pseudo registers, which are an infinite number of intermediate registers to realize operations. This registers will be converted into actual x86-64 registers in the future.
 
 \subsubsection{Implementation}
-Each file contains a list of declarations of functions (as can be seen on \ref{tab_grammar}) that contains a bloc statement. Each function, contains a list of parameters and the list of declarations of variables.
-A RTL graph is created for each function in a recursive way. As seen \ref{tab_grammar}, a function has a list of statements that will be converted into one or more assembler commands. For each command a label will be created and saved into the RTL graph. Each statement and expression class will have a "toRTL" method that will save it's label into the graph. The function will have as arguments the register and label to exit and it will return it's own label to be given to the next toRTL call in order to line up every statement and expression. 
-To make condition branches, another function will be created called "toRTLc" which will receive two label, one to be done if the expression is true, and another in order to be done in the other case. The structure will be represented as toRTLc(e, s1Label, s2Label) where 'e' will be the expression with a true or false value. s1Label will be the label to go if 'e' is true and s2Label in the other case.
+Each file contains a list of declarations of functions (as can be seen on table \ref{tab_grammar}) that contains a bloc statement. Each function, contains a list of parameters and the list of declarations of variables.
+A RTL graph is created for each function in a recursive way. As seen in table \ref{tab_grammar}, a function has a list of statements that will be converted into one or more assembler commands. For each command, a label will be created and saved into the RTL graph, the RTL graph will contain each assembly operation with a label of reference to it. 
 
-In order to realize the \&\& expression, for example:
-if e1 \&\& e2 do s1 else s2
+Each \textit{statement} and \textit{expression} class (declared in the syntax.java file) will have a "toRTL" method that will save it's label into the graph. The function "toRTL" will have as arguments:
+\begin{itemize}
+	\item \textbf{Register} Register to be used.
+	\item \textbf{Exit Label} The label to which the program will go after making the current instruction.
+	\item \textbf{The RTL graph which will be added} In case it is necessary to add two instructions or more which is almost always the case.
+\end{itemize}
+Later on, there were added some more information to the function to be able to work with variables and structures.
+\begin{itemize}
+	\item \textbf{Variables} Is a Map that links a string with it's register. This is used to know in which pseudo-register each variable is stored in order access it. If the variable is not there, it is supposed to be global. The Typer section will make sure the global really exists.
+	\item \textbf{Struct Defintion} Is a Map between a string (the structure name) and a list of strings which are all the variables inside the structure. This is used for knowing what number to add as an offset when doing something like $p->a$
+	\item \textbf{Struct Declaration} This is a Map between all structure pointers and the structure they are actually pointing. To actually compute $p->a$ first it will be necessary to use the structure declaration to know which structure is it pointing and then use the structure definition to know the offset. Because of the typer, this Maps will always contain what is is looking for, but an extra level of security was add to display an error if some variable is not in the Map.
+\end{itemize}
+The RTL function will return it's own label to be given to the next toRTL call in order to line up every statement and expression.
+
+To make \textbf{condition branches}, another function will be created called "toRTLc" which will receive two label, one to be done if the expression is true, and another in order to be done in the other case. The structure will be represented as toRTLc(e, s1Label, s2Label) where 'e' will be the expression with a true or false value. s1Label will be the label to go if 'e' is true and s2Label in the other case.
+
+In order to realize the \&\& expression, for example with the case:
+"if e1 \&\& e2 do s1 else s2"
 The following conversion will be done:
-toRTLc(e1 \&\& e2, s1Label, s2Label) -$>$ toRTLc(e1, toRTLc(e2, s1Label, s2Label), s2Label)
-Using a similar logic, the expression:
-if e1 $|$$|$ e2 do s1 else s2
-will be converted:
-toRTLc(e1 $|$$|$ e2, s1Label, s2Label) -$>$ toRTLc(e1, s1Label, toRTLc(e2, s1Label, s2Label))
+\[toRTLc(e1 \&\& e2, s1Label, s2Label) -> \]
+\[toRTLc(e1, toRTLc(e2, s1Label, s2Label), s2Label)\]
 
-In order to make the negative sign, for example -2, the compiler actually does the operation 0 - 2.
-In order to make the not operation, for example !a. The compiler does an if statement such as:
-if a then 0 else 1. %TODO: put this in a fancy way, like centered in the middle
+Using a similar logic, the expression:
+"if e1 $|$$|$ e2 do s1 else s2"
+will be converted:
+\[toRTLc(e1 || e2, s1Label, s2Label) -> \]
+\[toRTLc(e1, s1Label, toRTLc(e2, s1Label, s2Label))\]
+
+In order to make the \textbf{negative sign}, for example \(-2\), the compiler actually does the operation \(0 - 2\).
+
+In order to make the \textbf{not operation}, for example !a. The compiler does an if statement such as:
+"if a then 0 else 1".
 In which case, making something like !!41 will return 1 as a result. Which is what actually happens in C code.
 
-% TODO: see the "posible simplifications for the addition" (RTL)
-% TODO: we can do 5 + 4 compilate as 9 directly. write about this "evaluation partielle"
+Some simplifications were done when doing binary operations. The compiler will compute the line:
+\[ x = 4 + 5\]
+as
+\[x = 9\]
 
 %TODO: put an example done by RTL it will be interesting
+
 \subsection{Explicit Transfer Language (ERTL)}
+
+The \textit{Explicit Register Transfer Language} is in charge of the function call conventions. Here, the first parameters are sent to a function are stored in the registers which convention dictates will be used (\%rdi, \%rsi, \%rdx, \%rcx, \%r8, \%r9) and the rest of the parameters will be stocked at in the stack. Also, it will return the result of the function in the register \%rax. It will also make sure the registers known as \textit{callee saved} are correctly saved by the function before returning to the previous function.
+
+During this stage, some pseudo-registers will be converted to real registers.  
+
+\subsubsection{Implementation}
+
+Inside a class ERTL was created. The class implements a method called "createERTL" that receives an RTL class and creates an ERTL class from it.
+Basically, the graph is maintained untouched except for the call to a function. There is also some extra code added to the beginning and the end of the function bloc.
+
+A RTL function like this:
+
+\begin{lstlisting}
+#10 main[]
+entry  : L15
+exit   : L11
+locals : [#8]
+	L15: mov $42 #11 --> L14
+	L14: #10 <- call fact[#11] --> L13
+	L13: Mmov #10 #8 --> L12
+	L12: Mmov #8 #9 --> L11
+\end{lstlisting}
+
+will now be extended to:
+
+\begin{lstlisting}
+main(0)
+entry  : L32
+locals : [#8]
+	L32: alloc_frame --> L31 
+	L31: Mmov %r12 #18 --> L30 
+	L30: Mmov %rbx #17 --> L15
+	L15: mov $42 #11 --> L14
+	L14: Mmov #11 %rdi --> L29
+	L29: call fact(1) --> L28 
+	L28: Mmov %rax #10 --> L13 
+	L13: Mmov #10 #8 --> L12 
+	L12: Mmov #8 #9 --> L27 
+	L27: Mmov #9 %rax --> L11 
+	L11: Mmov #18 %r12 --> L35 
+	L35: Mmov #17 %rbx --> L34
+	L34: delete_frame --> L33 
+	L33: return
+\end{lstlisting}
+
+
 \subsection{Location Transfer Language (LTL)}
 \section{Conclusion}
 

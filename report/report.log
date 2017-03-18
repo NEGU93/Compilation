@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  18 MAR 2017 17:11
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  18 MAR 2017 19:25
 entering extended mode
 **report.tex
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
@@ -165,43 +165,70 @@ Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
 \Gin@req@height=\dimen128
 \Gin@req@width=\dimen129
 )
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\listings\listings.sty"
+\lst@mode=\count95
+\lst@gtempboxa=\box28
+\lst@token=\toks17
+\lst@length=\count96
+\lst@currlwidth=\dimen130
+\lst@column=\count97
+\lst@pos=\count98
+\lst@lostspace=\dimen131
+\lst@width=\dimen132
+\lst@newlines=\count99
+\lst@lineno=\count100
+\lst@maxwidth=\dimen133
+
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\listings\lstmisc.sty"
+File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
+\c@lstnumber=\count101
+\lst@skipnumbers=\count102
+\lst@framebox=\box29
+)
+("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\listings\listings.cfg"
+File: listings.cfg 2015/06/04 1.6 listings configuration
+))
+Package: listings 2015/06/04 1.6 (Carsten Heinz)
+
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\float\float.sty"
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count95
-\float@exts=\toks17
-\float@box=\box28
-\@float@everytoks=\toks18
-\@floatcapt=\box29
+\c@float@type=\count103
+\float@exts=\toks18
+\float@box=\box30
+\@float@everytoks=\toks19
+\@floatcapt=\box31
 )
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux)
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
-LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 9.
+LaTeX Font Info:    ... okay on input line 9.
 
 -- Lines per column: 56 (exact).
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\context\base\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count96
-\scratchdimen=\dimen130
-\scratchbox=\box30
-\nofMPsegments=\count97
-\nofMParguments=\count98
-\everyMPshowfont=\toks19
-\MPscratchCnt=\count99
-\MPscratchDim=\dimen131
-\MPnumerator=\count100
-\makeMPintoPDFobject=\count101
-\everyMPtoPDFconversion=\toks20
-) (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.toc
+\scratchcounter=\count104
+\scratchdimen=\dimen134
+\scratchbox=\box32
+\nofMPsegments=\count105
+\nofMParguments=\count106
+\everyMPshowfont=\toks20
+\MPscratchCnt=\count107
+\MPscratchDim=\dimen135
+\MPnumerator=\count108
+\makeMPintoPDFobject=\count109
+\everyMPtoPDFconversion=\toks21
+)
+\c@lstlisting=\count110
+ (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 2.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -215,30 +242,36 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 <images/Diagram.png, id=9, 102.98476pt x 231.86626pt>
 File: images/Diagram.png Graphic file (type png)
  <use images/Diagram.png>
-Package pdftex.def Info: images/Diagram.png used on input line 77.
+Package pdftex.def Info: images/Diagram.png used on input line 86.
 (pdftex.def)             Requested size: 85.35826pt x 192.18004pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [2 <D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/Diagram.png>]
-
+[2 <D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/Diagram.png>]
 <images/syntax_tree.png, id=17, 113.223pt x 120.45pt>
 File: images/syntax_tree.png Graphic file (type png)
 
 <use images/syntax_tree.png>
-Package pdftex.def Info: images/syntax_tree.png used on input line 133.
+Package pdftex.def Info: images/syntax_tree.png used on input line 142.
 (pdftex.def)             Requested size: 85.35826pt x 90.8096pt.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 157.
+(Font)              <8> on input line 166.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 157.
+(Font)              <6> on input line 166.
 
-Overfull \hbox (0.822pt too wide) in paragraph at lines 190--228
+Overfull \hbox (0.822pt too wide) in paragraph at lines 199--237
  [] 
  []
 
 [3 <D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/syntax_tree.pn
-g>] [4] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
+g>] [4]
+LaTeX Font Info:    Try loading font information for OML+ptm on input line 345.
+
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\omlptm.fd"
+File: omlptm.fd 
+)
+LaTeX Font Info:    Font shape `OML/ptm/m/n' in size <10> not available
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 345.
+
+[5] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
 Missing character: There is no Ã in font ptmr7t!
 Missing character: There is no © in font ptmr7t!
 )
@@ -253,17 +286,17 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[5
+[6
 
 ] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.aux) ) 
 Here is how much of TeX's memory you used:
- 2200 strings out of 493921
- 35382 string characters out of 3144879
- 98505 words of memory out of 3000000
- 5503 multiletter control sequences out of 15000+200000
+ 3401 strings out of 493921
+ 53163 string characters out of 3144879
+ 121170 words of memory out of 3000000
+ 6689 multiletter control sequences out of 15000+200000
  38797 words of font info for 72 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
- 27i,12n,19p,589b,237s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 27i,12n,32p,589b,1085s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Progr
 am Files (x86)/MiKTeX 2.9/fonts/enc/dvips/fontname/8r.enc}<C:/Program Files (x8
 6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program Files (x86)
@@ -277,9 +310,9 @@ type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
 e1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/time
 s/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.p
 fb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (5 pages, 153178 bytes).
+Output written on report.pdf (6 pages, 164041 bytes).
 PDF statistics:
- 69 PDF objects out of 1000 (max. 8388607)
+ 72 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

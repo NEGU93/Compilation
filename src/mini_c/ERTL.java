@@ -2,6 +2,8 @@ package mini_c;
 
 /** Explicit Register Transfer Language (ERTL) */
 
+// TODO: IMPORTANT! I don't pass the parameters to the good registers before calling a function!
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;

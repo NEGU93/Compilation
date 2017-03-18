@@ -8,7 +8,7 @@ import static mini_c.Mbinop.*;
 
 /** README:
 * 		The last parameters given to the function with structures and those things are because of a bad communication between
- * 	the typer and the RTL. We had no time to change it but I recognize is horrible. TODO!
+ * 	the typer and the RTL. We had no time to change it but I recognize is horrible.
 * */
 
 /* Syntaxe abstraite de Mini-Python */
@@ -216,142 +216,19 @@ class Ebinop extends Expr { // Operation between 2 Expr
 	  }
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration) {
-		/* Many cases in this big switch were make to optimize the compiler. It seems bigger but it's only to make it more efficient, making the compiler work when there are constants */
-		switch (this.op) {
-			case Beq: // x = y
-				/* 2 option for x, or a variable or a p->a, else is not a lvalue */
-				Label L2;
-				if (e1 instanceof Evar) { // 1st option, x is a variable
-					if (variables.containsKey(((Evar) e1).getX())) {	// x can be a local variable
-						Rmbinop rmbinop = new Rmbinop(Mmov, r, variables.get(((Evar) e1).getX()), l);
-						L2 = g.add(rmbinop);
-					}
-					else {	// x is a global variable
-						Rassign_global rag = new Rassign_global(r, ((Evar) e1).getX(), l);
-						L2 = g.add(rag);
-					}
-				}
-				else if (e1 instanceof Ebinop) {	// 2nd option, p->x = y;
-					if (variables.containsKey(((Evar)((Ebinop)e1).e1).getX())) { // Local Variable
-						if (((Ebinop) e1).op != Bobj) {
-							throw new Error(e1.toString() + " not lValue");
-						}
-						//Register r2 = new Register();
-						/* Get the index of the pointer (a) */
-						LinkedList<String> as = struct_definition.get(struct_declaration.get(((Evar) ((Ebinop) e1).e1).getX()));
-						if ((as == null) || (as.isEmpty())) { throw new Error(((Evar) ((Ebinop) e1).e1).getX() + " of " + struct_declaration.get(((Evar) ((Ebinop) e1).e1).getX()) + " struct was either empty or not defined. The typer should have got this."); }
-						int a = as.indexOf(((Evar) ((Ebinop) e1).e2).getX());
-						if (a == -1) { throw new Error("Structure " + ((Evar) ((Ebinop) e1).e1).getX() + " has no element " + ((Evar) ((Ebinop) e1).e2).getX() + ". The typer should have got this."); }
-
-						Rstore rstore = new Rstore(r, variables.get(((Evar) ((Ebinop) e1).e1).getX()), a, l); // r2 = p
-						/*Label L3 */
-						L2 = g.add(rstore);
-						//L2 = ((Ebinop) e1).getE1().toRTL(L3, variables.get(((Evar)((Ebinop)e1).e1).getX()), g, variables, struct_definition, struct_declaration);
-					}
-					else {
-						throw new Error("global structure not yet implemented");	// TODO
-					}
-				}
-				else { throw new Error(e1.toString() + " not lValue"); }
-				Label L1 = this.e2.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
-				return L1;
-			case Bobj: // p->a (used to load only)
-				Register r2 = new Register();
-				/* Get the index of the pointer */
-				LinkedList<String> as = struct_definition.get( struct_declaration.get(((Evar) e1).getX()));
-				if ( (as == null) || (as.isEmpty())) { throw new Error( ((Evar) e1).getX() + " of " + struct_declaration.get(((Evar) e1).getX()) + " struct was either empty or not defined. The typer should have got this."); }
-				int a = as.indexOf(((Evar) e2).getX());
-				if (a == -1) { throw new Error("Structure " + ((Evar) e1).getX() + " has no element " + ((Evar) e2).getX() + ". The typer should have got this."); }
-
-				Rload rs = new Rload(variables.get(((Evar) e1).getX()), r, a,  l); // r = p, r2 = new register and i = a (offset)
-				return g.add(rs);
-				//Label L3 = e1.toRTL(L4, r2, g, variables, struct_definition, struct_declaration);
-				//return L3;
-				// TODO: implement the global
-		}
-		if ( (e2 instanceof Ecst) && (e1 instanceof Ecst)) { // 5 op 4 (Only constants) ALL THIS IF IS TO MAKE COMPILER TAKE OUT SOME JOB. IT'S NOT NECESARRY NORMALLY
-			switch (this.op) { // in this case, the compilator will transform things like 4 + 5 directly to 9 in compilation time to make it more effective!
-				case Badd:
-					return new Ecst(new Constant(((Ecst) e1).getInt() + ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-				case Bsub:
-					return new Ecst(new Constant(((Ecst) e1).getInt() - ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-				case Bmul:
-					return new Ecst(new Constant(((Ecst) e1).getInt() * ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-				case Bdiv:
-					return new Ecst(new Constant(((Ecst) e1).getInt() / ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-				case Bmod:
-					return new Ecst(new Constant(((Ecst) e1).getInt() % ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-				case Beqeq:
-					if (((Ecst) e1).getInt() == ((Ecst) e2).getInt()) {
-						return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					} else {
-						return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					}
-				case Band:
-					if ( ((Ecst) e1).getInt() != 0 && ((Ecst) e2).getInt() != 0 ) { return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
-					else { return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
-				case Bor:
-					if ( ((Ecst) e1).getInt() == 0 && ((Ecst) e2).getInt() == 0 ) { return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
-					else { return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
-				case Beq:
-					throw new Error("Constant = Constant not available");
-				case Bneq:
-					if (((Ecst) e1).getInt() != ((Ecst) e2).getInt()) {
-						return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					} else {
-						return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					}
-				case Blt:
-					if (((Ecst) e1).getInt() < ((Ecst) e2).getInt()) {
-						return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					} else {
-						return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					}
-				case Ble:
-					if (((Ecst) e1).getInt() <= ((Ecst) e2).getInt()) {
-						return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					} else {
-						return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					}
-				case Bgt:
-					if (((Ecst) e1).getInt() > ((Ecst) e2).getInt()) {
-						return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					} else {
-						return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					}
-				case Bge:
-					if (((Ecst) e1).getInt() >= ((Ecst) e2).getInt()) {
-						return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					} else {
-						return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
-					}
-				default:
-					throw new Error("Incompatible operation between integers");
-			}
+		Label L = dealWithAssignments(l, r, g, variables, struct_definition, struct_declaration);
+		if (L != null) { return L; }
+		if ( (e2 instanceof Ecst) && (e1 instanceof Ecst)) { // ALL THIS IF IS TO MAKE COMPILER TAKE OUT SOME JOB. IT'S NOT NECESARRY. Just an efficient fancy thing.
+			return constantOperations(l, r, g, variables, struct_definition, struct_declaration);
 		}
 		else if ( (e1 instanceof Ecst) || (e2 instanceof Ecst) ) { //If i reach here then e1 && e2 are not both constants
-			if ((this.op == Badd)) { // this is x + 4 or 4 + x
-				if (e1 instanceof Ecst) {	// I add the constant directly as add $4 x instead of charging it to a register
-					Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e1).getInt()), r, l);
-					Label L2 = g.add(rmunop);
-					Label L1 = this.e2.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
-					return L1;
-				}
-				else {
-					Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e2).getInt()), r, l);
-					Label L2 = g.add(rmunop);
-					Label L1 = this.e1.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
-					return L1;
-				}
-			}
-			else if ((this.op == Bsub) && (e2 instanceof Ecst)) { // this is x - 4 or 4 - x. Same as above but for subs
-				Rmunop rmunop = new Rmunop(new Maddi(-((Ecst) e2).getInt()), r, l);
-				Label L2 = g.add(rmunop);
-				Label L1 = this.e1.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
-				return L1;
-			}
+			// This function is also NOT NECESSARY. It will make things like add $4 x instead of loading 4 to a register and add registers.
+			// Efficiency but the code will work with or without this.
+			L = constantAndVariable(l, r, g, variables, struct_definition, struct_declaration);
+			if (L != null) { return L; }
 		}
 		/* If I reached here then they are "normal" operations (+, /, *, -, <, >, etc ) and no 2 constants */
+		// This is the reall to RTL part... the rest was to get things more efficiently and fancy but it should work without it.
 		Register r2 = new Register();
 		//Rmbinop rb;
 		Label L3;
@@ -416,9 +293,9 @@ class Ebinop extends Expr { // Operation between 2 Expr
 				L3 = g.add(rmb);
 				break;
 			case Beq:
-				throw new Error("Don't know how I get here");
+				throw new Error("Don't know how I get here"); // Normally this was done with the "dealWithAssignments" function
 			case Bobj:
-				throw new Error("Don't know how I get here");
+				throw new Error("Don't know how I get here"); // Normally this was done with the "dealWithAssignments" function
 			case Bmod:
 				throw new Error("Don't know how I get here");
 			default:
@@ -431,6 +308,149 @@ class Ebinop extends Expr { // Operation between 2 Expr
 		return L1;
 	}
 
+	private Label dealWithAssignments(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration) {
+		/* This just works with the assignments of a variable int or a structure.
+		* Op "="
+		* */
+		switch (this.op) {
+			case Beq: // x = y
+				/* 2 option for x, or a variable or a p->a, else is not a lvalue */
+				Label L2;
+				if (e1 instanceof Evar) { // 1st option, x is a variable
+					if (variables.containsKey(((Evar) e1).getX())) {	// x can be a local variable
+						Rmbinop rmbinop = new Rmbinop(Mmov, r, variables.get(((Evar) e1).getX()), l);
+						L2 = g.add(rmbinop);
+					}
+					else {	// x is a global variable
+						Rassign_global rag = new Rassign_global(r, ((Evar) e1).getX(), l);
+						L2 = g.add(rag);
+					}
+				}
+				else if (e1 instanceof Ebinop) {	// 2nd option, p->x = y;
+					if (variables.containsKey(((Evar)((Ebinop)e1).e1).getX())) { // Local Variable
+						if (((Ebinop) e1).op != Bobj) {
+							throw new Error(e1.toString() + " not lValue");
+						}
+						//Register r2 = new Register();
+						/* Get the index of the pointer (a) */
+						LinkedList<String> as = struct_definition.get(struct_declaration.get(((Evar) ((Ebinop) e1).e1).getX()));
+						if ((as == null) || (as.isEmpty())) { throw new Error(((Evar) ((Ebinop) e1).e1).getX() + " of " + struct_declaration.get(((Evar) ((Ebinop) e1).e1).getX()) + " struct was either empty or not defined. The typer should have got this."); }
+						int a = as.indexOf(((Evar) ((Ebinop) e1).e2).getX());
+						if (a == -1) { throw new Error("Structure " + ((Evar) ((Ebinop) e1).e1).getX() + " has no element " + ((Evar) ((Ebinop) e1).e2).getX() + ". The typer should have got this."); }
+
+						Rstore rstore = new Rstore(r, variables.get(((Evar) ((Ebinop) e1).e1).getX()), a, l); // r2 = p
+						/*Label L3 */
+						L2 = g.add(rstore);
+						//L2 = ((Ebinop) e1).getE1().toRTL(L3, variables.get(((Evar)((Ebinop)e1).e1).getX()), g, variables, struct_definition, struct_declaration);
+					}
+					else {
+						throw new Error("global structure not yet implemented");	// TODO
+					}
+				}
+				else { throw new Error(e1.toString() + " not lValue"); }
+				Label L1 = this.e2.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
+				return L1;
+			case Bobj: // p->a (used to load only)
+				Register r2 = new Register();
+				/* Get the index of the pointer */
+				LinkedList<String> as = struct_definition.get( struct_declaration.get(((Evar) e1).getX()));
+				if ( (as == null) || (as.isEmpty())) { throw new Error( ((Evar) e1).getX() + " of " + struct_declaration.get(((Evar) e1).getX()) + " struct was either empty or not defined. The typer should have got this."); }
+				int a = as.indexOf(((Evar) e2).getX());
+				if (a == -1) { throw new Error("Structure " + ((Evar) e1).getX() + " has no element " + ((Evar) e2).getX() + ". The typer should have got this."); }
+
+				Rload rs = new Rload(variables.get(((Evar) e1).getX()), r, a,  l); // r = p, r2 = new register and i = a (offset)
+				return g.add(rs);
+			//Label L3 = e1.toRTL(L4, r2, g, variables, struct_definition, struct_declaration);
+			//return L3;
+			// TODO: implement the global
+		}
+		return null;
+	}
+	private Label constantOperations(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration) {
+		// cases like 5 op 4 (Only constants)
+		switch (this.op) { // in this case, the compilator will transform things like 4 + 5 directly to 9 in compilation time to make it more effective!
+			case Badd:
+				return new Ecst(new Constant(((Ecst) e1).getInt() + ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+			case Bsub:
+				return new Ecst(new Constant(((Ecst) e1).getInt() - ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+			case Bmul:
+				return new Ecst(new Constant(((Ecst) e1).getInt() * ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+			case Bdiv:
+				return new Ecst(new Constant(((Ecst) e1).getInt() / ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+			case Bmod:
+				return new Ecst(new Constant(((Ecst) e1).getInt() % ((Ecst) e2).getInt())).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+			case Beqeq:
+				if (((Ecst) e1).getInt() == ((Ecst) e2).getInt()) {
+					return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				} else {
+					return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				}
+			case Band:
+				if ( ((Ecst) e1).getInt() != 0 && ((Ecst) e2).getInt() != 0 ) { return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
+				else { return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
+			case Bor:
+				if ( ((Ecst) e1).getInt() == 0 && ((Ecst) e2).getInt() == 0 ) { return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
+				else { return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration); }
+			case Beq:
+				throw new Error("Constant = Constant not available");
+			case Bneq:
+				if (((Ecst) e1).getInt() != ((Ecst) e2).getInt()) {
+					return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				} else {
+					return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				}
+			case Blt:
+				if (((Ecst) e1).getInt() < ((Ecst) e2).getInt()) {
+					return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				} else {
+					return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				}
+			case Ble:
+				if (((Ecst) e1).getInt() <= ((Ecst) e2).getInt()) {
+					return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				} else {
+					return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				}
+			case Bgt:
+				if (((Ecst) e1).getInt() > ((Ecst) e2).getInt()) {
+					return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				} else {
+					return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				}
+			case Bge:
+				if (((Ecst) e1).getInt() >= ((Ecst) e2).getInt()) {
+					return new Ecst(new Constant(1)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				} else {
+					return new Ecst(new Constant(0)).toRTL(l, r, g, variables, struct_definition, struct_declaration);
+				}
+			default:
+				throw new Error("Incompatible operation between integers");
+		}
+	}
+	private Label constantAndVariable(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration) {
+		// cases with one constant and one variable. Optimizing
+		if ((this.op == Badd)) { // this is x + 4 or 4 + x
+			if (e1 instanceof Ecst) {	// I add the constant directly as add $4 x instead of charging it to a register
+				Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e1).getInt()), r, l);
+				Label L2 = g.add(rmunop);
+				Label L1 = this.e2.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
+				return L1;
+			}
+			else {
+				Rmunop rmunop = new Rmunop(new Maddi(((Ecst) e2).getInt()), r, l);
+				Label L2 = g.add(rmunop);
+				Label L1 = this.e1.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
+				return L1;
+			}
+		}
+		else if ((this.op == Bsub) && (e2 instanceof Ecst)) { // this is x - 4 or 4 - x. Same as above but for subs
+			Rmunop rmunop = new Rmunop(new Maddi(-((Ecst) e2).getInt()), r, l);
+			Label L2 = g.add(rmunop);
+			Label L1 = this.e1.toRTL(L2, r, g, variables, struct_definition, struct_declaration);
+			return L1;
+		}
+		return null; // If this then keep going.
+	}
 	private Mbinop Binop2Mbinop() {
 		switch (this.op) {
 			case Badd: return Mbinop.Madd;
