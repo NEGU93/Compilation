@@ -40,6 +40,7 @@ class Interference {
                 for ( Register r : li.outs) {
                     if ( (r != w) && (r != v) ) {   // for all the other registers in out
                         arcsv.intfs.add(r);         // Add as interference
+                       System.out.println(r);
                         graph.get(r).intfs.add(v);  // For both
                     }
                 }

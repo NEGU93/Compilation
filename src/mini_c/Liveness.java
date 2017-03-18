@@ -72,7 +72,7 @@ class Liveness {
 		HashMap<Label, Boolean> labelsInStack = new HashMap<Label, Boolean>();
 		Stack<Label> stack = new Stack<Label>();
 		Label truc = new Label();
-		
+
 		for (Label l : g.graph.keySet()) {
 			LiveInfo liveInfo = new LiveInfo();
 			stack.push(l);
@@ -91,90 +91,77 @@ class Liveness {
 
 		}
 
-	/*	for (Label l : g.graph.keySet()) {
-
-			liveInfo = this.info.get(l);
-			// updating the out
-			for (Label label : liveInfo.succ) {
-				if (info.get(label) != null) {
-					liveInfo.outs.addAll(info.get(label).ins);
-				}
-				// updating the in
-				liveInfo.ins = liveInfo.uses;
-				liveInfo.ins.addAll(liveInfo.outs);
-				liveInfo.ins.removeAll(liveInfo.defs);
-				this.info.put(l, liveInfo);
-
-			}
-		}*/
-
-		// ERTL ertl2 = g.graph.get(stack.peek());
-		// System.out.println("here "+ertl2);
 		boolean finish;
 		while (!stack.empty()) {
-			//finish = true;
+			// finish = true;
 
 			Label current = stack.pop();
 			labelsInStack.put(current, false);
-			
-			//System.out.println("here " + stack.size());
+
+			// System.out.println("here " + stack.size());
 			LiveInfo liveInfo = this.info.get(current);
-			ERTL ertl= liveInfo.instr;
+			//ERTL ertl = liveInfo.instr;
 
-//			liveInfo.defs = ertl.def();
-//			liveInfo.uses = ertl.use();
-//			liveInfo.succ = ertl.succ();
-//			liveInfo.instr = ertl;
-			int old_in=liveInfo.ins.size();
-
+			// liveInfo.defs = ertl.def();
+			// liveInfo.uses = ertl.use();
+			// liveInfo.succ = ertl.succ();
+			// liveInfo.instr = ertl;
+			int old_in = liveInfo.ins.size();
 
 			//liveInfo.outs = new HashSet<>();
 			//liveInfo.ins = new HashSet<>();
 
 			// updating the out
 			for (Label label : liveInfo.succ) {
-				if (info.get(label) != null) {
-					liveInfo.outs.addAll(info.get(label).ins);
-				}
-				// updating the in
-				liveInfo.ins = liveInfo.uses;
-				liveInfo.ins.addAll(liveInfo.outs);
-				liveInfo.ins.removeAll(liveInfo.defs);
-				// on teste si old_in et in sont égaux
-				finish = old_in < liveInfo.ins.size();
-				//System.out.println("here finish is "+finish);
-				/*if (old_in != null && old_in.size() == liveInfo.ins.size()) {
-					for (Register r : old_in) {
-						if (!liveInfo.ins.contains(r)) {
-							finish = false;
-							break;
-						}
-					}
-				}*/
-				
-
-				// updating the info
-				//this.info.put(current, liveInfo);
-
-				// for each pred we add it to the stack
-				if (finish) {
-					for (Label l1 : g.graph.keySet()) {
-						boolean isSux = false;
-						Label[] sux = info.get(l1).succ;
-						for (int j = 0; j < sux.length; j++) {
-							if (sux[j].name.equals(current.name)) {
-								isSux = true;
-							}
-						}
-						if (isSux && !labelsInStack.get(l1)) {
-							stack.push(l1);
-							labelsInStack.put(l1, true);
-						}
-					}
-				}
-
+					liveInfo.outs.addAll(this.info.get(label).ins);
 			}
+			// updating the in
+//TODO this code should work and do the good algorithm but raises NPE
+			//liveInfo.ins.clear();
+			//liveInfo.ins.addAll(liveInfo.uses);
+//			for (Register r : liveInfo.outs) {
+//				if (!liveInfo.defs.contains(r)) {
+//					liveInfo.ins.add(r);
+//				}
+//			}
+			
+			//this code compiles but is wrong since putting liveInfo.ins=liveInfo.uses; make the pointers identical and modifies uses too
+			liveInfo.ins=liveInfo.uses;
+			liveInfo.ins.addAll(liveInfo.outs);
+			liveInfo.ins.removeAll(liveInfo.defs);
+		
+			// on teste si old_in et in sont égaux
+			
+			finish = old_in < liveInfo.ins.size();
+			// System.out.println("here finish is "+finish);
+			/*
+			 * if (old_in != null && old_in.size() == liveInfo.ins.size()) { for
+			 * (Register r : old_in) { if (!liveInfo.ins.contains(r)) { finish =
+			 * false; break; } } }
+			 */
+
+			// updating the info
+			// this.info.put(current, liveInfo);
+
+			// for each pred we add it to the stack
+			if (finish) {
+				for (Label l1 : g.graph.keySet()) {
+					boolean isSux = false;
+					Label[] sux = info.get(l1).succ;
+					for (int j = 0; j < sux.length; j++) {
+						if (sux[j].name.equals(current.name)) {
+							isSux = true;
+						}
+					}
+					if (isSux && !labelsInStack.get(l1)) {
+						stack.push(l1);
+						labelsInStack.put(l1, true);
+					}
+				}
+			}
+
 		}
+
 	}
 
 	private void print(Set<Label> visited, Label l) {
