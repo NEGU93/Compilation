@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  18 MAR 2017 19:25
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.8.22)  18 MAR 2017 20:07
 entering extended mode
 **report.tex
 (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.tex
@@ -242,7 +242,7 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 <images/Diagram.png, id=9, 102.98476pt x 231.86626pt>
 File: images/Diagram.png Graphic file (type png)
  <use images/Diagram.png>
-Package pdftex.def Info: images/Diagram.png used on input line 86.
+Package pdftex.def Info: images/Diagram.png used on input line 89.
 (pdftex.def)             Requested size: 85.35826pt x 192.18004pt.
 
 [2 <D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/Diagram.png>]
@@ -250,26 +250,26 @@ Package pdftex.def Info: images/Diagram.png used on input line 86.
 File: images/syntax_tree.png Graphic file (type png)
 
 <use images/syntax_tree.png>
-Package pdftex.def Info: images/syntax_tree.png used on input line 142.
+Package pdftex.def Info: images/syntax_tree.png used on input line 145.
 (pdftex.def)             Requested size: 85.35826pt x 90.8096pt.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 166.
+(Font)              <8> on input line 169.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 166.
+(Font)              <6> on input line 169.
 
-Overfull \hbox (0.822pt too wide) in paragraph at lines 199--237
+Overfull \hbox (0.822pt too wide) in paragraph at lines 202--240
  [] 
  []
 
 [3 <D:/HardDiskDrive/Documentos/GitHub/Compilation/report/images/syntax_tree.pn
 g>] [4]
-LaTeX Font Info:    Try loading font information for OML+ptm on input line 345.
+LaTeX Font Info:    Try loading font information for OML+ptm on input line 358.
 
  ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\psnfss\omlptm.fd"
 File: omlptm.fd 
 )
 LaTeX Font Info:    Font shape `OML/ptm/m/n' in size <10> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 345.
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 358.
 
 [5] (D:\HardDiskDrive\Documentos\GitHub\Compilation\report\report.bbl
 Missing character: There is no Ã in font ptmr7t!
@@ -292,7 +292,7 @@ Before submitting the final camera ready copy, remember to:
 Here is how much of TeX's memory you used:
  3401 strings out of 493921
  53163 string characters out of 3144879
- 121170 words of memory out of 3000000
+ 129170 words of memory out of 3000000
  6689 multiletter control sequences out of 15000+200000
  38797 words of font info for 72 fonts, out of 3000000 for 9000
  844 hyphenation exceptions out of 8191
@@ -310,7 +310,7 @@ type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/typ
 e1/urw/times/utmb8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/time
 s/utmbi8a.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmr8a.p
 fb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on report.pdf (6 pages, 164041 bytes).
+Output written on report.pdf (6 pages, 162996 bytes).
 PDF statistics:
  72 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

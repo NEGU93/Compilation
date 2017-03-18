@@ -66,9 +66,12 @@ In the program, global structures were not yet implemented, although the code is
 Although the compiler computes "$5 + 4$" directly as $9$, it will fail to do so when more complex integer operations are done like "$4 * 9 + (4 \&\& 0)$". It is to be done more optimization on this side. Jumps are also always done by the program itself and the compiler will not compute a "if(1)" as a direct jump to the section of code inside the if loop.
 
 The division is not well implemented as it is done with whatever two registers desired, which will end up in an error compilation. Normally a division must be done between any register and \%rax, and to make the operation \(div r1 r2\) it is necessary to do:
-\[ mov r2 \%rax\]
-\[div r1 \%rax\]
-\[mov \%rax r2\]
+\begin{lstlisting}
+		mov r2 %rax
+		div r1 %rax
+		mov %rax r2
+\end{lstlisting}
+
 %TODO: format this thing.
 
 \subsection{Structure of a Compiler}\label{sub_structure_of_a_compiler}
@@ -332,8 +335,27 @@ During this stage, some pseudo-registers will be converted to real registers.
 
 \subsubsection{Implementation}
 
-Inside a class ERTL was created. The class implements a method called "createERTL" that receives an RTL class and creates an ERTL class from it.
-Basically, the graph is maintained untouched except for the call to a function. There is also some extra code added to the beginning and the end of the function bloc.
+Inside a class ERTLfile was created. The class implements a method called "createERTL" that receives an RTL class and creates an ERTLfile class from it. Each RTL has an implementation of a method called "toERTL" that returns an ERTL class. This method is used by "createERTL" to create the ERTL file in question.
+
+Basically, the RTL graph is maintained untouched (copied into ERTL almost as it was) except for the call to a function. There is also some extra code added to the beginning and the end of the function bloc.
+
+For calling the function, the following was added:
+
+\begin{enumerate}
+	\item Move the arguments to the input registers and to the stack if necessary. The registers used as parameters of a function were declared as "Register.parameters". The code was done so that if this is to be changed later, adding or removing registers from the parameters list, nothing must be changed outside the Registers class. 
+	\item Make the call to the function.
+	\item Save the result from register \%rax (Again, a definition Register.result was made that applies to \%rax). Should the return register be changed, only the class \textit{Register} must be changed.
+	\item Recover the parameters on the stack with a manipulation of \%rsp.
+\end{enumerate}
+
+After entering a function. Some instructions where added.
+
+\begin{enumerate}
+	\item Allocate the frame stack
+	\item Save all the \textit{callee saved} registers defined in "Register.callee\_saved"
+	\item Recover all the parameters from "Registers.parameters"
+	
+\end{enumerate}
 
 A RTL function like this:
 
