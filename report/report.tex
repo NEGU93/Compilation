@@ -2,9 +2,14 @@
 \usepackage{cite}
 \usepackage{array}
 \usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{amsmath}
 \usepackage{listings}	% Used to add code
 \usepackage{float} %used to force figures in a position
 \hyphenation{op-tical net-works semi-conduc-tor}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
 
 \begin{document}
 \title{Building a Compilator on Java for a mini-C Programming Language}
@@ -65,12 +70,12 @@ In the program, global structures were not yet implemented, although the code is
 
 Although the compiler computes "$5 + 4$" directly as $9$, it will fail to do so when more complex integer operations are done like "$4 * 9 + (4 \&\& 0)$". It is to be done more optimization on this side. Jumps are also always done by the program itself and the compiler will not compute a "if(1)" as a direct jump to the section of code inside the if loop.
 
-The division is not well implemented as it is done with whatever two registers desired, which will end up in an error compilation. Normally a division must be done between any register and \%rax, and to make the operation \(div r1 r2\) it is necessary to do:
-\begin{lstlisting}
-		mov r2 %rax
-		div r1 %rax
-		mov %rax r2
-\end{lstlisting}
+%The division is not well implemented as it is done with whatever two registers desired, which will end up in an error compilation. Normally a division must be done between any register and \%rax, and to make the operation \(div r1 r2\) it is necessary to do:
+%\begin{lstlisting}
+%		mov r2 %rax
+%		div r1 %rax
+%		mov %rax r2
+%\end{lstlisting}
 
 %TODO: format this thing.
 
@@ -325,7 +330,7 @@ Some simplifications were done when doing binary operations. The compiler will c
 as
 \[x = 9\]
 
-%TODO: put an example done by RTL it will be interesting
+%TODO: maybe I can put an example done by RTL it will be interesting but I'll check that later
 
 \subsection{Explicit Transfer Language (ERTL)}
 
@@ -333,7 +338,7 @@ The \textit{Explicit Register Transfer Language} is in charge of the function ca
 
 During this stage, some pseudo-registers will be converted to real registers.  
 
-\subsubsection{Implementation}
+\subsubsection{Implementation} \label{sec:ERTL-implementation}
 
 Inside a class ERTLfile was created. The class implements a method called "createERTL" that receives an RTL class and creates an ERTLfile class from it. Each RTL has an implementation of a method called "toERTL" that returns an ERTL class. This method is used by "createERTL" to create the ERTL file in question.
 
@@ -354,10 +359,18 @@ After entering a function. Some instructions where added.
 	\item Allocate the frame stack
 	\item Save all the \textit{callee saved} registers defined in "Register.callee\_saved"
 	\item Recover all the parameters from "Registers.parameters"
-	
 \end{enumerate}
 
-A RTL function like this:
+Before exiting the function, some other things are done:
+
+\begin{enumerate}
+	\item Copy the result to the result register (\%rax).
+	\item Recover the \textit{callee saved} registers.
+	\item Deallocate the frame stack.
+	\item finish with the "ret" command.
+\end{enumerate}
+
+Once applying the changes discussed, the output would be as follows. A RTL function will be printed as:
 
 \begin{lstlisting}
 #10 main[]
@@ -370,7 +383,7 @@ locals : [#8]
 	L12: Mmov #8 #9 --> L11
 \end{lstlisting}
 
-will now be extended to:
+While the ERTL extension will now be extended to:
 
 \begin{lstlisting}
 main(0)
@@ -392,8 +405,99 @@ locals : [#8]
 	L33: return
 \end{lstlisting}
 
+Note that the return statement makes it unnecessary to have an extra field to save the exit label. There is also no need to tell the function who is been called, on which register is each parameter stored as by knowing only the number of parameters it will be enough for the function to know where they are. It can be seen also that they are many calls to registers that are not needed. All label L28, L13, L12 and L27 can be removed for example. Hopefully the following parts of the code will take care of reducing that to a more effective code.
 
 \subsection{Location Transfer Language (LTL)}
+
+The Location Transfer Language is the final stage before the actual production of the assembly code which will assign all the other pseudo-register to actual available registers and add, when needed, the rest of the register to the stack.
+
+To make the LTL graph, previous stages are needed. Which will be explained by what follows.
+
+\subsubsection{Life Duration Analysis}
+
+The definition of an \textit{alive variable} is as follows:
+
+\theoremstyle{definition}
+\begin{definition}{Alive Variable}
+	A variable is said to be alive at a given breakpoint of the program if the value it contains is susceptible to be used in a future point of the execution code.
+\end{definition}
+
+Some other definitions will be needed to make:
+
+\theoremstyle{definition}
+\begin{definition}{def(I)}
+	Defined as the set of variables defined by the instruction 'I'
+\end{definition}
+\theoremstyle{definition}
+\begin{definition}{use(I)}
+	Defined as the set of variables used by the instruction 'I'
+\end{definition}
+
+Here there are some examples of "def" and "use" registers for some simple commands:
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{||c | c | c||}
+			\hline
+			Instruction & def & use  \\ [0.5ex] 
+			\hline\hline
+			mov n r & \{r\} &   $\emptyset$ \\ 
+			\hline
+			mov r x & $\emptyset$ & \{r\} \\
+			\hline
+			load n(r1) r2 & \{r2\} & \{r2\} \\
+			\hline
+			store r1 n(r2) & $\emptyset$ & \{r1, r2\} \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{def \& use} \label{tab:def-and-use}
+\end{table}
+
+Having defined that, we are going to make two more definitions:
+
+\theoremstyle{definition}
+\begin{definition}{in(I)}
+	Defined as the set of variables alive at the moment of the call of instruction 'I' 
+\end{definition}
+\theoremstyle{definition}
+\begin{definition}{in(I)}
+	Defined as the set of variables alive at the moment of exit from the instruction 'I'
+\end{definition}
+
+We can generate two equations for these new definitions as follows:
+
+\begin{align*}
+	\left\{ 
+	\begin{array}{cl} 
+		in(I) & = use(I) \cup (out(I) \setminus def(I)) \\
+		out(I) & = \cup_{s \in succ(I)}in(s) \\
+	\end{array}
+	\right.
+\end{align*}
+
+The algorithm is applied by recursion. The actual algorithm implemented was another one a bit more complex to make it reach the stable state faster and make it more efficient. This is the Kildall algorithm.
+
+%TODO: do you want to say something here?
+
+\subsubsection{Interference Graph}
+
+An interference graph is created using the information obtained by the \textit{Life Duration Analysis}.
+
+\theoremstyle{definition}
+\begin{definition}{Interference}
+	Two variables are said to interfere if they cannot use the same register or memory location.
+\end{definition}
+
+The interference graph is it's a non oriented one that contains all the variables with two types of connections, \textit{interference} or \textit{preference}.
+
+If we go back to the example given on \ref{sec:ERTL-implementation} which contained the ERTL result of a simple function. In this case, all registers \%rax, r10, r8 and r9 should connect with themselves in order to be able to remove all the "mov" commands.
+
+\subsubsection{Implementation}
+
+For the \textbf{Life Duration Analysis}, each ERTL class will implement both "use" and "def" functions which will give a set of \textit{Registers} defined for each ERTL command.
+The Kildall algorithm was then applied.
+
 \section{Conclusion}
 
 % use section* for acknowledgment

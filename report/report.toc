@@ -17,6 +17,9 @@
 \contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-A}1}Implementation}{4}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-B}}Explicit Transfer Language (ERTL)}{5}
 \contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-B}1}Implementation}{5}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Location Transfer Language (LTL)}{5}
-\contentsline {section}{\numberline {VI}Conclusion}{5}
-\contentsline {section}{References}{6}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Location Transfer Language (LTL)}{6}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-C}1}Life Duration Analysis}{6}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-C}2}Interference Graph}{6}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-C}3}Implementation}{6}
+\contentsline {section}{\numberline {VI}Conclusion}{6}
+\contentsline {section}{References}{7}
