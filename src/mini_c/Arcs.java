@@ -10,16 +10,17 @@ class Arcs {
     Set<Register> prefs = new HashSet<>();
     Set<Register> intfs = new HashSet<>();
 }
-// TODO: there is a problem with p->a = 4 (I think). Not sure when it's wrong but I think is when making interferences.
+
 class Interference {
     Map<Register, Arcs> graph;
 
     Interference(Liveness lg) {
         graph = new HashMap<>();
+        // Add preference
         for ( Map.Entry<Label, LiveInfo> l : lg.info.entrySet()) {  // For every label in ERTL
             LiveInfo li = l.getValue();
             if ( (li.instr instanceof ERmbinop) && ( ((ERmbinop)li.instr).m == Mbinop.Mmov)) { // Mmov v w
-                Register w = ((ERmbinop)li.instr).r1;
+                Register w = ((ERmbinop)li.instr).r1;   //get both registers involved
                 Register v = ((ERmbinop)li.instr).r2;
                 Arcs arcsv = new Arcs();
                 Arcs arcsw = new Arcs();
@@ -31,14 +32,16 @@ class Interference {
                 graph.put(w, arcsw);
             }
         }
+        //Add interference
+        // (I don't remember why I did this separatelly but there must be a reason... And it there is none then I'm too afraid to change it now)
         for ( Map.Entry<Label, LiveInfo> l : lg.info.entrySet()) {  // For every label in ERTL
             LiveInfo li = l.getValue();
             if ( (li.instr instanceof ERmbinop) && ( ((ERmbinop)li.instr).m == Mbinop.Mmov)) { // Mmov v w
                 Register w = ((ERmbinop)li.instr).r1;
                 Register v = ((ERmbinop)li.instr).r2;
                 Arcs arcsv = graph.get(v);
-                for ( Register r : li.outs) {
-                    if ( (r != w) && (r != v) ) {   // for all the other registers in out
+                for ( Register r : li.outs) {       // for all the other registers in out
+                    if ( (r != w) && (r != v) ) {   // that are not v or w obviously
                         arcsv.intfs.add(r);         // Add as interference
                         graph.putIfAbsent(r, new Arcs());
                         graph.get(r).intfs.add(v);  // For both
@@ -51,7 +54,11 @@ class Interference {
                     graph.putIfAbsent(v, new Arcs());       // Make sure I have it
                     Arcs arcsv = graph.get(v);
                     Register w = li.instr.getConflict();    // Does the ERTL has a conflict of registers?
-                    if ( w != null) {
+                    if ( w != null) {   //
+                        /* Maybe this is not necessary and I'm adding conflicts that should not be there
+                        * This is not explained in the polycopie or the lectures but thinking about it I think this should be here
+                        * If not I'm just adding interference which will make the final code less efficient in the worst case scenario
+                        * But it will work anyway. */
                         arcsv.intfs.add(w);         // Add as interference
                         graph.putIfAbsent(w, new Arcs());   // Make sure w is in the graph
                         graph.get(w).intfs.add(v);  // For both

@@ -52,10 +52,12 @@ General knowledge of x86-64 assembly and the functioning of processors will also
 \textit{Mini C} can deal both with integers and structures. It can even support pointers inside structures to other structures or to the same structure in order to create lists for example. 
 
 \subsubsection{What it doesn't}
-%TODO: ADD STUFF NOT YET IMPLEMENTED. sizeof
+%TODO: ADD STUFF NOT IMPLEMENTED.
 \textit{Mini C} can deal both with integers and structures. But it doesn't work with any other types of variables such as floating point numbers or characters directly.
 
+%TODO: is this really not implemented?
 The function \textit{sizeof} is not yet implemented. The compiler will read it correctly and will know the program is correctly written but it will not know how to translate \textit{sizeof} resulting in an incomplete and broken assembly code.  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
 textit{Mini C} doesn't implement a for loop. Even though is almost the same as implementing a while loop. It was not believed to be relevant the implementation of it as an academic objective as the implementation of it will only require time but will not help in the better understanding of a compiler.
 
@@ -69,6 +71,8 @@ There was no real communication between the typer and the RTL (section \ref{sec:
 In the program, global structures were not yet implemented, although the code is prepared for it. In the section of code which it should be done, a throw error is prompt saying that the global structures are not yet implemented.
 
 Although the compiler computes "$5 + 4$" directly as $9$, it will fail to do so when more complex integer operations are done like "$4 * 9 + (4 \&\& 0)$". It is to be done more optimization on this side. Jumps are also always done by the program itself and the compiler will not compute a "if(1)" as a direct jump to the section of code inside the if loop.
+
+The Appel \& George algorithm can be applied for coloring the interference graph (section \ref{sec:coloring}) in order to achieve better registers assignments for a better optimized assembly code.
 
 %The division is not well implemented as it is done with whatever two registers desired, which will end up in an error compilation. Normally a division must be done between any register and \%rax, and to make the operation \(div r1 r2\) it is necessary to do:
 %\begin{lstlisting}
@@ -411,6 +415,8 @@ Note that the return statement makes it unnecessary to have an extra field to sa
 
 The Location Transfer Language is the final stage before the actual production of the assembly code which will assign all the other pseudo-register to actual available registers and add, when needed, the rest of the register to the stack.
 
+In the Location Transfer part, all the register are re-written using allocatable ones and if there is no need to do the actual operation, like for example in a case like "mov r1 r1", it will be replaced with a "goto L", where L is the label of the next operation.
+
 To make the LTL graph, previous stages are needed. Which will be explained by what follows.
 
 \subsubsection{Life Duration Analysis}
@@ -493,15 +499,92 @@ The interference graph is it's a non oriented one that contains all the variable
 
 If we go back to the example given on \ref{sec:ERTL-implementation} which contained the ERTL result of a simple function. In this case, all registers \%rax, r10, r8 and r9 should connect with themselves in order to be able to remove all the "mov" commands.
 
+\subsubsection{Coloring} \label{sec:coloring}
+
+In this stage, the actual allocatable registers are mapped with the pseudo-registers so that all registers left are actually the ones being used in the assembly code. This section could be seen as actually coloring the interference graph, where each color is an actual allocatable register.
+
+One of the best's algorithms to implement this stage is the one from George and Appel \cite{COLORING}. However this code was not applied in the code, but a simpler one was made.
+
 \subsubsection{Implementation}
+
+Each section described (Life Duration, Interference Graph and Coloring) was implemented with different classes each in the java files Arcs.java, Liveness.java and Coloring.java.
 
 For the \textbf{Life Duration Analysis}, each ERTL class will implement both "use" and "def" functions which will give a set of \textit{Registers} defined for each ERTL command.
 The Kildall algorithm was then applied.
 
+To create the \textbf{interference graph} the following logic was applied. For every instruction that defines a variable $v$  which the alive variables in "out" are \(w_{1}, ..., w_{n}\):
+\begin{itemize}
+	\item For the instruction mov $w$ $v$, we add interference between $v$ and all $w_{i}$ different from $w$. And we add the preference between $v$ and $w$.
+	\item For every other instruction we add the interference between $v$ and all $w_{i}$ with \(i \in [1, ..., n]\) 
+\end{itemize}
+
+For \textbf{Coloring} the interference graph, first a "possible" registers list was made for each pseudo-register with all the possible allocatable registers that could be used for that pseudo-register. After the list was made, some iterations were made to assign all the pseudo-registers by the following functions (and in that order).
+
+\begin{enumerate}
+	\item \textit{onlyOnePossiblity} In this function, every register with one and only one possibility was assigned to that register only if that same register appeared as a preferred one.
+	\item \textit{onlyOnePossibility2} In this function, every register with one and only one possibility was assigned to that register regardless if that same register appeared as a preferred one.
+	\item \textit{preferredOne} In this function, every register was assigned to a possible register if that register appeared as a preferred one.
+	\item \textit{preferredPseudo} In this function, if the preferred register is a pseudo-register (not listed in the possible register list), it checks if that register (the preferred one) has already been assigned to a allocatable register and, if that allocatable register is not in the interference, it assigns it to himself.
+	\item \textit{assignTheRest} In here the registers were assigned to whatever register possible left.
+	\item \textit{spillRegisters} If there are register left without possibilities just stack them.
+\end{enumerate}
+
+The reason why 1 and 2 are not made together was because if two registers say r1 and r2 have only one option and they interfere with each other, then one of those will be forced be stored in the stack. If one of those register however, has the option as preferred while the other doesn't, then that register will not be chosen as the one stored on the stack.
+
+Each ERTL subclass applies "toLTL" method. Equivalent as the RTL application of "toERTL", the LTL graph is created using the color graph created. In this section, every register is directly replaced with the register contained in the color graph. If the replacement of it makes the operation meaningless, then the operation is replaced by a "goto" command. The allocate and deallocate stack frame can now be replaced by the actual number or by a "goto" if that number is empty.
+
+IN the following code we can see how the example shown in \ref{sec:ERTL-implementation} is presented in the LTL graph.
+
+\begin{lstlisting}
+main()
+entry  : L32
+	L32: goto L31
+	L31: goto L30
+	L30: goto L15
+	L15: mov $42 %rdi --> L14
+	L14: goto L29
+	L29: call fact --> L28
+	L28: goto L13
+	L13: goto L12
+	L12: goto L27
+	L27: goto L11
+	L11: goto L35
+	L35: goto L34
+	L34: goto L33
+	L33: return
+\end{lstlisting}
+
+We can see that almost all the "mov" functions as well as the allocate and deallocate frame were replaced by the "goto" function. 
+As stated before, all registers \%rax, r10, r8 and r9 were mapped to the same colors so that all the "mov" operations on labels L28, L13, L12 and L27 were replaced by "goto".
+
+\subsection{x86-64 Assembly Code}
+\subsubsection{Implementation}
+Finally, the final assembly code was generated from the LTL graph. This was done by something called \textit{Linearization} which visits the LTL graph creating the code.
+Labels are created when visiting each for a second time. That means that a "goto L" will not generate the L label by it's own. The code on the label L will be put where the operation "goto L" was placed and L will be added to a visited list. If another operation "goto L" appears, then there it will be replaced by a "jmp L" only in that case.
+Two functions mutually recursive are created to make the \textit{Linearization}.
+
+\begin{enumerate}
+	\item \textbf{lin} Giving a certain label, lin created the code if the label was not yet visited. If not it creates a jmp to that label, marking that label as needed (so that it is actually added to the file).
+	\item \textbf{instr} Done by the visitor, this generates the code by a given label without checking any condition.
+\end{enumerate}
+
+An example on how the recursion is done will be as follows.
+\begin{lstlisting}
+instr(L1 : mov n d -> L) := 	
+		produce L1 : mov n d
+		call lin(L)
+\end{lstlisting}
+
+For branching cases, special care will be taken to choose in which order to apply lin for both labels to make sure that, if possible, only one jump is needed. Both the conditional jump and the forced jump implementation will try to be avoided.
+
 \section{Conclusion}
 
+The implementation of a compiler proved to be very time consuming and very difficult to debug. Following the lectures and faithfully as possible proved to be the most efficient tool for debugging and making the correct implementation of the code.
+
+It is a personal pride having been able to implement a working compiler although with bugs and incomplete in some aspects. The general knowledge of how to do it and the theory of how the compiler work were correctly assimilated.
+
 % use section* for acknowledgment
-\section*{Acknowledgment}
+%\section*{Acknowledgment}
 
 % Bibliography
 \newpage

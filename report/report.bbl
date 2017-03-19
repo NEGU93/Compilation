@@ -48,4 +48,8 @@ S.~Hudson. Cup parser generator for java. [Online]. Available:
 \bibitem{CUP_MANUAL}
 S.~E. Hudson, \emph{CUP User's Manual}, jul 1999.
 
+\bibitem{COLORING}
+A.~W. George, Lal \&~Appel, ``Iterated register coalescing,'' \emph{ACM
+  Transacions on Programming Languages and Systems}, jul 1995.
+
 \end{thebibliography}

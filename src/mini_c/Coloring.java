@@ -26,10 +26,11 @@ class Coloring {
                 todo.put(r, posibleColors);
             }
         }
-        //printTodoList(todo);
+        //printTodoList();
         do {} while (onlyOnePossibility(ig)); // Do this until I have no only one posibility left
         do {} while (onlyOnePossibility2(ig));
         do {} while (preferredOne(ig));
+        do {} while (preferredPseudo(ig));
         do {} while (assignTheRest(ig));
         spillRegisters();
         if (!todo.isEmpty()) { throw new Error("The todolist is still not empty"); }
@@ -70,6 +71,19 @@ class Coloring {
         }
         return false;
     }
+    /* Similar to preferedOne but this time it checks if the prefered one is a pseudo-register */
+    private boolean preferredPseudo(Interference ig) {
+        for (Map.Entry<Register, Set<Register>> tl : todo.entrySet()) { // go for every register in the todolist
+            for ( Register preferredRegister : ig.graph.get(tl.getKey()).prefs ) {   // For every preferred register (Only one most of the time right?)
+                if (!todo.containsKey(preferredRegister) && !ig.graph.get(tl.getKey()).intfs.contains(preferredRegister)) {
+                    colors.put(tl.getKey(), colors.get(preferredRegister));
+                    todo.remove(tl.getKey());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     /* Ok, just do the rest of the list with whatever they can */
     private boolean assignTheRest(Interference ig) {
         for (Map.Entry<Register, Set<Register>> tl : todo.entrySet()) { // go for every register in the todolist
@@ -95,7 +109,7 @@ class Coloring {
 
     /* Assigns a real Register to a pseudo register and delete it from the todolist*/
     private boolean addColour(Register pseudoRegister, Register realRegister, Interference interference) {
-        Operand operand = new Reg(realRegister); // Create the register
+        Operand operand = new Reg(realRegister);    // Create the register
         colors.put(pseudoRegister, operand);       // get it to the colored graph
         removeRegisterAsOption(realRegister, interference.graph.get(pseudoRegister).intfs); // Remove the new register from the interferences
         todo.remove(pseudoRegister);       // remove it from the todolist

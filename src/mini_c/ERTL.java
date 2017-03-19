@@ -44,8 +44,7 @@ class ERconst extends ERTL {
   @Override Set<Register> def() { return singleton(r); }
   @Override Set<Register> use() { return emptySet; }
   @Override Register getR() { return r; }
-  @Override
-  void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
+  @Override void toLTL(LTLgraph lg, Coloring coloring, Label key, int formals, int m) {
     Lconst lconst = new Lconst(this.i, coloring.get(r), l);
     lg.put(key, lconst);
   }
