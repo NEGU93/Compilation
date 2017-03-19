@@ -2,11 +2,7 @@ package mini_c;
 
 /** Explicit Register Transfer Language (ERTL) */
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.lang.Integer.max;
 import static mini_c.Mbinop.Mmov;
@@ -565,25 +561,26 @@ class ERTLfun {
     for (Map.Entry<Label, RTL> rtl : rfun.body.graph.entrySet()) {  // RTL -> ERTL
       this.body.put(rtl.getKey(), rtl.getValue().toERTL(rfun.exit, this.body));
     }
-    startERTLGraph(rfun.entry);   // Add the begining of the function call
+    startERTLGraph(rfun.entry, rfun.formals);   // Add the begining of the function call
     returnERTLGraph(rfun.exit);   // Add the end of the function call
     createLiveness();             // create Live
     createInterference();         // Interference
     createColormap();             // Colorate
   }
   /* Make the start of the function */
-  private void startERTLGraph(Label current) {
-    for (int i = 0; i < this.formals; i++) {
+  private void startERTLGraph(Label current, List<Register> formals) {
+    int i = 0;
+    for (Iterator<Register> it = formals.iterator(); it.hasNext(); i++) {
       if (i < parameters.size()) { // Get the first arguments in registers
-        ERmbinop erb = new ERmbinop(Mmov, parameters.get(i), new Register(), current);
+        ERmbinop erb = new ERmbinop(Mmov, parameters.get(i), it.next(), current);
         current = this.body.add(erb);
       }
       else { // The other arguments in the pile
-        ERget_param getPam = new ERget_param((i - parameters.size()),new Register(), current);
+        ERget_param getPam = new ERget_param((i - parameters.size()), it.next(), current);
         current = this.body.add(getPam);
       }
     }
-    for ( int i = 0 ; i < callee_saved.size(); i++ ) { // for every input
+    for ( i = 0 ; i < callee_saved.size(); i++ ) { // for every input
       backUpReg.add(new Register());
       ERmbinop er = new ERmbinop(Mmov, callee_saved.get(i), this.backUpReg.get(i), current);
       current = this.body.add(er);
