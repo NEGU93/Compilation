@@ -5,6 +5,9 @@
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{listings}	% Used to add code
+\lstset{language=Java}
+
+
 \usepackage{float} %used to force figures in a position
 \hyphenation{op-tical net-works semi-conduc-tor}
 
@@ -29,7 +32,7 @@ Universit\'{e} Saclay-Paris}
 
 \begin{abstract}
 In this project, a compilator was created to generate a x86-64 assembler code from a C fragment called mini-C.
-This is a 100\% C-compatible fragment, in the sense that any Mini C program is also a C program. 
+This is a 100\% C-compatible fragment, in the sense that any Mini C program is also a C program.
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
@@ -41,29 +44,29 @@ The reader is suppose to have some basic knowledge of C and for that reason almo
 
 Simply stated, a Compiler is a program that can read a code written in a specific programming language and translate it into an equivalent code of another language. A fairly good analogy can be made by a translator between two different languages like Spanish and French for example.
 
-The objective of this project is to create a compiler for a fragment of C denominated \textit{Mini C}. Produce a reasonably effective code x86-64. In this project, a ".s" file will be created containing the translation between the C file to assembly. After the file is generated, the use of another compiler will be needed to produce the final output file that can be run by the computer. 
+The objective of this project is to create a compiler for a fragment of C denominated \textit{Mini C} towrds a reasonably effective code x86-64. In this project, a ".s" file will be created containing the translation between the C file to assembly. After the file is generated, the use of another compiler will be needed to produce the final output file that can be run by the computer.
 
 General knowledge of x86-64 assembly and the functioning of processors will also be required. The concept of the stack and registers like the callee saved and the caller saved must be clear for the reader.
 
 \subsection{Mini C}
 \subsubsection{What it does}
-\textit{Mini C} is a fragment of the language C which contains integers and pointers to structures. \textit{Mini C} is 100\% compatible with C in the sense that every \textit{Mini C} program is also a C program. This will enable to use a C compiler such us \textbf{gcc} to use as reference. 
+\textit{Mini C} is a fragment of the language C which contains integers and pointers to structures. \textit{Mini C} is 100\% compatible with C in the sense that every \textit{Mini C} program is also a C program. This will enable to use a C compiler such us \textbf{gcc} to use as reference.
 
-\textit{Mini C} can deal both with integers and structures. It can even support pointers inside structures to other structures or to the same structure in order to create lists for example. 
+\textit{Mini C} can deal both with integers and structures. It can even support pointers inside structures to other structures or to the same structure in order to create lists for example. Mini is a Turing Complete language thus, despite its small structure, every single code in C can be reduced to \textit{Mini C}.
 
 \subsubsection{What it doesn't}
 %TODO: ADD STUFF NOT IMPLEMENTED.
 \textit{Mini C} can deal both with integers and structures. But it doesn't work with any other types of variables such as floating point numbers or characters directly.
 
 %TODO: is this really not implemented?
-The function \textit{sizeof} is not yet implemented. The compiler will read it correctly and will know the program is correctly written but it will not know how to translate \textit{sizeof} resulting in an incomplete and broken assembly code.  
+The function \textit{sizeof} is not yet implemented. The compiler will read it correctly and will know the program is correctly written but it will not know how to translate \textit{sizeof} resulting in an incomplete and broken assembly code.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
 
-textit{Mini C} doesn't implement a for loop. Even though is almost the same as implementing a while loop. It was not believed to be relevant the implementation of it as an academic objective as the implementation of it will only require time but will not help in the better understanding of a compiler.
+\textit{Mini C} doesn't implement a for loop. Even though is almost the same as implementing a while loop. It was not believed to be relevant the implementation of it as an academic objective as the implementation of it will only require time but will not help in the better understanding of a compiler.
 
 The "++" and "--" commands to increase or decrease a variables value were not implemented as well.
 
-\subsubsection{Known bugs and work to be done} 
+\subsubsection{Known bugs and work to be done}
 %TODO: add bugs
 
 There was no real communication between the typer and the RTL (section \ref{sec:RTL}) generation code. For which reason, the toRLT function had to create in some cases some information already treated. This was not only working twice but also made the syntax class longer and more difficult to read. It is work for the future to create a better communication between both parts.
@@ -101,7 +104,7 @@ A more detailed diagram of the structure can be seen in figure \ref{fig_struct_o
 \end{figure}
 
 \section{Lexical Analyzer} \label{sec:lexical-Analizer}
-A lexical analyzer (\textit{Lexer}) is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating a token stream for parsers called \textit{lexemes} consisting of a \textit{token name} and the \textit{attribute value}. 
+A lexical analyzer (\textit{Lexer}) is the first front-end step in compilers, matching keywords, comments, operators, etc, and generating a token stream for parsers called \textit{lexemes} consisting of a \textit{token name} and the \textit{attribute value}.
 The \textit{token name} is an abstract symbol that will be used during syntax analysis, while the \textit{attribute value} is an entry in the \textit{symbol table} (discussed on \ref{sub_structure_of_a_compiler}) which will be used during the semantic analysis and the code generation.
 
 The Lexer reads input from the programming language to compile (mini c in our case) and matches it against regular expressions and runs a corresponding action if such an expression is matched.
@@ -116,7 +119,7 @@ The concept of regular expression arose in the 1950's when the American mathemat
 
 A regular expression is a sequence of characters that define a search pattern. In other words, there are a conjunction of letters and digits that follow a certain rule.
 
-Let us define \textit{letter} as any letter in the Latin alphabet and \textit{digit} any number [0-9]. Then we can define rules as follow: 
+Let us define \textit{letter} as any letter in the Latin alphabet and \textit{digit} any number [0-9]. Then we can define rules as follow:
 \begin{equation}
 0 | [1-9] (<digit>* | [])\label{reg_expr_example}
 \end{equation}
@@ -132,14 +135,14 @@ There are two different classes of automatas:
 	\item \textit{Nondeterministic Finite Automata} (NFA)
 	\item \textit{Deterministic Finite Automata} (DFA)
 \end{enumerate}
-The first class (NFA) have no restrictions on the labels of their edges. A symbol can label several edges out of the same state. The DFA on the other hand have for each state and symbol exactly one edge with that symbol leaving that state. 
+The first class (NFA) have no restrictions on the labels of their edges. A symbol can label several edges out of the same state. The DFA on the other hand have for each state and symbol exactly one edge with that symbol leaving that state.
 %translate to english...
 
 \subsection{Implementation}
 
 For the lexical analyzer, a flex library was used \cite{JFLEX}. A .flex file was created and then, by means of jflex, converted to the final java class.
 
-Jflex lexers are based on a DFA automata. For more information about jflex library please refer to \cite{JFLEX_MANUAL}. 
+Jflex lexers are based on a DFA automata. For more information about jflex library please refer to \cite{JFLEX_MANUAL}.
 
 The work of the lexer was only to read input from the file and create new symbols (\textit{lexemes}) containing the information as explained in \ref{sec:lexical-Analizer}.
 
@@ -147,7 +150,7 @@ The work of the lexer was only to read input from the file and create new symbol
 
 The syntax of a programming language describes the proper form of its programs.
 
-The \textit{syntax analyzer} or \textit{parser} uses the first component of the \textit{lexemes}, the \textit{tokens}. The \textit{parser} creates some kind of tree representation that depicts the grammatical structure of the token stream called the \textit{syntax tree}. In this tree, each node represent an operation and the children of the node represent the arguments of that operation. 
+The \textit{syntax analyzer} or \textit{parser} uses the first component of the \textit{lexemes}, the \textit{tokens}. The \textit{parser} creates some kind of tree representation that depicts the grammatical structure of the token stream called the \textit{syntax tree}. In this tree, each node represent an operation and the children of the node represent the arguments of that operation.
 
 \begin{figure}[H]
 	\centering
@@ -177,9 +180,9 @@ In that file, precedence where applied to each operator using the following tabl
 	\begin{center}
 	\begin{tabular}{||c c||}
 		\hline
-		Operator & Associativity  \\ [0.5ex] 
+		Operator & Associativity  \\ [0.5ex]
 		\hline\hline
-		= & right \\ 
+		= & right \\
 		\hline
 		$|$$|$ & left  \\
 		\hline
@@ -187,7 +190,7 @@ In that file, precedence where applied to each operator using the following tabl
 		\hline
 		== != & left  \\
 		\hline
-		$<$ $<$= $>$ $>$= & left \\ [1ex] 
+		$<$ $<$= $>$ $>$= & left \\ [1ex]
 		\hline
 		+ - & left \\
 		\hline
@@ -208,32 +211,32 @@ After the precedence, the following grammar was implemented (table \ref{tab_gram
 
 \begin{table}[H]
 	\begin{center}
-		\begin{tabular}{ | m{1.5cm} | m{6.5cm}| } 
+		\begin{tabular}{ | m{1.5cm} | m{6.5cm}| }
 			\hline
-			$<$ file $>$ & $<$ decl $>$* EOF \\ 
+			$<$ file $>$ & $<$ decl $>$* EOF \\
 			\hline
-			$<$ decl $>$ & $<$ var $>$ $|$ $<$ type $>$ $|$ $<$ funct $>$ \\ 
+			$<$ decl $>$ & $<$ var $>$ $|$ $<$ type $>$ $|$ $<$ funct $>$ \\
 			\hline
-			$<$ var $>$ & int $<$ ident $>^{+},$ ; \newline 
-						struct $<$ ident $>$ ( *$<$ ident $>^{+},$ ) ; \\ 
+			$<$ var $>$ & int $<$ ident $>^{+},$ ; \newline
+						struct $<$ ident $>$ ( *$<$ ident $>^{+},$ ) ; \\
 			\hline
 			$<$ type $>$ & struct $<$ ident $>$ { $<$ var $>$* } ; \\
 			\hline
-			$<$ funct $>$ & int $<$ ident $>$ ( $<$ param $>^{*},$ ) $<$ bloc $>$ \newline 
+			$<$ funct $>$ & int $<$ ident $>$ ( $<$ param $>^{*},$ ) $<$ bloc $>$ \newline
 							struct $<$ ident $>$ * $<$ ident $>$ ($<$ param $>^{*},$) $<$ bloc $>$ \\
 			\hline
 			$<$ param $>$ & int $<$ ident $>$ $|$ struct $<$ ident $>$ * $<$ ident $>$ \\
 			\hline
-			$<$ expr $>$ & 	$<$ integer $>$ \newline 
+			$<$ expr $>$ & 	$<$ integer $>$ \newline
 							$<$ ident $>$ \newline
 							$<$ expr $>$ -$>$ $<$ ident $>$ \newline
-							$<$ ident $>$ ( $<$ expr $>^{*},$ ) \newline 
+							$<$ ident $>$ ( $<$ expr $>^{*},$ ) \newline
 							! $<$ expr $>$ $|$ -$<$ expr $>$ \newline
 							$<$ expr $>$ $<$ op $>$ $<$ expr $>$ \newline
 							sizeof ( struct $<$ ident $>$ ) \newline
 							( $<$ expr $>$ )	\\
 			\hline
-			$<$ op $>$ & = $|$ == $|$ != $|$ + $|$ - $|$ * $|$ / $|$ \&\& $|$ $<$ $|$ $<$= $|$ $>$ $|$ $>$= $|$ $|$$|$ \\ 
+			$<$ op $>$ & = $|$ == $|$ != $|$ + $|$ - $|$ * $|$ / $|$ \&\& $|$ $<$ $|$ $<$= $|$ $>$ $|$ $>$= $|$ $|$$|$ \\
 			\hline
 			$<$ instr $>$ & ; \newline
 							$<$ expr $>$; \newline
@@ -241,7 +244,7 @@ After the precedence, the following grammar was implemented (table \ref{tab_gram
 							if ( $<$ expr $>$ ) $<$ instr $>$ else $<$ instr $>$ \newline
 							while ( $<$ expr $>$ ) $<$ instr $>$ \newline
 							$<$ bloc $>$ \newline
-							return $<$ expr $>$; \\				
+							return $<$ expr $>$; \\
 			\hline
 			$<$ instr $>$ & { $<$ var $>*$ $<$ instr $>*$  } \\
 			\hline
@@ -253,29 +256,31 @@ After the precedence, the following grammar was implemented (table \ref{tab_gram
 Where '$|$' is either one or the other is found. The '*' is as many as necessary (including none at all), while on the other hand, '+' means as many as necessary but at least one. If under any of those symbols there is a comma (',') it means there are comma indented.
 
 As an example on how to read the table, wwe can see that within a file, one will find a list of declarations. These declarations can be either a variable  (global variables) or a structure declaration or functions. The declarations of functions have it's own parameters (or none) and a bloc in which it will be the code.
-The bloc is composed by the declarations of the variables followed by instructions. The instructions are loops such as if or while or simply expressions. Expressions can be all type of C \& C ++ expressions such as integers, pointers, negation, call to functions, etc.   
+The bloc is composed by the declarations of the variables followed by instructions. The instructions are loops such as if or while or simply expressions. Expressions can be all type of C \& C ++ expressions such as integers, pointers, negation, call to functions, etc.
 
 \section{Semantic Analyzer} \label{sec:semantic-analyzer}
 \textit{"Well typed programs do not go wrong"}
 
 The semantics of a programming language defines what each program does when executing.
 
-A \textit{Semantic Analyzer} uses the \textit{syntax tree} and the information in the \textit{symbol table} to check the source program for semantic consistency with the language definition. 
+A \textit{Semantic Analyzer} uses the \textit{syntax tree} and the information in the \textit{symbol table} to check the source program for semantic consistency with the language definition.
 
 An important part of the \textit{semantic analysis} is the \textit{type checking} where it gathers type information and checks that each operator has matching operands.
 An example of the type checking will be to make sure the index which whom an array is accessed is an integer and not any other incompatible type.
-In a equation like \(8.0 + 4\), the type checking will make sure to convert the integer "4" into a floating point before making the operation. 
+In a equation like \(8.0 + 4\), the type checking will make sure to convert the integer "4" into a floating point before making the operation.
 
-The \textit{type checking} will make sure that the variables of a equation like \(e1 + e2\) are from the same type and reject the incoherent programs. 
+The \textit{type checking} will make sure that the variables of a equation like \(e1 + e2\) are from the same type and reject the incoherent programs.
 There are some languages that use \textbf{dynamic types}, which means they check they check the type of the variables dynamically. Such languages are for example PHP, Python or Lisp. On the other hand, there are also \textbf{static types} languages which is the compiler the one in charge on checking the types. For example OCaml, Java and C (which will be our case).
 
 \subsection{Implementation}
 The bigger and more critic class of the entire program was created in \textit{Syntax.java} class. An object of the class \textit{File}, created by the parser (which uses the lexer) implements a method called \textit{Typer} which takes care of what was explained in this section (\ref{sec:semantic-analyzer}).
 
+\subsection{Results}
 %TODO: something to add?
+Our Typer types correctly all the good tests given beforehand. However there are still some functions that are not well implemented in the typer as far as lifespan of the variables is concerned. Indeed some tests provided such as "typing/bad/testfile-redef-4.c" are compiled but should fail. This is due to the lifespan of the local variables within the blocks. A solution could presumably be easily implemented but we had no success in trying and decided to move on forward in order to complete the project
 
 \section{Code Generation}
-In this section we will actually generate the assembly code itself. It takes as input an intermediate representation of the source program and maps it into the target language. 
+In this section we will actually generate the assembly code itself. It takes as input an intermediate representation of the source program and maps it into the target language.
 It is too difficult to be able to do this part in only one step. So it will actually be divided into 3 stages:
 \begin{enumerate}
 	\item \textit{Register Transfer Language} (RTL)
@@ -293,7 +298,7 @@ The second phase is to create a a \textit{Register Transfer Language}. Here a \t
 
 \subsubsection{Implementation}
 Each file contains a list of declarations of functions (as can be seen on table \ref{tab_grammar}) that contains a bloc statement. Each function, contains a list of parameters and the list of declarations of variables.
-A RTL graph is created for each function in a recursive way. As seen in table \ref{tab_grammar}, a function has a list of statements that will be converted into one or more assembler commands. For each command, a label will be created and saved into the RTL graph, the RTL graph will contain each assembly operation with a label of reference to it. 
+A RTL graph is created for each function in a recursive way. As seen in table \ref{tab_grammar}, a function has a list of statements that will be converted into one or more assembler commands. For each command, a label will be created and saved into the RTL graph, the RTL graph will contain each assembly operation with a label of reference to it.
 
 Each \textit{statement} and \textit{expression} class (declared in the syntax.java file) will have a "toRTL" method that will save it's label into the graph. The function "toRTL" will have as arguments:
 \begin{itemize}
@@ -340,7 +345,7 @@ as
 
 The \textit{Explicit Register Transfer Language} is in charge of the function call conventions. Here, the first parameters are sent to a function are stored in the registers which convention dictates will be used (\%rdi, \%rsi, \%rdx, \%rcx, \%r8, \%r9) and the rest of the parameters will be stocked at in the stack. Also, it will return the result of the function in the register \%rax. It will also make sure the registers known as \textit{callee saved} are correctly saved by the function before returning to the previous function.
 
-During this stage, some pseudo-registers will be converted to real registers.  
+During this stage, some pseudo-registers will be converted to real registers.
 
 \subsubsection{Implementation} \label{sec:ERTL-implementation}
 
@@ -351,7 +356,7 @@ Basically, the RTL graph is maintained untouched (copied into ERTL almost as it 
 For calling the function, the following was added:
 
 \begin{enumerate}
-	\item Move the arguments to the input registers and to the stack if necessary. The registers used as parameters of a function were declared as "Register.parameters". The code was done so that if this is to be changed later, adding or removing registers from the parameters list, nothing must be changed outside the Registers class. 
+	\item Move the arguments to the input registers and to the stack if necessary. The registers used as parameters of a function were declared as "Register.parameters". The code was done so that if this is to be changed later, adding or removing registers from the parameters list, nothing must be changed outside the Registers class.
 	\item Make the call to the function.
 	\item Save the result from register \%rax (Again, a definition Register.result was made that applies to \%rax). Should the return register be changed, only the class \textit{Register} must be changed.
 	\item Recover the parameters on the stack with a manipulation of \%rsp.
@@ -393,19 +398,19 @@ While the ERTL extension will now be extended to:
 main(0)
 entry  : L32
 locals : [#8]
-	L32: alloc_frame --> L31 
-	L31: Mmov %r12 #18 --> L30 
+	L32: alloc_frame --> L31
+	L31: Mmov %r12 #18 --> L30
 	L30: Mmov %rbx #17 --> L15
 	L15: mov $42 #11 --> L14
 	L14: Mmov #11 %rdi --> L29
-	L29: call fact(1) --> L28 
-	L28: Mmov %rax #10 --> L13 
-	L13: Mmov #10 #8 --> L12 
-	L12: Mmov #8 #9 --> L27 
-	L27: Mmov #9 %rax --> L11 
-	L11: Mmov #18 %r12 --> L35 
+	L29: call fact(1) --> L28
+	L28: Mmov %rax #10 --> L13
+	L13: Mmov #10 #8 --> L12
+	L12: Mmov #8 #9 --> L27
+	L27: Mmov #9 %rax --> L11
+	L11: Mmov #18 %r12 --> L35
 	L35: Mmov #17 %rbx --> L34
-	L34: delete_frame --> L33 
+	L34: delete_frame --> L33
 	L33: return
 \end{lstlisting}
 
@@ -445,9 +450,9 @@ Here there are some examples of "def" and "use" registers for some simple comman
 	\begin{center}
 		\begin{tabular}{||c | c | c||}
 			\hline
-			Instruction & def & use  \\ [0.5ex] 
+			Instruction & def & use  \\ [0.5ex]
 			\hline\hline
-			mov n r & \{r\} &   $\emptyset$ \\ 
+			mov n r & \{r\} &   $\emptyset$ \\
 			\hline
 			mov r x & $\emptyset$ & \{r\} \\
 			\hline
@@ -464,7 +469,7 @@ Having defined that, we are going to make two more definitions:
 
 \theoremstyle{definition}
 \begin{definition}{in(I)}
-	Defined as the set of variables alive at the moment of the call of instruction 'I' 
+	Defined as the set of variables alive at the moment of the call of instruction 'I'
 \end{definition}
 \theoremstyle{definition}
 \begin{definition}{in(I)}
@@ -474,16 +479,15 @@ Having defined that, we are going to make two more definitions:
 We can generate two equations for these new definitions as follows:
 
 \begin{align*}
-	\left\{ 
-	\begin{array}{cl} 
+	\left\{
+	\begin{array}{cl}
 		in(I) & = use(I) \cup (out(I) \setminus def(I)) \\
 		out(I) & = \cup_{s \in succ(I)}in(s) \\
 	\end{array}
 	\right.
 \end{align*}
 
-The algorithm is applied by recursion. The actual algorithm implemented was another one a bit more complex to make it reach the stable state faster and make it more efficient. This is the Kildall algorithm.
-
+The algorithm is applied by recursion and iterates until the smallest fixed point. We actually implemented the Kildall algorithm that is not as costly as this naive algorithm that, in the wors cases, is of complexity $\mathcal{O}(N^4)$ where $N$ is the number of vertices. The Kildall algorithm only recomputes values that have changed and do not iterate over the whole table each time. We used a stack to store the vertices that had changed and had to be recomputed and in order not to add them twice we implemented a HashMap \textit{labelsInStack}.
 %TODO: do you want to say something here?
 
 \subsubsection{Interference Graph}
@@ -515,7 +519,7 @@ The Kildall algorithm was then applied.
 To create the \textbf{interference graph} the following logic was applied. For every instruction that defines a variable $v$  which the alive variables in "out" are \(w_{1}, ..., w_{n}\):
 \begin{itemize}
 	\item For the instruction mov $w$ $v$, we add interference between $v$ and all $w_{i}$ different from $w$. And we add the preference between $v$ and $w$.
-	\item For every other instruction we add the interference between $v$ and all $w_{i}$ with \(i \in [1, ..., n]\) 
+	\item For every other instruction we add the interference between $v$ and all $w_{i}$ with \(i \in [1, ..., n]\)
 \end{itemize}
 
 For \textbf{Coloring} the interference graph, first a "possible" registers list was made for each pseudo-register with all the possible allocatable registers that could be used for that pseudo-register. After the list was made, some iterations were made to assign all the pseudo-registers by the following functions (and in that order).
@@ -554,7 +558,7 @@ entry  : L32
 	L33: return
 \end{lstlisting}
 
-We can see that almost all the "mov" functions as well as the allocate and deallocate frame were replaced by the "goto" function. 
+We can see that almost all the "mov" functions as well as the allocate and deallocate frame were replaced by the "goto" function.
 As stated before, all registers \%rax, r10, r8 and r9 were mapped to the same colors so that all the "mov" operations on labels L28, L13, L12 and L27 were replaced by "goto".
 
 \subsection{x86-64 Assembly Code}
@@ -570,7 +574,7 @@ Two functions mutually recursive are created to make the \textit{Linearization}.
 
 An example on how the recursion is done will be as follows.
 \begin{lstlisting}
-instr(L1 : mov n d -> L) := 	
+instr(L1 : mov n d -> L) :=
 		produce L1 : mov n d
 		call lin(L)
 \end{lstlisting}
@@ -593,5 +597,3 @@ It is a personal pride having been able to implement a working compiler although
 \bibliography{ref}
 
 \end{document}
-
-
