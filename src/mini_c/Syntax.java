@@ -26,10 +26,8 @@ enum Binop {
 }
 class Typing {
 	  public static HashMap<String,LinkedList<Param>> declStruct = new HashMap<String,LinkedList<Param>>(); // there we store the list of pointers a structure contains
-	  public static HashMap<String,Var> varType = new HashMap<String, Var>(); //there we store the variable declared as int, the value doesn't serve anything
-	  //HashMap<String,String> varsPoints = new HashMap<String, String>(); //there we store the struct id * vars, the key is the name of the pointer, the value is the id
+	  public static HashMap<String,Var> varType = new HashMap<String, Var>(); //there we store the variables, functions included
 	  public static HashMap<String,LinkedList<Var>> funArgsType=new HashMap<String,LinkedList<Var>>(); //we store, for each function the list of the type of its arguments
-	  //HashMap<String,String> funType=new HashMap<String,String>();
 	  public static HashMap<String,Var> varTypeLoc = new HashMap<String, Var>();
 
 	  Typing() {
