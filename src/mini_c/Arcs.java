@@ -40,7 +40,7 @@ class Interference {
                 for ( Register r : li.outs) {
                     if ( (r != w) && (r != v) ) {   // for all the other registers in out
                         arcsv.intfs.add(r);         // Add as interference
-                       System.out.println(r);
+                        graph.putIfAbsent(r, new Arcs());
                         graph.get(r).intfs.add(v);  // For both
                     }
                 }
@@ -60,8 +60,6 @@ class Interference {
                         if ( (r != v) ) {               // that is not v obviously
                             graph.putIfAbsent(r, new Arcs());
                             arcsv.intfs.add(r);         // Add as interference
-                            //System.out.println(" r = " + r.toString());
-                            //System.out.println("graph[r] = " + graph.get(r).toString());
                             graph.get(r).intfs.add(v);  // For both
                         }
                     }

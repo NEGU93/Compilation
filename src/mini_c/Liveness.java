@@ -18,7 +18,7 @@ class Liveness {
 	// do {
 	// finish = true;
 	// //lastInfo = new;
-	// // TODO: this is not yet the Kildall algorithm but the less effective
+	// // this is not yet the Kildall algorithm but the less effective
 	// one. I don't use pred. (calcul de point fixe dans pdf)
 	// for (Map.Entry<Label, ERTL> ertlg : g.graph.entrySet()) { // For every
 	// label
@@ -45,7 +45,7 @@ class Liveness {
 	// }
 	// this.info.put(ertlg.getKey(), liveInfo);
 	// }
-	// /*TODO: I still don't have how to compare to know when I reach the
+	// /*I still don't have how to compare to know when I reach the
 	// stationary state so I hardcode the 30 (I guess in 30 iterations it will
 	// be done)
 	// I implemented the function equals that uses the funciton equals of
@@ -117,18 +117,18 @@ class Liveness {
 			}
 			// updating the in
 //TODO this code should work and do the good algorithm but raises NPE
-			//liveInfo.ins.clear();
-			//liveInfo.ins.addAll(liveInfo.uses);
-//			for (Register r : liveInfo.outs) {
-//				if (!liveInfo.defs.contains(r)) {
-//					liveInfo.ins.add(r);
-//				}
-//			}
+			liveInfo.ins.clear();
+			liveInfo.ins.addAll(liveInfo.uses);
+			for (Register r : liveInfo.outs) {
+				if (!liveInfo.defs.contains(r)) {
+					liveInfo.ins.add(r);
+				}
+			}
 			
 			//this code compiles but is wrong since putting liveInfo.ins=liveInfo.uses; make the pointers identical and modifies uses too
-			liveInfo.ins=liveInfo.uses;
-			liveInfo.ins.addAll(liveInfo.outs);
-			liveInfo.ins.removeAll(liveInfo.defs);
+			//liveInfo.ins=liveInfo.uses;
+			//liveInfo.ins.addAll(liveInfo.outs);
+			//liveInfo.ins.removeAll(liveInfo.defs);
 		
 			// on teste si old_in et in sont égaux
 			
