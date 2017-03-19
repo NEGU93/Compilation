@@ -1,16 +1,28 @@
 
+struct U { int x; int y; };
+
+struct S { int a; struct U *u; int b; };
+
 int main() {
-  putchar(100+4);
-  putchar(102-1);
-  putchar(100+2*4/2);
-  putchar(216/2);
-  putchar(3*37);
-  putchar(0x20);
-  putchar(118 + -(1-2));
-  putchar(100 + 122 / 11);
-  putchar(113 + (1<2));
-  putchar(108 + (2<1));
-  putchar(99 + (2==1+1));
-  putchar(10 + (1==2));
+  struct U *u;
+  struct S *s;
+
+  u = sbrk(sizeof(struct U));
+  s = sbrk(sizeof(struct S));
+  s->u = sbrk(sizeof(struct U));
+  s->a = 'A';
+  s->b = 'B';
+  putchar(s->a);
+  putchar(s->b);
+  putchar(10);
+  u->x = 'X';
+  u->y = 'Y';
+  putchar(s->a);
+  putchar(s->b);
+  putchar(10);
+  s->u = u;
+  putchar(s->a);
+  putchar(s->b);
+  putchar(10);
   return 0;
 }

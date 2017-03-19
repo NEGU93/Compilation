@@ -212,8 +212,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
 	    }
 	    return("");
 	  }
-	@Override
-	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration) {
+	@Override Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration) {
 		Label L = dealWithAssignments(l, r, g, variables, struct_definition, struct_declaration);
 		if (L != null) { return L; }
 		if ( (e2 instanceof Ecst) && (e1 instanceof Ecst)) { // ALL THIS IF IS TO MAKE COMPILER TAKE OUT SOME JOB. IT'S NOT NECESARRY. Just an efficient fancy thing.
@@ -331,6 +330,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
 						}
 						//Register r2 = new Register();
 						/* Get the index of the pointer (a) */
+						// TODO: here I suppose p->a is the only option so no p->u->a is possible.
 						LinkedList<String> as = struct_definition.get(struct_declaration.get(((Evar) ((Ebinop) e1).e1).getX()));
 						if ((as == null) || (as.isEmpty())) { throw new Error(((Evar) ((Ebinop) e1).e1).getX() + " of " + struct_declaration.get(((Evar) ((Ebinop) e1).e1).getX()) + " struct was either empty or not defined. The typer should have got this."); }
 						int a = as.indexOf(((Evar) ((Ebinop) e1).e2).getX());
@@ -351,6 +351,7 @@ class Ebinop extends Expr { // Operation between 2 Expr
 			case Bobj: // p->a (used to load only)
 				Register r2 = new Register();
 				/* Get the index of the pointer */
+				// TODO: here I suppose p->a is the only option so no p->u->a is possible.
 				LinkedList<String> as = struct_definition.get( struct_declaration.get(((Evar) e1).getX()));
 				if ( (as == null) || (as.isEmpty())) { throw new Error( ((Evar) e1).getX() + " of " + struct_declaration.get(((Evar) e1).getX()) + " struct was either empty or not defined. The typer should have got this."); }
 				int a = as.indexOf(((Evar) e2).getX());
@@ -984,17 +985,14 @@ class Sizeof extends Expr {
 	}
 	@Override
     String Typer() {
-		//TODO, the sizeof is not complete is the parser.cup
 		if (Typing.declStruct.containsKey(s)) { return("int"); }
 		else {throw new Error("This structure does not exist");}
-	    }
+	}
 
 	@Override
 	Label toRTL(Label l, Register r, RTLgraph g, Map<String, Register> variables, Map<String, LinkedList<String>> struct_definition, Map<String, String> struct_declaration) {
-		LinkedList<Expr> structSized = new LinkedList<>();
-		structSized.add(new Evar(this.s));
-		Ecall callSizeOf = new Ecall("sizeof", structSized);
-		return callSizeOf.toRTL(l, r, g, variables, struct_definition, struct_declaration);
+		Ecst size = new Ecst(new Constant(Typing.declStruct.get(this.s).size()));
+		return size.toRTL(l, r, g, variables, struct_definition, struct_declaration);
 	}
 }
 

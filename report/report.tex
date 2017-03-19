@@ -58,13 +58,11 @@ General knowledge of x86-64 assembly and the functioning of processors will also
 %TODO: ADD STUFF NOT IMPLEMENTED.
 \textit{Mini C} can deal both with integers and structures. But it doesn't work with any other types of variables such as floating point numbers or characters directly.
 
-%TODO: is this really not implemented?
-The function \textit{sizeof} is not yet implemented. The compiler will read it correctly and will know the program is correctly written but it will not know how to translate \textit{sizeof} resulting in an incomplete and broken assembly code.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+%The function \textit{sizeof} is not yet implemented. The compiler will %read it correctly and will know the program is correctly written but it %will not know how to translate \textit{sizeof} resulting in an %incomplete and broken assembly code.
 
 \textit{Mini C} doesn't implement a for loop. Even though is almost the same as implementing a while loop. It was not believed to be relevant the implementation of it as an academic objective as the implementation of it will only require time but will not help in the better understanding of a compiler.
-
-The "++" and "--" commands to increase or decrease a variables value were not implemented as well.
+ 
+The "++" and "- -" commands to increase or decrease a variables value were not implemented as well.
 
 \subsubsection{Known bugs and work to be done}
 %TODO: add bugs
@@ -76,15 +74,6 @@ In the program, global structures were not yet implemented, although the code is
 Although the compiler computes "$5 + 4$" directly as $9$, it will fail to do so when more complex integer operations are done like "$4 * 9 + (4 \&\& 0)$". It is to be done more optimization on this side. Jumps are also always done by the program itself and the compiler will not compute a "if(1)" as a direct jump to the section of code inside the if loop.
 
 The Appel \& George algorithm can be applied for coloring the interference graph (section \ref{sec:coloring}) in order to achieve better registers assignments for a better optimized assembly code.
-
-%The division is not well implemented as it is done with whatever two registers desired, which will end up in an error compilation. Normally a division must be done between any register and \%rax, and to make the operation \(div r1 r2\) it is necessary to do:
-%\begin{lstlisting}
-%		mov r2 %rax
-%		div r1 %rax
-%		mov %rax r2
-%\end{lstlisting}
-
-%TODO: format this thing.
 
 \subsection{Structure of a Compiler}\label{sub_structure_of_a_compiler}
 
