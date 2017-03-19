@@ -238,20 +238,72 @@ class Rcall extends RTL {
   List<Register> rl;
   Label l;
 
-  Rcall(Register r, String s, List<Register> rl, Label l) { this.r = r;
-    this.s = s; this.rl = rl; this.l = l;  }
+  Rcall(Register r, String s, List<Register> rl, Label l) {
+    this.r = r;
+    this.s = s;
+    this.rl = rl;
+    this.l = l;
+  }
 
-  void accept(RTLVisitor v) { v.visit(this); }
-  public String toString() { return r + " <- call " + s + rl + " --> " + l; }
-  Label[] succ() { return new Label[] { l }; }
+  void accept(RTLVisitor v) {
+    v.visit(this);
+  }
+
+  public String toString() {
+    return r + " <- call " + s + rl + " --> " + l;
+  }
+
+  Label[] succ() {
+    return new Label[]{l};
+  }
 
   @Override
   ERTL toERTL(Label exit, ERTLgraph body) {
-    return new ERcall(this.s, this.rl.size(), this.l); // There is no problem here because the return is in rax so I don't even check
-    // TODO: I may have a problem with the goto part if the return is not directly after the function call
+    Label L = this.l;
+    // 4. pull if there was a push
+    if (this.rl.size() > parameters.size()) { // if I have more parameters than registers available
+      Maddi maddi = new Maddi(8 * (this.rl.size() - parameters.size()));
+      ERmunop ermunop = new ERmunop(maddi, Register.rsp, L);
+      L = body.add(ermunop);
+      for (int i = 0; i < this.rl.size() - parameters.size(); i++) {
+        ERload erload = new ERload(Register.rsp, i * 8, new Register(), L);
+        L = body.add(erload);
+      }
+    }
+    // 3. Get the result to %rax
+    //r = result;
+    ERmbinop erb = new ERmbinop(Mmov, result, r, L);
+    L = body.add(erb);
+    // 2. Call the function
+    ERcall eRcall = new ERcall(this.s, this.rl.size(), L);
+    if (this.rl.size() > 0) { L = body.add(eRcall); }
+    else { return eRcall; }
+    // 1. save the parameters to send
+    for (int i = 0; i < this.rl.size(); i++) {
+      if (i < parameters.size()) {    // Using size instead of hardcoding a 6 to make it more general and prone to changes in code
+        r = parameters.get(i);        // The first arguments in registers (
+        ERmbinop eRmbinop = new ERmbinop(Mmov, this.rl.get(i), r, L);
+        if ((i == rl.size() - 1) && (rl.size() <= parameters.size())) {
+          return eRmbinop;
+        } else {
+          L = body.add(eRmbinop);
+        }
+      } else { // The other arguments in the pile
+        r = new Register();
+        ERpush_param pushPam = new ERpush_param(r, L);
+        Label L1 = body.add(pushPam);
+        ERmbinop eRmbinop = new ERmbinop(Mmov, this.rl.get(i), r, L1);
+        if (i == rl.size() - 1) {
+          return eRmbinop;
+        } else {
+          L = body.add(eRmbinop);
+        }
+      }
+    }
+    throw new Error("Problem when calling a function toERTL function");
   }
-
-  ERTLgraph prevFun(ERTLgraph g, Label key) {
+}
+  /*ERTLgraph prevFun(ERTLgraph g, Label key) {
     Label L = this.l;
     // 4. pull if there was a push
     if (this.rl.size() > parameters.size()) { // if I have more parameters than registers available
@@ -292,7 +344,7 @@ class Rcall extends RTL {
     }
     return g;
   }
-}
+}*/
 
 /** saut inconditionnel */
 class Rgoto extends RTL {

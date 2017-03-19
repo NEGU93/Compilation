@@ -1,15 +1,22 @@
 \contentsline {section}{\numberline {I}Introduction}{1}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {I-A}}Structure of a Compiler}{1}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {I-A}}Mini C}{1}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {I-A}1}What it does}{1}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {I-A}2}What it doesn't}{1}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {I-A}3}Known bugs and work to be done}{2}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {I-B}}Structure of a Compiler}{2}
 \contentsline {section}{\numberline {II}Lexical Analyzer}{2}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-A}}Regular Expressions}{2}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-B}}Finite Automata}{2}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-C}}Implementation}{2}
-\contentsline {section}{\numberline {III}Syntax Analyzer}{2}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-B}}Finite Automata}{3}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-C}}Implementation}{3}
+\contentsline {section}{\numberline {III}Syntax Analyzer}{3}
 \contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Implementation}{3}
-\contentsline {section}{\numberline {IV}Semantic Analyzer}{3}
-\contentsline {section}{\numberline {V}Code Generation}{3}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-A}}Register Transfer Language (RTL)}{3}
+\contentsline {section}{\numberline {IV}Semantic Analyzer}{4}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Implementation}{4}
+\contentsline {section}{\numberline {V}Code Generation}{4}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-A}}Register Transfer Language (RTL)}{4}
 \contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-A}1}Implementation}{4}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-B}}Explicit Transfer Language (ERTL)}{4}
-\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Location Transfer Language (LTL)}{4}
-\contentsline {section}{\numberline {VI}Conclusion}{4}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-B}}Explicit Transfer Language (ERTL)}{5}
+\contentsline {subsubsection}{\numberline {\unhbox \voidb@x \hbox {V-B}1}Implementation}{5}
+\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Location Transfer Language (LTL)}{5}
+\contentsline {section}{\numberline {VI}Conclusion}{5}
+\contentsline {section}{References}{6}
