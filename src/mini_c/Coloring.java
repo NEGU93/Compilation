@@ -74,11 +74,15 @@ class Coloring {
     /* Similar to preferedOne but this time it checks if the prefered one is a pseudo-register */
     private boolean preferredPseudo(Interference ig) {
         for (Map.Entry<Register, Set<Register>> tl : todo.entrySet()) { // go for every register in the todolist
-            for ( Register preferredRegister : ig.graph.get(tl.getKey()).prefs ) {   // For every preferred register (Only one most of the time right?)
+            for ( Register preferredRegister : ig.graph.get(tl.getKey()).prefs ) {
                 if (!todo.containsKey(preferredRegister) && !ig.graph.get(tl.getKey()).intfs.contains(preferredRegister)) {
-                    colors.put(tl.getKey(), colors.get(preferredRegister));
-                    todo.remove(tl.getKey());
-                    return true;
+                    if (!ig.graph.get(tl.getKey()).intfs.contains(((Reg) colors.get(preferredRegister)).r)) {
+                        removeRegisterAsOption(((Reg) colors.get(preferredRegister)).r, ig.graph.get(tl.getKey()).intfs);
+                        colors.put(tl.getKey(), colors.get(preferredRegister));
+                        todo.remove(tl.getKey());
+                        addInterference(((Reg) colors.get(preferredRegister)).r, ig.graph.get(tl.getKey()).intfs, ig);
+                        return true;
+                    }
                 }
             }
         }
@@ -121,6 +125,13 @@ class Coloring {
             if (todo.containsKey(r)) {
                 todo.get(r).remove(toBeRemoved);
             }
+        }
+    }
+    private void addInterference(Register toBeAdded, Set<Register> fromHere, Interference interference) {
+        if (fromHere.isEmpty()) { return; }
+        for ( Register r : fromHere) { // for all the registers interferences
+            interference.graph.get(r).intfs.add(toBeAdded);
+            System.out.println("Register " + toBeAdded.toString() + " was added to an interference for " + r);
         }
     }
 
